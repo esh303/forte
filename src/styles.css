@@ -1,1 +1,114 @@
 /* You can add global styles to this file, and also import other style files */
+@import "~@ng-select/ng-select/themes/ant.design.theme.css";
+@media only screen
+and (min-device-width: 768px)
+and (max-device-width: 1024px)
+and (-webkit-min-device-pixel-ratio: 1) {
+  .navbar-right {
+    float: none!important;
+  }
+
+  .navbar-default .navbar-nav > li > a {
+    font-size: 11.5px!important;
+    padding: 16px 7px 16px!important;
+  }
+
+  .banner-form-agileinfo {
+    margin-top: 1em;
+  }
+}
+.wideSwal {
+  width:700px!important;
+}
+
+.padding-table{
+  padding: .5em 1em .2em 0.6em!important;
+}
+
+.padding-point-1{
+  padding: .1em!important;
+}
+
+.padding-table-active {
+  padding: .5em 1.5em .2em 0.6em!important;
+}
+
+
+.selectBox .cuppa-dropdown{
+  border: 2px solid #00000052;
+    background: rgba(76, 122, 113, 0.61);
+    color:#fff
+}
+
+.selectBox .cuppa-dropdown .selected-list .c-btn .c-list .c-token{
+  background-color: #4b5c59;
+  border-radius: 4px;
+}
+
+typeahead-container.dropdown  button {
+  display: block;
+    border: 0px;
+    background-color: white;
+    padding:5px 10px;
+}
+
+typeahead-container.dropdown button :hover {
+  /* display: block;
+  border: 0px; */
+  color:#fff;
+  background-color:  rgba(76, 122, 113, 0.61);
+}
+.selectBox .cuppa-dropdown .dropdown-list .list-area .ng-star-inserted .lazyContainer .pure-checkbox input[type=checkbox] {
+  /* border: 1px solid black!important;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px; */
+
+    box-sizing: content-box;
+    content: '';
+    color: #0079FE;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: -9px;
+    border: 2px solid #0079FE;
+    text-align: center;
+    transition: all 0.4s ease;
+
+}
+
+.multiselect-dropdown .dropdown-btn .selected-item {
+  border: 1px solid #337ab7;
+  margin-right: 4px;
+  margin-top: 5px;
+  background: #337ab7;
+  padding: 0 5px;
+  color: #fff;
+  border-radius: 2px;
+  float: left;
+  display: flex;
+  max-width: 100px;
+}
+
+.bs-datepicker {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+  background: #fff;
+  box-shadow: 0 0 10px 0 #aaa;
+  position: relative;
+  z-index: 1;
+}
+.bs-datepicker-container {
+  padding: 15px;
+}
+

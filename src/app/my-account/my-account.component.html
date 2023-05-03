@@ -1,0 +1,194 @@
+<div class="header">
+  <nav class="navbar navbar-default">
+    <app-header></app-header>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <app-sidemenu></app-sidemenu>
+    <div class="col-md-10 main_cont">
+
+      <div class="col-md-10 col-md-push-1 div-border ship-border">
+        <h2 class="bill-head">My Account</h2>
+        <div class="col-md-10 col-md-push-1">
+          <div class="row">
+            <div class="user-cont text-center">
+              <img src="../../assets/images/man.png" alt="" class="icon-img img-responsive center-block">
+              <h5 class="green bold">{{salesRepValues.customerName}}</h5>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5 col-sm-12">
+              <div class="cont">
+                <span class="head">Username :</span><span class="body">{{salesRepValues?.customerName}}</span></div>
+              <div class="cont">
+                <span class="head">Sales Rep :</span><span class="body">{{salesRepValues?.salesRepName}}</span>
+              </div>
+            </div>
+            <div class="col-md-5 col-md-offset-2 col-sm-12">
+              <div class="cont">
+                <span class="head">Company :</span><span class="body">{{salesRepValues?.companyName}}</span>
+              </div>
+              <div class="cont">
+                <span class="head">Account Usergroup :</span><span class="body">Corporate</span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5 col-sm-12">
+              <h4 class="sub-head">Personal</h4>
+              <div class="cont">
+                <span class="head">Email: </span><span class="body">{{salesRepValues?.email}}</span>
+              </div>
+              <div class="cont">
+                <span class="head">Phone: </span><span class="body">{{salesRepValues?.contactNumber}}</span>
+              </div>
+              <div class="cont">
+                <span class="head">Address: </span><span class="body">{{salesRepValues?.address}},{{salesRepValues?.city}},{{salesRepValues?.state}}</span>
+              </div>
+            </div>
+            <div class="col-md-5 col-md-offset-2 col-sm-12">
+              <h4 class="sub-head">Billing</h4>
+              <div class="cont">
+                <span class="head">Email: </span><span class="body">bruce@fortewlc.com</span>
+              </div>
+              <div class="cont">
+                <span class="head">Phone: </span><span class="body">(253) 820 - 1058</span>
+              </div>
+              <div class="cont">
+                <span class="head">Address: </span><span class="body">301 54th Fife, WA 98424 United States</span>
+              </div>
+            </div>
+          </div>
+          <!-- <form [formGroup]="myAccount">
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+              <h4 class="sub-head text-center">Pickup Information</h4>
+              <div class="row">
+                <div class="col-md-3 form-group">
+                  <label>Name</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="customerName"/>
+                  <app-error-message [control]="myAccount.controls.customerName"
+                                         style="font-size: 13px;"></app-error-message>
+                </div>
+                <div class="col-md-3 form-group">
+                  <label>Company</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="companyName"/>
+                  <app-error-message [control]="myAccount.controls.companyName"
+                                         style="font-size: 13px;"></app-error-message>
+                </div>
+
+                <div class="col-md-3 form-group">
+                  <label>Phone</label>
+                  <input type="text"  class="form-control"  placeholder="" formControlName="contactNumber" maxlength="10" minlength="10"
+                  ngPattern="/[0-9]/"
+                  onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" (change)="checkContactNumber(myAccount.controls.contactNumber.value)" />
+                  <span *ngIf="phoneNumberFlag" class="text-center" style="font-size:14px; color: #FF0000; text-align:center">(!Please Enter phone Number)</span>
+                  <!-- <app-error-message [control]="myAccount.controls.contactNumber"
+                                         style="font-size: 13px;"></app-error-message> -->
+
+                <!--</div>
+                <div class="col-md-3 form-group">
+                  <label>Ext</label>
+                  <input type="text" class="form-control" placeholder="" formControlName="extension"/>
+                  <app-error-message [control]="myAccount.controls.extension"
+                                         style="font-size: 13px;"></app-error-message>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-3 form-group">
+                  <label>Zip</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="zip"  maxlength="5" minlength="5"
+                  (change)="shipperZipCode(myAccount.controls.zip.value)"
+                  ngPattern="/[0-9]/"
+                  onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"/>
+                  <app-error-message [control]="myAccount.controls.zip"
+                                         style="font-size: 13px;"></app-error-message>
+                  <span *ngIf="shipperErrorMessage" style="color: #FF0000">Zip is not Found</span>
+                </div>
+                <div class="col-md-3 form-group">
+                  <label>City</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="city"/>
+                  <app-error-message [control]="myAccount.controls.city"
+                                         style="font-size: 13px;"></app-error-message>
+                </div>
+                <div class="col-md-3 form-group">
+                  <label>State</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="state"/>
+                  <app-error-message [control]="myAccount.controls.state"
+                    style="font-size: 13px;"></app-error-message>
+
+                  </div>
+                <div class="col-md-3 form-group">
+                  <label>Country</label>
+                  <!-- <input type="text" class="form-control"  placeholder="" formControlName="country"/> -->
+                 <!-- <select class="form-control" formControlName="country" disabled>
+                    <option value="USA">United States</option>
+                    <option>Canada</option>
+                    <option>Mexico</option>
+                  </select>
+                  <app-error-message [control]="myAccount.controls.country"
+                                     style="font-size: 13px;"></app-error-message>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Address 1</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="address1"/>
+                  <app-error-message [control]="myAccount.controls.address1"
+                                         style="font-size: 13px;"></app-error-message>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Address 2</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="address2"/>
+
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Available for Pickup By</label><span style="color:#FF0000">*</span>
+                  <!-- <input type="time" class="form-control"  placeholder="" /> -->
+                 <!-- <timepicker formControlName="pickUpTime" [showMeridian]="ismeridian" ></timepicker>
+                  <app-error-message [control]="myAccount.controls.pickUpTime"
+                                         style="font-size: 13px;"></app-error-message>
+                 </div>
+                <div class="col-md-6 form-group">
+                  <label>Dock Closes At</label><span style="color:#FF0000">*</span>
+                  <!-- <input type="time" class="form-control"  placeholder="" /> -->
+                 <!-- <timepicker formControlName="closeTime" [showMeridian]="ismeridian" ></timepicker>
+                  <app-error-message [control]="myAccount.controls.closeTime"
+                                         style="font-size: 13px;"></app-error-message>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col-md-4 col-md-push-2 green-button text-center" *ngIf ="!upDateFlag">
+                <a (click)="clearData('clear')" ><em class="fa fa-close icon" aria-hidden="true" style="margin-right:10px;"></em>CLEAR DATA</a>
+              </div>
+              <div class="col-md-4 col-md-push-2 green-button text-center" *ngIf ="upDateFlag">
+                <a (click)="clearData('default')" ><em class="fa fa-close icon" aria-hidden="true" style="margin-right:10px;"></em>SET DEFAULT</a>
+              </div>
+              <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button  class="btn-save-green" *ngIf ="!upDateFlag && setDefaultFlag === false" (click)="saveData(myAccount.value)" [disabled]= "!myAccount.controls.customerName.valid ||!myAccount.controls.companyName.valid ||!myAccount.controls.extension.valid ||!myAccount.controls.zip.valid ||!myAccount.controls.city.valid ||!myAccount.controls.state.valid ||!myAccount.controls.country.valid ||!myAccount.controls.address1.valid ||!myAccount.controls.pickUpTime.valid ||!myAccount.controls.closeTime.valid"><em class="fa fa-save" aria-hidden="true" style="margin-right:10px; "></em>SAVE DATA </button>
+              <button  class="btn-save-green" *ngIf ="upDateFlag && setDefaultFlag === false" (click)="saveData(myAccount.value)"  [disabled]= "!myAccount.controls.customerName.valid ||!myAccount.controls.companyName.valid ||!myAccount.controls.extension.valid ||!myAccount.controls.zip.valid ||!myAccount.controls.city.valid ||!myAccount.controls.state.valid ||!myAccount.controls.country.valid ||!myAccount.controls.address1.valid ||!myAccount.controls.pickUpTime.valid ||!myAccount.controls.closeTime.valid"><em class="fa fa-save" aria-hidden="true" style="margin-right:10px; "></em>UPDATE</button>
+              <button  class="btn-save-green" *ngIf ="upDateFlag && setDefaultFlag === true" (click)="setDefault()"  style="margin-right:10px; ">UPDATE</button>
+             <!-- <button  class="form-control" (click)="saveData(myAccount.value)"><em class="fa fa-save" aria-hidden="true" style="margin-right:10px;"></em>SAVE DATA</button>   -->
+           <!-- </div>
+            </div>
+          </div>
+        </form> -->
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
+

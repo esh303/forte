@@ -1,0 +1,764 @@
+<div class="header">
+  <nav class="navbar navbar-default">
+    <app-header></app-header>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <app-sidemenu></app-sidemenu>
+    <div class="col-md-10 main_cont" *ngIf="!showWhenNoFedexSubscription">
+      <ngx-loading [show]="pickupLoader"></ngx-loading>
+      <div class="col-md-12   ship-border">
+        <h2 class="bill-head text-center" style="margin-bottom: 10px">Get Rates & Transit Times Of FedEx</h2>
+        <form [formGroup]="packageForm">
+
+          <!-- <div class="row"> -->
+          <div class="row div-border">
+            <h4 class="sub-head">Shipper Information
+              <button class="leg" data-toggle="modal" data-target="#shipper-address-save-modal" style="margin-top:-10px;float:right;" 
+              [disabled]="!packageForm.controls['shipperCompanyName'].valid
+                     || !packageForm.controls['shipperStreet1'].valid
+                     || !packageForm.controls['originZip'].valid 
+                     || !packageForm.controls['originState'].valid
+                     || !packageForm.controls['originCity'].valid">
+                <em class="fa fa-save" style="margin-right:5px"></em>Save Template</button>
+            </h4>
+            <div class="row">
+
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Shipper</label>
+                  <span style="color:#FF0000">*</span>
+                  <input class="form-control" formControlName="shipperCompanyName" autocomplete="nope">
+                  <div class="input-group-btn">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 20px;
+                  height: 50px" aria-haspopup="true" aria-expanded="false">
+                      <em class="fa fa-caret-down"></em>
+                    </button>
+                    <div class="dropdown-menu" style="padding: 0px;height:100px;overflow: auto;width:500">
+                      <table class="table table-bordered" style="margin-bottom: 0px;border:none">
+                        <div class="scrollit">
+                          <thead>
+                            <tr>
+                              <td>Template Name</td>
+                              <td>Company</td>
+                              <td>Zip/Post</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let addressTemplates of shipperTemplates" class="noIbar" (click)="getAddressClickValues(addressTemplates, 'shipperid')">
+                              <td>{{addressTemplates?.templateName}}</td>
+                              <td>{{addressTemplates?.companyName}}</td>
+                              <td>{{addressTemplates?.zip}}</td>
+                            </tr>
+                          </tbody>
+                          <label *ngIf="hideShipperTemplate">No Templates Available</label>
+                        </div>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label>Contact</label>
+                <input class="form-control" formControlName="shipperContactName" autocomplete="nope">
+              </div>
+              <div class="col-md-4">
+                <label>Phone</label>
+                <span style="color:#FF0000">*</span>
+                <input class="form-control" formControlName="shipperPhoneNumber" minlength="10" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                  name="phone" mask="(999) 999-9999" ng-model="phone" autocomplete="nope">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <label>Street1</label>
+                <span style="color:#FF0000">*</span>
+                <input class="form-control" formControlName="shipperStreet1" autocomplete="nope">
+
+              </div>
+              <div class="col-md-4">
+                <label>Street2</label>
+                <input class="form-control" formControlName="shipperStreet2" autocomplete="nope">
+              </div>
+              <div class="col-md-4">
+                <label>Country</label>
+                <input class="form-control" formControlName="shipperCountry" autocomplete="nope" [disabled]="true">
+              </div>
+            </div>
+
+            <div class="row ">
+
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Zip</label>
+                  <span style="color:#FF0000">*</span>
+                  <input type="text" class="form-control" placeholder="Origin" formControlName="originZip"
+                   (change)="getCityState(packageForm.controls['originZip'].value, 'origin')"
+                    ngPattern="/[0-9]/" maxlength="5" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" required>
+
+                  <div class="input-group-btn">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-toggle="modal" data-target="#shipper-location-search-modal"
+                      type="button" style="margin-top: 20px;height: 50px" tooltip="Look up for the google places">
+                      <em class="fa fa-search"></em>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label>City</label>
+                <span style="color:#FF0000">*</span>
+                <input type="text" class="form-control" placeholder="Origin" formControlName="originCity"
+                   required [disabled]="true">
+
+              </div>
+              <div class="col-md-4">
+                <label>State</label>
+                <span style="color:#FF0000">*</span>
+                <input type="text" class="form-control" placeholder="Origin" formControlName="originState" 
+                 required [disabled]="true">
+              </div>
+
+            </div>
+          </div>
+          <div class="row div-border">
+            <div class="row">
+              <h4 class="sub-head">Consignee Information
+                <button class="leg" data-toggle="modal" data-target="#address-save-modal" 
+                 style="margin-top:-10px;float:right;" [disabled]="!packageForm.controls['consigneeCompanyName'].valid
+                 || !packageForm.controls['consigneeStreet1'].valid
+                 || !packageForm.controls['destinationZip'].valid
+                 || !packageForm.controls['destinationCity'].valid
+                 || !packageForm.controls['destinationState'].valid">
+                  <em class="fa fa-save" style="margin-right: 5px;"></em>Save Template</button>
+              </h4>
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Consignee</label>
+                  <span style="color:#FF0000">*</span>
+                  <input class="form-control" formControlName="consigneeCompanyName" autocomplete="nope">
+                  <div class="input-group-btn">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 20px;
+                     height: 50px" aria-haspopup="true" aria-expanded="false">
+                      <em class="fa fa-caret-down"></em>
+                    </button>
+                    <div class="dropdown-menu" style="padding: 0px;height:100px;overflow: auto;width:500">
+                      <table class="table table-bordered" style="margin-bottom: 0px;border:none">
+                        <div class="scrollit">
+                          <thead>
+                            <tr>
+                              <td>Template Name</td>
+                              <td>Company</td>
+                              <td>Zip/Post</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let consignee of consigneeTemplates" class="noIbar" (click)="getAddressClickValues(consignee, 'consigneeid')">
+                              <td>{{consignee?.templateName}}</td>
+                              <td>{{consignee?.companyName}}</td>
+                              <td>{{consignee?.zip}}</td>
+                            </tr>
+                          </tbody>
+                          <label *ngIf="hideConsigneeTemplate">No Templates Available</label>
+                        </div>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label>Contact</label>
+                <input class="form-control" formControlName="consigneeContactName" autocomplete="nope">
+              </div>
+              <div class="col-md-4">
+                <label>Phone</label>
+                <span style="color:#FF0000">*</span>
+                <input class="form-control" formControlName="consigneePhoneNumber" minlength="10" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                  name="phone" mask="(999) 999-9999" clean="true" ng-model="phone" autocomplete="nope">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <label>Street1</label>
+                <span style="color:#FF0000">*</span>
+                <input class="form-control" formControlName="consigneeStreet1" autocomplete="nope">
+              </div>
+              <div class="col-md-4">
+                <label>Street2</label>
+                <input class="form-control" formControlName="consigneeStreet2" autocomplete="nope">
+              </div>
+              <div class="col-md-4">
+                <label>Country</label>
+                <input class="form-control" formControlName="consigneeCountry" autocomplete="nope" [disabled]="true">
+              </div>
+            </div>
+            <div class="row ">
+
+              <div class="col-md-4">
+                <div class="input-group">
+                  <label>Zip</label>
+                  <span style="color:#FF0000">*</span>
+                  <input type="text" class="form-control" placeholder="Destination" formControlName="destinationZip" (change)="getCityState(packageForm.controls['destinationZip'].value, 'destination')"
+                    ngPattern="/[0-9]/" maxlength="5" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" required>
+
+                  <div class="input-group-btn">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-toggle="modal" data-target="#consignee-location-search-modal"
+                      type="button" style="margin-top: 20px;height: 50px" tooltip="Look up for the google places">
+                      <em class="fa fa-search"></em>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label>City</label>
+                <span style="color:#FF0000">*</span>
+                <input type="text" class="form-control" placeholder="Origin" formControlName="destinationCity" 
+                  required [disabled]="true">
+
+              </div>
+              <div class="col-md-4">
+                <label>State</label>
+                <span style="color:#FF0000">*</span>
+                <input type="text" class="form-control" placeholder="Origin" formControlName="destinationState" 
+                  required [disabled]="true">
+
+              </div>
+            </div>
+
+          </div>
+          <div class="row div-border">
+            <div class="row ">
+              <div class="col-md-6 form-group">
+                <label>Packaging</label>
+                <span style="color:#FF0000">*</span>
+                <select class="form-control" formControlName="packagingType" required>
+                  <option value="" hidden>Select</option>
+                  <option value="YOUR_PACKAGING">Your Packaging
+                  </option>
+                  <option value="FEDEX_ENVELOPE">FedEx Envelope
+                  </option>
+                  <option value="FEDEX_EXTRA_LARGE_BOX">FedEx Extra Large Box
+                  </option>
+                  <option value="FEDEX_LARGE_BOX">FedEx Large Box
+                  </option>
+                  <option value="FEDEX_MEDIUM_BOX">FedEx Medium Box
+                  </option>
+                  <option value="FEDEX_PAK">FedEx Pak
+                  </option>
+                  <option value="FEDEX_SMALL_BOX">FedEx Small Box
+                  </option>
+                  <option value="FEDEX_TUBE">FedEx Tube
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-6 form-group">
+                <label>Weight</label>
+                <span style="color:#FF0000">*</span>
+                <div class="input-group" style="display: flex">
+                  <input type="text" class="form-control" placeholder="Weight" formControlName="weightValue" ngPattern="/[0-9.]/" maxlength="5"
+                    onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" (change)="checkWeightValue(packageForm.value)"
+                    required>
+                  <select class="form-control" formControlName="weightUnit" required>
+                    <option value="" hidden>Select</option>
+                    <option value='KG'>kg</option>
+                    <option value='LB'>lbs</option>
+                  </select>
+                </div>
+                <span style="color: #ff0000" *ngIf="invalidWeightMsg">Exceeding the Max package weight</span>
+              </div>
+              <div class="col-md-12 form-group">
+
+                <input type="checkbox" class="option-input radio" style="top:5px;" value="true" formControlName="residential" />
+                <label>I'm shipping to a residence</label>
+              </div>
+              <!-- <div class="col-md-4 form-group">
+                  <label>PickUp Date</label>
+                  <input class="form-control" placeholder="" ngModel bsDatepicker [minDate]="minDate" (keydown)="eventHandler($event)"
+                         [bsConfig]="{showWeekNumbers: false}"  
+                         formControlName="pickupDate" (bsValueChange)="pickUpDateConfirm($event)"
+                          autocomplete="nope">
+                         
+                      
+                        </div> -->
+            </div>
+            <div class="row margin-top">
+              <div class="col-md-6 green-button text-center">
+                <button (click)="clear()">
+                  <em class="fa fa-money-bill-alt icon"></em>Clear
+                </button>
+              </div>
+              <div class="col-md-6  green-button text-center" *ngIf="!showForEnteringfedexSubsctiption">
+                <button (click)="getRates(packageForm.value)" [disabled]="!packageForm.controls['originZip'].valid || 
+                          !packageForm.controls['destinationZip'].valid || 
+                          !packageForm.controls['packagingType'].valid || 
+                          !packageForm.controls['weightValue'].valid || 
+                          !packageForm.controls['shipperCompanyName'].valid ||
+                          !packageForm.controls['shipperStreet1'].valid ||
+                          !packageForm.controls['consigneeCompanyName'].valid || 
+                          !packageForm.controls['consigneeStreet1'].valid || 
+                          !packageForm.controls['weightUnit'].valid ||
+                          !packageForm.controls['weightValue'].valid || invalidWeightMsg === true">
+                  <em class="fa fa-money-bill-alt icon"></em>Get Rates
+                </button>
+              </div>
+              <div class="col-md-6  green-button text-center" *ngIf="showForEnteringfedexSubsctiption">
+                <button (click)="fedexDetails()" data-toggle="modal" data-target="#fedexSubscription-modal" [disabled]="!packageForm.controls['originZip'].valid || 
+                            !packageForm.controls['destinationZip'].valid || 
+                            !packageForm.controls['packagingType'].valid || 
+                            !packageForm.controls['weightValue'].valid || 
+                            !packageForm.controls['shipperCompanyName'].valid ||
+                            !packageForm.controls['shipperStreet1'].valid ||
+                            !packageForm.controls['consigneeCompanyName'].valid || 
+                            !packageForm.controls['consigneeStreet1'].valid || 
+                            !packageForm.controls['weightUnit'].valid ||
+                            !packageForm.controls['weightValue'].valid || invalidWeightMsg === true">
+                  <em class="fa fa-money-bill-alt icon"></em>Get Rates
+                </button>
+              </div>
+
+            </div>
+          </div>
+          <!-- </div> -->
+          <!-- </div> -->
+        </form>
+      </div>
+
+      <div class="row" *ngIf="entryLoader">
+        <div class="col-md-10 col-md-push-1 table-div" style="margin-top: 30px">
+
+          <div class="col-md-8 col-md-push-4 table-div">
+            <span style="padding:40px; color: #4c7971; font-size: 22px; ">
+              <em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #4c7971;font-size: 22px;"></em>&nbsp;Loading</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 div-border ship-border" style="margin-top:20px" *ngIf="showRateDetail">
+
+        <div class="row">
+          <ul class="rtab" id="rateTabList" role="list" aria-label="">
+            <span tabindex="-1"> </span>
+            <li aria-posinset="1" aria-selected="false" aria-setsize="2" class="rtab-item--active" id="retailRatesTab" role="tab" tabindex="0"
+              (click)="getRateForFedexRetailRate()">FedEx® Retail Rates
+            </li>
+            <li aria-posinset="2" aria-selected="true" aria-setsize="2" class="rtab-item" id="oneRatesTab" role="tab" tabindex="0" (click)="getRateForFedexOneRate()">
+              FedEx One Rate®
+            </li>
+          </ul>
+        </div>
+        <div class="row" *ngIf="showLoader">
+          <div class="col-md-10 col-md-push-1 table-div" style="margin-top: 30px">
+            <div class="col-md-8 col-md-push-4 table-div">
+              <span style="padding:40px; color: #4c7971; font-size: 22px; ">
+                <em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #4c7971;font-size: 22px;"></em>&nbsp;Loading</span>
+            </div>
+          </div>
+        </div>
+        <!-- <div  class="row" style="border-bottom:1px solid #cbd1d9;padding:20px 10px;" *ngIf="showRateDetail">
+              <table class="table table-bordered">
+                <tr>
+                  <th>ARRIVES ON</th>
+                  <th>DELIVERED BY</th>
+                  <th>Rate</th>
+                </tr>
+                <tr *ngFor="let result of resultData?.RateReplyDetails">
+                  <td><tr *ngFor="let date of result?.CommitDetails"><td>{{date?.CommitTimestamp | date:'MM/dd/yyyy'}}</td></tr></td>
+                  <td><tr><td>{{result?.DeliveryTimestamp | date:'h:mm a'}}&nbsp;{{result?.ServiceType}}</td></tr></td>
+                  <td><tr *ngFor="let rate of result?.RatedShipmentDetails">{{rate?.ShipmentRateDetail?.TotalNetCharge?.Amount}}</tr></td>
+                </tr>
+              </table>
+                
+            </div> -->
+        <div class="row" style="border-bottom:1px solid #cbd1d9;padding:20px 10px;" *ngIf="showSuccessResponse">
+          <div class="row" style="border-bottom:1px solid #cbd1d9;padding:20px 10px;" *ngFor="let result of resultData?.RateReplyDetails">
+            <div class="col-md-2" *ngFor="let date of result?.CommitDetails">
+              <div class="row help-seg">
+                <p class="title-head">ARRIVES ON</p>
+                <p class="help-carr" *ngIf="date?.CommitTimestamp!==undefined">{{date?.CommitTimestamp | date: 'MM/dd/yyyy'}}</p>
+                <p class="help-carr" *ngIf="date?.CommitTimestamp === undefined">{{date.TransitTime}}</p>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="row help-seg">
+                <p class="title-head">DELIVERED BY</p>
+                <p class="help-carr" *ngIf="result?.DeliveryTimestamp!==undefined">{{result?.DeliveryTimestamp | date:'shortTime'}} </p>
+                <p class="help-carr" *ngIf="result?.DeliveryTimestamp==undefined">-</p>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div class="row help-seg">
+                <p class="title-head">{{result?.ServiceType}}</p>
+              </div>
+              <div class="row help-seg" *ngFor="let rate of result?.RatedShipmentDetails">
+                <div class="col-md-4">
+                  <p class="text-left help-carr">Base rate</p>
+                  <p class="text-left help-carr">Fuel surcharge</p>
+                  <p class="text-left help-carr">Shipment Quote</p>
+                </div>
+                <div class="col-md-3">
+                  <p class="text-right help-carr" *ngIf="!showForForteSubscription">{{rate?.ShipmentRateDetail?.TotalNetFreight?.Amount}}</p>
+                  <p class="text-right help-carr" *ngIf="showForForteSubscription">{{rate?.ShipmentRateDetail?.TotalNetFreight?.forteAmount}}</p>
+                  <p class="text-right help-carr" *ngIf="!showForForteSubscription">{{rate?.ShipmentRateDetail?.TotalSurcharges?.Amount}}</p>
+                  <p class="text-right help-carr" *ngIf="showForForteSubscription">{{rate?.ShipmentRateDetail?.TotalSurcharges?.forteSurcharge}}</p>
+                  <p class="text-right help-carr" *ngIf="!showForForteSubscription">{{rate?.ShipmentRateDetail?.TotalNetCharge?.Amount}}</p>
+                  <p class="text-right help-carr" *ngIf="showForForteSubscription">{{rate?.ShipmentRateDetail?.TotalNetCharge?.forteNetAmount}}</p>
+                </div>
+                <div class="col-md-2" *ngIf="!showForForteSubscription">
+                  <div class="row help-seg">
+                  <h2 class="rate-text text-center">${{rate?.ShipmentRateDetail?.TotalNetCharge?.Amount}}</h2>
+                </div>
+                </div>
+                <div class="col-md-2" *ngIf="showForForteSubscription" >
+                  <div class="row help-seg">
+                    <!-- <p class="title-head text-center">FORTE RATE</p> -->
+                    <h2 class="rate-text text-center">${{rate?.ShipmentRateDetail?.TotalNetCharge?.forteNetAmount}}</h2>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            
+            <div class="col-md-1" *ngFor="let rateNew of result?.RatedShipmentDetails">
+              <div class="row help-seg">
+                <p class="title-head text-center">PICK UP</p>
+                <p class="rate-text text-center green-button" style="font-size:18px;color:#4c7971">
+                  <em class="fa fa-truck" aria-hidden="true" data-toggle="modal" data-target="#fedex-modal" (click)="addShipment(result, rateNew); timePatch()"></em>
+                </p>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+        <div class="row" *ngIf="showFailureResponse">
+          <div class="row" style="border-bottom:1px solid #cbd1d9;padding:20px 10px;" *ngFor="let errorResponse of resultData?.Notifications">
+            <h2 class="rate-text text-center">{{errorResponse.Message}}</h2>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="col-md-10 col-md-push-1 div-border ship-border" *ngIf="failureInNetwork">
+        <div class="row">
+          <h2 class="rate-text text-center"> Failed to Load Response</h2>
+        </div>
+
+      </div>
+      <div class="col-md-10 col-md-push-1 div-border ship-border" *ngIf="failureInFedexSubscription">
+        <div class="row">
+          <h2 class="rate-text text-center">You are not provided the Fedex Subscription Credentials, Service is not available. </h2>
+        </div>
+
+      </div>
+    </div>
+    <div class="col-md-10 main_cont" *ngIf="showWhenNoFedexSubscription">
+        <div class="col-md-12   ship-border">
+            <h2 class="bill-head text-center" style="margin-bottom: 40px">Get Rates & Transit Times Of FedEx</h2>
+            
+        <div class="row" style="margin-top: 140px;">
+        <h2 class="rate-text text-center" style="color: #7a7d82">You are not entitled to get the Fedex Rates,<br>Please contact admin@fortetlc.com or call 800.501.9922</h2>
+      
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div>
+    <img src="" id="imgId" style="width: 500px; height: 500px">
+  </div> -->
+
+  <div class="modal fade" id="fedex-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" *ngIf="showForPickUp">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button style="margin-top: -12px;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span style="font-size: 35px;" aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel" style="color: #FFFFFF">Pick Up Information</h4>
+        </div>
+       
+          <div class="modal-body">
+
+              <form [formGroup]="pickupForm">
+            <!--<h4 class="sub-head">Pick Up Information</h4>-->
+
+            <div class="row">
+
+
+              <div class="col-md-6 form-group">
+                <label>Date</label>
+                <span style="color:#FF0000">*</span>
+                <span style="color:#FF0000;font-size: 13px;" *ngIf="invalidDateErrorMsg">(Date is Invalid)</span>
+                <input class="form-control" placeholder="" bsDatepicker date-only="true" [minDate]="minDate" [minDate]="minDate" [bsConfig]="{ showWeekNumbers: false, dateInputFormat: 'MM/DD/YYYY'}"
+                  [(ngModel)]="datePatch" formControlName="pickUpDate" (bsValueChange)="invalidDate($event)" required>
+                <app-error-message [control]="$any(pickupForm).controls['pickUpDate']" style="font-size: 13px;"></app-error-message>
+              </div>
+
+            </div>
+
+
+
+
+            <div class="row">
+
+              <div class="col-md-6 form-group">
+                <label>Pick Up Time</label>
+                <span style="color:#FF0000">*</span>
+                <timepicker formControlName="pickUpReadyTime" [showMeridian]="ismeridian" required></timepicker>
+                <app-error-message [control]="$any(pickupForm).controls['pickUpReadyTime']"
+                style="font-size: 13px;"></app-error-message>
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>Company Closing Time</label>
+                <span style="color:#FF0000">*</span>
+                <timepicker formControlName="companyClosingTime" [showMeridian]="ismeridian" [(ngModel)]="mytime"required></timepicker>
+                <app-error-message [control]="$any(pickupForm).controls['companyClosingTime']"
+                style="font-size: 13px;"></app-error-message>
+              </div>
+            </div>
+
+          </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">CLOSE</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="createPickup(pickupForm.value)"
+             [disabled]="!pickupForm.controls['pickUpDate'].valid || !pickupForm.controls['pickUpReadyTime'].valid 
+            || !pickupForm.controls['companyClosingTime'].valid || invalidDateErrorMsg === true">CREATE</button>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Shipper Address Save Modal -->
+  <div id="shipper-address-save-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <form [formGroup]="addressTemplateNameForm">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="color: #FFFFFF">
+              <em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <p>This will save the information in the Shipper section as a new template.</p>
+                <div class="form-group">
+                  <label>Template Name</label>
+                  <input type="text" formControlName="addressTempName" placeholder="Please enter a template name">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="row">
+              <div class="col-md-4 col-md-push-2 green-button text-center">
+                <button class="green-button" (click)="addressTemplateSave(packageForm.value, 'shipperAddress', addressTemplateNameForm.value)"
+                  [disabled]="addressTemplateNameForm.invalid">
+                  <em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+              </div>
+              <div class="col-md-4 col-md-push-2 green-button text-center">
+                <button class="green-button" data-dismiss="modal">
+                  <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Shipper Address Save Modal -->
+  <!-- Address Save Modal -->
+  <div id="address-save-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <form [formGroup]="addressTemplateNameForm">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="color: #FFFFFF">
+              <em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <p>This will save the information in the Consignee section as a new template.</p>
+                <div class="form-group">
+                  <label>Template Name</label>
+                  <input type="text" formControlName="addressTempName" placeholder="Please enter a template name">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="row">
+              <div class="col-md-4 col-md-push-2 green-button text-center">
+                <button class="green-button" (click)="addressTemplateSave(packageForm.value, 'address', addressTemplateNameForm.value)"
+                  [disabled]="addressTemplateNameForm.invalid">
+                  <em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+              </div>
+              <div class="col-md-4 col-md-push-2 green-button text-center">
+                <button class="green-button" data-dismiss="modal">
+                  <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Address Save Modal -->
+
+
+  <div id="shipper-location-search-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+      
+      <div class="modal-content">
+        <form>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" style="color: #FFFFFF;opacity:1">&times;</button>
+            <h4 class="modal-title" style="color: #FFFFFF">
+              <em class="fa fa-search" style="margin-right:5px;"></em>&nbsp;Search for location</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+
+              <div class="col-md-12">
+                <label>Enter the Location:</label>
+                <ng4geo-autocomplete  style="background:#4c7971" [userSettings]="originSettings" (componentCallback)="autoCompleteCallback1($event)"
+                  autofocus></ng4geo-autocomplete>
+                 
+              </div>
+              <div class="clearfix"> &nbsp;</div>
+              <div class="clearfix"> &nbsp;</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="row">
+              
+              <div class="col-md-4 col-md-push-4 green-button text-center">
+                <button class="green-button" data-dismiss="modal">
+                  <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+   <div id="consignee-location-search-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+      
+      <div class="modal-content">
+        <form>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" style="color: #FFFFFF;opacity:1">&times;</button>
+            <h4 class="modal-title" style="color: #FFFFFF">
+              <em class="fa fa-search" style="margin-right:5px;"></em>&nbsp;Search for location</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <label>Enter the Location:</label>
+                <ng4geo-autocomplete class="" style="background:#4c7971!important;" [userSettings]="destinationSettings" (componentCallback)="autoCompleteCallback2($event)"></ng4geo-autocomplete>
+                
+              </div>
+              <div class="clearfix"> &nbsp;</div>
+                <div class="clearfix"> &nbsp;</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="row">
+              
+              <div class="col-md-4 col-md-push-4 green-button text-center">
+                <button class="green-button" data-dismiss="modal">
+                  <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div> 
+
+
+  <!-- fedex Credentials modal-->
+  <div class="modal fade" id="fedexSubscription-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button style="margin-top: -12px;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span style="font-size: 35px;" aria-hidden="true"  style="color: #FFFFFF;opacity: 1">&times;</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel" style="color: #FFFFFF">Fedex Subscription</h4>
+        </div>
+        <form [formGroup]="fedexCredentialsForm">
+          <div class="modal-body">
+
+
+            <!--<h4 class="sub-head">Pick Up Information</h4>-->
+
+            <div class="row">
+
+
+              <div class="col-md-12 form-group">
+                <label>Key</label>
+                <span style="color:#FF0000">*</span>
+                <span style="color:#FF0000;font-size: 13px;" *ngIf="invalidDateErrorMsg">(Date is Invalid)</span>
+                <input class="form-control" type="text" formControlName="key" required>
+                <app-error-message [control]="$any(fedexCredentialsForm).controls['key']" style="font-size: 13px;"></app-error-message>
+              </div>
+              </div>
+              <div class="row">
+              <div class="col-md-12 form-group">
+                <label>Password</label>
+                <span style="color:#FF0000">*</span>
+                <span style="color:#FF0000;font-size: 13px;" *ngIf="invalidDateErrorMsg">(Date is Invalid)</span>
+                <input class="form-control" type="password" formControlName="password" required>
+                <app-error-message [control]="$any(fedexCredentialsForm).controls['password']" style="font-size: 13px;"></app-error-message>
+              </div>
+            </div>
+            <!-- </div> -->
+            <div class="row">
+
+
+              <div class="col-md-6 form-group">
+                <label>Account Number</label>
+                <span style="color:#FF0000">*</span>
+                <span style="color:#FF0000;font-size: 13px;" *ngIf="invalidDateErrorMsg">(Date is Invalid)</span>
+                <input class="form-control" type="text" formControlName="accountNumber" required>
+                <app-error-message [control]="$any(fedexCredentialsForm).controls['accountNumber']" style="font-size: 13px;"></app-error-message>
+              </div>
+              <div class="col-md-6 form-group">
+                <label>Meter Number</label>
+                <span style="color:#FF0000">*</span>
+                <span style="color:#FF0000;font-size: 13px;" *ngIf="invalidDateErrorMsg">(Date is Invalid)</span>
+                <input class="form-control" type="text" formControlName="meterNumber" required>
+                <app-error-message [control]="$any(fedexCredentialsForm).controls['meterNumber']" style="font-size: 13px;"></app-error-message>
+              </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">CLOSE</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="updateFedexCredentials(fedexCredentialsForm.value)"
+              [disabled]="!fedexCredentialsForm.controls['key'].valid || 
+                            !fedexCredentialsForm.controls['password'].valid ||
+                            !fedexCredentialsForm.controls['meterNumber'].valid || 
+                            !fedexCredentialsForm.controls['accountNumber'].valid">OK</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <app-footer></app-footer>

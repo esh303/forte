@@ -1,0 +1,626 @@
+<div class="banner-w3layoutsSales" id="home">
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2">
+        <h3 class="text-center" style="color: #9a7459;">Company Entry</h3>
+        <div class="clearfix">&nbsp;</div>
+        <div class="card">
+          <form action="#" method="post" [formGroup]="customerForm" autocomplete="nope">
+            <div class="row">
+              <div class="col-sm-12">
+                <label class="labelText">Company Name</label><span style="color: #FF0000">*</span>
+                <input class="form-control fieldsGrey" placeholder="" maxlength="150" formControlName="companyName"
+                  autocomplete="nope">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label class="labelText">Account Id</label>
+                <input class="form-control fieldsGrey" placeholder="" formControlName="referenceId"
+                  ngPattern="/^[a-zA-Z0-9\s]*$/" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');"
+                  autocomplete="nope" required="">
+              </div>
+              <div class="col-sm-6" *ngIf="!HideDetailsForEdit">
+                <label>Choose Sales Representative</label><span style="color: #FF0000">*</span>
+                <select formControlName="salesRepId" class="selectField">
+                  <option value="" hidden>Select</option>
+                  <option *ngFor="let salesRepName of salesRepArray" value="{{salesRepName.id}}">
+                    {{salesRepName.salesRepName}}</option>
+                </select>
+              </div>
+              <div class="col-sm-6" *ngIf="HideDetailsForEdit">
+                <label>Choose Sales Representative</label><span style="color: #FF0000">*</span>
+                <select formControlName="salesRepId" class="selectField">
+                  <option value="" hidden>Select</option>
+                  <option *ngFor="let salesRepName of salesRepArray" value="{{salesRepName.id}}">
+                    {{salesRepName.salesRepName}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4">
+                <label class="labelText">Zip</label>
+                <input type="text" class="form-control fieldsGrey" placeholder="" ngPattern="/[0-9]/" maxlength="5"
+                  onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" formControlName="zip"
+                  (keyup)="checkForZipcode(customerForm.controls['zip'].value)" autocomplete="nope">
+                  <span *ngIf="showTableZip"> * Please select a city below</span>
+                  <table *ngIf="showTableZip" id ="consigneeTableId" class="table table-bordered" >
+                    <div class="scrollit">
+                      <!-- <thead>
+                    <tr>
+                      <td>City Name</td>
+                      
+                    </tr>
+                    </thead> -->
+                    <tbody>
+                    <tr  *ngFor="let addressTemplates of originZipArray; let i = index" class="noIbar" tabindex='{{i}}' id={{i}} (keydown)="scroll($event, i, 'origin')" (keyup)="scroll($event, i, 'origin')" (click)="getCityNameValue(addressTemplates)">
+                      <td ><input  value={{addressTemplates?.cityName}}  readonly/></td>
+                      
+                    </tr>
+                    </tbody>
+                      <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                    </div>
+                  </table> 
+              </div>
+              <div class="col-sm-4">
+                <label class="labelText">City</label>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/^[a-zA-Z\s]*$/"
+                  onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="40" formControlName="city"
+                  autocomplete="nope">
+              </div>
+              <div class="col-sm-4">
+                <label class="labelText">State</label>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/^[a-zA-Z\s]*$/"
+                  onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="2" formControlName="state"
+                  autocomplete="nope">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label class="labelText" for="rating">Street Address</label>
+                <textarea class="form-control fieldsGrey" rows="2" id="address" formControlName="address"
+                  ngPattern="/^[a-zA-Z0-9.,\s]*$/" onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9.,\s]*$/g,'');"
+                  autocomplete="nope"></textarea>
+              </div>
+              <div class="col-sm-6">
+                <label class="labelText" for="rating">Rating Notes</label>
+                <textarea class="form-control fieldsGrey" rows="2" id="rating" formControlName="ratingNotes"
+                  ngPattern="/^[a-zA-Z0-9.,%$\s]*$/"
+                  onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9.,%$\s]*$/g,'');" autocomplete="nope"></textarea>
+              </div>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+              <h4 style="padding-left: 12px; color: #4c7a71;">Cost Plus Factor</h4>
+              <div class="col-sm-12">
+                <label>Do you want to use Cost Plus Factor?</label>
+                <input type="radio" formControlName="costPlus" value=true
+                  (change)="costPlusMethod(customerForm.controls['costPlus'].value)">Yes
+                <input type="radio" formControlName="costPlus" value=false
+                  (change)="costPlusMethod(customerForm.controls['costPlus'].value)">No
+              </div>
+            </div>
+            <div class="row" *ngIf="showForCostPlus">
+              <div class="col-sm-5" *ngIf="showForAddingCostPlus">
+                <label>Carrier</label>&nbsp;<span style="color: #ff0000" *ngIf="costPlusCarrierError">Carrier is already
+                  choosen</span>
+                <select class="selectField" formControlName="carrierTypeForCostplus"
+                  (change)="duplicateCarrier(customerForm.controls['carrierTypeForCostplus'].value)">
+                  <option value="" hidden>Select</option>
+                  <option *ngFor="let carrier of carrierArray" value="{{carrier}}">{{carrier}}</option>
+                </select>
+              </div>
+              <div class="col-sm-5" *ngIf="!showForAddingCostPlus">
+                <label>Carrier</label>&nbsp;<span style="color: #ff0000" *ngIf="costPlusCarrierError">Carrier is already
+                  choosen</span>
+                <select class="selectField" formControlName="carrierTypeForCostplus"
+                  (change)="duplicateCarrier(customerForm.controls['carrierTypeForCostplus'].value)" [disabled]="true">
+                  <option value="" hidden>Select</option>
+                  <option *ngFor="let carrier of carrierArray" value="{{carrier}}">{{carrier}}</option>
+                </select>
+              </div>
+              <div class="col-sm-5">
+                <label>Cost Plus Factor(%)</label>
+                <input type="text" class="form-control" formControlName="factor">
+              </div>
+              <div class="col-sm-2" style="padding-top: 20px;">
+                <button class="btn btn-danger" *ngIf="showForAddingCostPlus"
+                  (click)="addCostPlus(customerForm.value)"><em class="fa fa-plus-circle" aria-hidden="true"
+                    style="font-size: 20px; vertical-align: middle"></em>Add</button>
+                <button class="btn btn-danger" *ngIf="!showForAddingCostPlus"
+                  (click)="addCostPlus(customerForm.value)"><em class="fa fa-plus-circle" aria-hidden="true"
+                    style="font-size: 20px; vertical-align: middle"></em>Save</button>
+              </div>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="row">
+              <div class="table-responsive col-sm-12" *ngIf="showTableForCostPlus">
+                <table class="table-bordered table-responsive" style="color: #9c7357; width: 100%;">
+                  <tr class="text-center">
+                    <th class="text-center">Carrier</th>
+                    <th class="text-center">Cost Plus Factor(%)</th>
+                    <th class="text-center">Edit</th>
+                    <th class="text-center">Delete</th>
+                  </tr>
+                  <tr *ngFor="let costPlus of costPlusArray; let i = index">
+                    <td class="text-center">{{costPlus.carrier}}</td>
+                    <td class="text-center">{{costPlus.factor}}</td>
+                    <td class="text-center" *ngIf="costPlus.factor!='' && costPlus.factor !== null"
+                      (click)="editCostPlus(costPlus, i)"><em class="fa fa-check" aria-hidden="true"></em></td>
+                    <td class="text-center" *ngIf="costPlus.factor!='' && costPlus.factor !== null"
+                      (click)="deleteCostPlus(costPlus, i)"><em class="fa fa-minus-circle" aria-hidden="true"></em></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+              <h4 style="padding-left: 12px; color: #4c7a71;">WareHouse Management</h4>
+              <div class="col-sm-12">
+                <label>Do you want to use WMS?</label>
+                <input type="radio" formControlName="wmsFactor" value=true>Yes
+                <input type="radio" formControlName="wmsFactor" value=false>No
+              </div>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+              <h4 style="padding-left: 12px; color: #4c7a71;">Shipping Documents</h4>
+              <div class="col-sm-12">
+                <!-- <label>Do you want to use WMS?</label> -->
+                <input type="checkbox"  formControlName="bolUpload" ><span style="margin-left: 10px;margin-right: 10px;">BOL</span>
+                <input type="checkbox" formControlName="deliveryUpload" ><span style="margin-left: 10px;margin-right: 10px;">Delivery Receipt</span>
+                <input type="checkbox" formControlName="weightUpload" ><span style="margin-left: 10px;margin-right: 10px;">Weight Inspection</span>
+                <input type="checkbox" formControlName="invoiceUpload" ><span style="margin-left: 10px;margin-right: 10px;">Invoice</span>
+                <!-- <input type="checkbox" formControlName="byOrder">ByOrder -->
+                <label>ByOrder</label>
+                <input type="radio" formControlName="byOrder" value=true>Yes
+                <input type="radio" formControlName="byOrder" value=false>No
+
+              </div>
+            </div> 
+            <div class="clearfix">&nbsp;</div>
+            <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+              <h4 style="padding-left: 12px; color: #4c7a71;">Account Specific Pricing (To Show “Customer Name C/O Forte” on BOL)</h4>
+
+              <!-- <div class="clearfix">&nbsp;</div>
+
+              <div class="row"> -->
+                <div class="col-sm-12">
+                  <label>Do you want to use Account specific Pricing ?</label>&nbsp;
+                  <!-- <br> -->
+                  <input type="radio" formControlName="specificPricing" value="true"
+                    (change)="checkPricing(customerForm.controls['specificPricing'])"
+                    style="vertical-align: text-bottom; margin-top: 18px;"> Yes
+                  <input type="radio" formControlName="specificPricing" value="false"
+                    (change)="checkPricing(customerForm.controls['specificPricing'])"
+                    style="vertical-align: text-bottom; margin-top: 18px;" selected> No
+                </div>
+              <!-- </div> -->
+            </div>
+
+              <!-- <div class="clearfix">&nbsp;</div> -->
+              <div *ngIf="enablePricingDetails" class="row">
+
+                <div class="col-sm-5" >
+                  <label>Carrier</label>&nbsp;<span style="color: #ff0000" *ngIf="showErrorPricing">Carrier is
+                    already choosen</span>
+                  <select class="selectField" formControlName="carrierTypeForAccountPricing">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let carrier of carrierArray" value="{{carrier}}">{{carrier}}</option>
+                  </select>
+                </div>
+                <!-- <div class="col-sm-5" *ngIf="!showForAddingAccountPricing">
+                  <label>Carrier</label>&nbsp;<span style="color: #ff0000" *ngIf="showErrorPricing">Carrier is
+                    already choosen</span>
+                  <select class="selectField" formControlName="carrierTypeForAccountPricing">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let carrier of carrierArray" value="{{carrier}}">{{carrier}}</option>
+                  </select>
+                </div> -->
+                <div class="col-sm-2" style="padding-top: 20px;">
+                  <button class="btn btn-danger"  *ngIf="showForAddingAccountPricing" (click)="addAccountPricing(customerForm.value)"><em
+                      class="fa fa-plus-circle" aria-hidden="true"
+                      style="font-size: 20px; vertical-align: middle"></em>Add</button>
+                  <button class="btn btn-danger"  *ngIf="!showForAddingAccountPricing" (click)="addAccountPricing(customerForm.value)"><em class="fa fa-plus-circle" aria-hidden="true" style="font-size: 20px; vertical-align: middle"></em>Save</button>
+                </div>
+
+
+
+
+
+
+              </div>
+              <div class="clearfix">&nbsp;</div>
+              <div class="row">
+                <div class="table-responsive col-sm-12" *ngIf="showTableForAccountSpecific">
+                  <table class="table-bordered table-responsive" style="color: #9c7357; width: 75%;">
+                    <tr class="text-center">
+                      <th class="text-center">Carrier</th>
+                      <th class="text-center">Edit</th>
+                      <th class="text-center">Delete</th>
+                    </tr>
+                    <tr *ngFor="let accountSpecificPricing of specificPricingList; let i = index">
+                      <td class="text-center">{{accountSpecificPricing}}</td>
+                      <td class="text-center" (click)="editaccountPricing(accountSpecificPricing, i)"><em class="fa fa-check" aria-hidden="true"></em></td>
+                    <td class="text-center"   (click)="deleteaccountPricing(accountSpecificPricing, i)"><em class="fa fa-minus-circle" aria-hidden="true"></em></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+            <div class="clearfix">&nbsp;</div>
+            <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+              <h4 style="padding-left: 12px; color: #4c7a71;">Fedex Small Pac</h4>
+              <div class="col-sm-12">
+                <label>Allow Customers to use Fedex Small Pac?</label>
+                <input type="radio" formControlName="fedexSubscription" value=true
+                  (change)="fedexSubscriptionMethod(customerForm.controls['fedexSubscription'].value, 'initialOne')">Yes
+                <input type="radio" formControlName="fedexSubscription" value=false
+                  (change)="fedexSubscriptionMethod(customerForm.controls['fedexSubscription'].value, 'initialOne')">No
+              </div>
+            </div>
+            <div class="row" *ngIf="showFedexCredentials">
+              <div class="col-sm-6">
+                <input type="radio" formControlName="accountSubscription" value=true
+                  (change)="fedexSubscriptionMethod(customerForm.controls['accountSubscription'].value, 'account')">Customer
+                Supplied Account
+              </div>
+              <div class="col-md-6">
+                <input type="radio" formControlName="accountSubscription" value=false
+                  (change)="fedexSubscriptionMethod(customerForm.controls['accountSubscription'].value, 'account')">Forte
+                Account
+              </div>
+              <div class="col-md-6" *ngIf="typeOfAccountSubscribe === 'forte'">
+                <label>Premium Factor(%)</label>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/^[a-zA-Z0-9.\s]*$/"
+                  onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9.\s]*$/g,'');" formControlName="premiumFactor"
+                  maxlength="2" autocomplete="nope">
+              </div>
+            </div>
+            <style>
+              input[type="file"] {
+                display: none;
+              }
+
+              .custom-file-upload {
+                border: 1px solid #ccc;
+                display: inline-block;
+                padding: 12px 25px;
+                font-size: 12.5px;
+                cursor: pointer;
+                margin-top: 0px;
+              }
+            </style>
+            <div *ngIf="!showBusinessRules">
+              <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+                <h4 style="padding-left: 12px; color: #4c7a71;">Rules</h4>
+                <div class="col-sm-6">
+                  <label>Category</label><br>
+                  <select formControlName="category" class="selectField">
+                    <option value="" hidden>Select</option>
+                    <option value="AP">AP</option>
+                    <option value="AR">AR</option>
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label>Choose Carrier</label><br>
+                  <select class="selectField" formControlName="carrierType"
+                    (change)="checkForCarrier(customerForm.controls['carrierType'].value)">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let carrier of carrierArray" value="{{carrier}}">{{carrier}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="clearfix">&nbsp;</div>
+              <div class="row">
+                <div class="col-sm-5">
+                  <label>Directions</label><br>
+                  <select formControlName="directions" class="selectField"
+                    (change)="chooseDirections(customerForm.controls['directions'].value, customerForm.value)">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let directions of directionsArray" value="{{directions}}">{{directions}}</option>
+                  </select>
+                </div>
+                <div class="col-sm-4" *ngIf="showUseZipCodes">
+                  <label>Use Specific Zip</label><br>
+                  <input type="radio" formControlName="specificZipFlag" value="true"
+                    (change)="checkUseZipCodes(customerForm.controls['specificZipFlag'].value, customerForm.value)"> YES
+                  &nbsp;
+                  <input type="radio" formControlName="specificZipFlag" value="false"
+                    (change)="checkUseZipCodes(customerForm.controls['specificZipFlag'].value, customerForm.value)"> No
+                </div>
+                <div class="col-sm-3" *ngIf="showFieldsFrom">
+                  <label>State or Zip</label><span *ngIf="showErrorMessageSpecificStateFrom"
+                    style="color: #ff0000">Invalid</span>
+                  <span *ngIf="showMsgReddaway" style="color: #ff0000">{{errorMessageForReddaway}}</span>
+                  <input type="text" class="form-control" maxlength="9" formControlName="fromCityState"
+                    placeholder="From"
+                    (change)="getFromCity(customerForm.controls['fromCityState'].value, customerForm.controls['directions'].value, customerForm.value)"
+                    autocomplete="nope">
+                </div>
+                <div class="col-sm-3" *ngIf="showFieldsTo">
+                  <label>&nbsp;</label><span *ngIf="showErrorMessageSpecificStateTo" style="color: #ff0000">Invalid
+                    State or Zip</span>
+                  <input type="text" class="form-control" maxlength="9" formControlName="toCityState" placeholder="To"
+                    (change)="getToCity(customerForm.controls['toCityState'].value, customerForm.controls['directions'].value, customerForm.value)"
+                    autocomplete="nope">
+                </div>
+                <div class="col-sm-3">
+                  <label>Discount (%)</label><span style="color: #ff0000;" *ngIf="showDiscountErrorMessage">Exceeds
+                    100</span>
+                  <input type="text" class="form-control" maxlength="7" ngPattern="/^[0-9.,\s]*$/" autocomplete="nope"
+                    onkeyup="this.value=this.value.replace(/[^0-9.,\s]*$/g,'');" formControlName="discount"
+                    (change)="checkDiscount(customerForm.controls['discount'].value)">
+                </div>
+                <div class="col-sm-3">
+                  <label>AMC($)</label>
+                  <input type="text" class="form-control" maxlength="7" ngPattern="/^[0-9.,\s]*$/" autocomplete="nope"
+                    onkeyup="this.value=this.value.replace(/[^0-9.,\s]*$/g,'');" formControlName="minimumCharge">
+                </div>
+              </div>
+              <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+                <h4 style="padding-left: 12px; color: #4c7a71;">Accessorials</h4>
+                <div class="col-sm-4">
+                  <label class="labelText">Name</label>
+                  <select formControlName="assessorialName" class="selectField">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let assessorial of assessorialNames"> {{assessorial}}</option>
+                  </select>
+                </div>
+                <div class="col-sm-4">
+                  <label class="labelText">Charges</label>
+                  <input class="form-control" placeholder="" formControlName="charge" ngPattern="/[0-9.]/" maxlength="5"
+                    autocomplete="nope" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                    (keyup)="checkForAssessorials(customerForm.controls['assessorialName'].value, customerForm.controls['charge'].value)">
+                </div>
+                <div class="col-sm-4" style="padding-top: 20px;">
+                  <button class="btn btn-danger" (click)="addAssessorials(customerForm.value)"
+                    [disabled]="enableAssessorialAdd === false"><em class="fa fa-plus-circle" aria-hidden="true"
+                      style="font-size: 20px; vertical-align: middle"></em> Add Accessorials</button>
+                </div>
+              </div>
+              <div class="clearfix">&nbsp;</div>
+              <div class="row">
+                <div class="col-sm-2" style="color: #4c7a71;">
+                  <label>Apply FAK:</label>&nbsp;
+                  <br>
+                  <input type="radio" formControlName="presentFakValue" value="Yes"
+                    (change)="checkFak(customerForm.controls['presentFakValue'])"
+                    style="vertical-align: text-bottom; margin-top: 18px;"> Yes
+                  <input type="radio" formControlName="presentFakValue" value="No"
+                    (change)="checkFak(customerForm.controls['presentFakValue'])"
+                    style="vertical-align: text-bottom; margin-top: 18px;" selected> No
+                </div>
+                <div class="col-sm-3" *ngIf="showFakValues">
+                  <label>FAK Range From</label>
+                  <select formControlName="fakRangeFrom" class="selectField"
+                    (change)="checkFakRangeFrom(customerForm.controls['fakRangeFrom'].value)">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let class of classArray">{{class}}</option>
+                  </select>
+                  <span *ngIf="showErrorMessage" style="color: #ff0000; font-size: 10px;">Choose different FAK
+                    Range</span>
+                </div>
+                <div class="col-sm-3" *ngIf="showFakValues">
+                  <label>FAK Range To</label>
+                  <select formControlName="fakRangeTo" class="selectField"
+                    (change)="checkFakRangeTo(customerForm.controls['fakRangeTo'].value)">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let class of resultArray">{{class}}</option>
+                  </select>
+                  <span *ngIf="showErrorMessageToRange" style="color: #ff0000; font-size: 10px;">Choose different FAK
+                    Range</span>
+                </div>
+                <div class="col-sm-2" *ngIf="showFakValues">
+                  <label>FAK</label>
+                  <select formControlName="fakValue" class="selectField"
+                    (change)="checkFakValues(customerForm.controls['fakRangeFrom'].value, customerForm.controls['fakRangeTo'].value, customerForm.controls['fakValue'].value)">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let class of classArray">{{class}}</option>
+                  </select>
+                </div>
+                <div class="col-sm-2" *ngIf="showFakValues" style="padding-top: 20px;">
+                  <button class="btn btn-danger" type="submit"
+                    [disabled]="enableFakAdd === false || showErrorMessage === true"
+                    (click)="fakAdd(customerForm.value)">Add FAK</button>
+                </div>
+              </div>
+              <!-- <div class="clearfix">&nbsp;</div> -->
+              <!--   <div class="row">
+                <div class="col-sm-12" style="color: #4c7a71;">
+                    <label>Account Specific Pricing</label>&nbsp;
+                    <br>
+                    <input type="radio" formControlName="specificPricing" value="Yes" (change)="checkPricing(customerForm.controlsspecificPricing)"  style="vertical-align: text-bottom; margin-top: 18px;"> Yes
+                    <input type="radio"  formControlName="specificPricing" value="No" (change)="checkPricing(customerForm.controlsspecificPricing)" style="vertical-align: text-bottom; margin-top: 18px;" selected> No
+                  </div>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div *ngIf="enablePricingDetails" class="row">
+                <div class="col-sm-4">
+                    <label class="labelText">Name</label>
+                    <input class="form-control" Placeholder="Name">
+                  </div>
+                  <div class="col-sm-4">
+                      <label class="labelText">Street</label>
+                      <input class="form-control" Placeholder="Street">
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="labelText">Zip</label>
+                        <input class="form-control" Placeholder="Zip">
+                      </div>
+            </div>
+            <div  *ngIf="enablePricingDetails" class="row">
+                <div class="col-sm-4">
+                    <label class="labelText">City</label>
+                    <input class="form-control" Placeholder="City">
+                  </div>
+                  <div class="col-sm-4">
+                      <label class="labelText">State</label>
+                      <input class="form-control" Placeholder="State">
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-danger" style="margin-top:21px"><em class="fa fa-plus-circle" aria-hidden="true" style="font-size: 20px;margin-right:5px; vertical-align: middle"></em>  Add Account Pricing</button>
+                      </div>
+            </div> -->
+
+              <div class="clearfix">&nbsp;</div>
+              <div class="row">
+                <div class="table-responsive col-sm-6" *ngIf="showAssessorials">
+                  <table class="table-bordered table-responsive" style="color: #9c7357; width: 100%;">
+                    <tr class="text-center">
+                      <th class="text-center">Accessorials</th>
+                      <th class="text-center">Charges</th>
+                      <th class="text-center">Delete</th>
+                    </tr>
+                    <tr *ngFor="let assessorial of assessorialArray; let i = index">
+                      <td class="text-center" *ngIf="assessorial.charge!='' && assessorial.charge !== null">
+                        {{assessorial.assessorialName}}</td>
+                      <td class="text-center" *ngIf="assessorial.charge!='' && assessorial.charge !== null">
+                        ${{assessorial.charge}}</td>
+                      <td class="text-center" *ngIf="assessorial.charge!='' && assessorial.charge !== null"><em
+                          class="fa fa-minus-circle" aria-hidden="true" (click)="deleteAssessorial(assessorial, i)"></em>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="table-responsive col-sm-6" *ngIf="showFAKTable">
+                  <table class="table-bordered table-responsive" style="color: #9c7357; width: 100%;">
+                    <tr class="text-center">
+                      <th class="text-center">FAK Range</th>
+                      <th class="text-center">FAK Value</th>
+                      <th class="text-center">Delete</th>
+                    </tr>
+                    <tr *ngFor="let fakValue of fakArray; let i=index">
+                      <td class="text-center" *ngIf="fakValue.fakRangeTo !==''">
+                        {{fakValue.fakRangeFrom}}-{{fakValue.fakRangeTo}}</td>
+                      <td class="text-center" *ngIf="fakValue.fakRangeTo ==''">{{fakValue.fakRangeFrom}}</td>
+                      <td class="text-center">{{fakValue.fakValue}}</td>
+                      <td class="text-center"><em class="fa fa-minus-circle" aria-hidden="true"
+                          (click)="deleteFakValue(fakArray, i)"></em></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="text-center" style="padding-top: 20px;">
+                <button class="btn btn-danger" *ngIf="!editMode && !addNewRuleMode"
+                  [disabled]="showErrorMessageSpecificStateFrom === true || showErrorMessageSpecificStateTo === true"
+                  (click)="add(customerForm)"><em class="fa fa-plus-circle" aria-hidden="true"
+                    style="font-size: 20px; vertical-align: middle"></em>Add Rules</button>
+                <button class="btn btn-danger" *ngIf="!editMode && addNewRuleMode"
+                  [disabled]="showErrorMessageSpecificStateFrom === true || showErrorMessageSpecificStateTo === true"
+                  (click)="saveNewRules(customerForm)"><em class="fa fa-plus-circle" aria-hidden="true"
+                    style="font-size: 20px; vertical-align: middle"></em>Add Rules</button>
+                <span *ngIf="showErrorMessageOnAddRules" style="color: #ff0000">Please Fill out all the fields</span>
+                <span *ngIf="showEmailExistMsg" style="color: #ff0000">{{customerResponse?.result}}</span>
+              </div>
+              <div>&nbsp;</div>
+              <div class="row">
+                <div class="table-responsive col-sm-12" *ngIf="showTableDetail">
+                  <table class="table-bordered table-responsive" style="color: #9c7357; width: 100%;">
+                    <tr class="text-center">
+                      <th class="text-center">Category</th>
+                      <th class="text-center">Carrier</th>
+                      <th class="text-center">Directions</th>
+                      <th class="text-center">Discount</th>
+                      <th class="text-center">Minimum Charge</th>
+                    </tr>
+                    <tr class="text-center" *ngFor="let array of arrayValues; let i = index">
+                      <td class="text-center">{{array.category}}</td>
+                      <td class="text-center">{{array.type}}</td>
+                      <td class="text-center">{{array.directions}}
+                    <tr>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'SPECIAL RULES' && array.stateFrom.length>0 && array.stateTo.length>0 && array.directions !== 'INTRASTATE'">
+                        [{{array.stateFrom}} - {{array.stateTo}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'SPECIAL RULES' && array.stateFrom.length>0 && array.cityTo.length>0 && array.directions !== 'INTRASTATE'">
+                        [{{array.stateFrom}} - {{array.cityTo}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'SPECIAL RULES' && array.cityFrom.length>0 && array.stateTo.length>0 && array.directions !== 'INTRASTATE'">
+                        [{{array.cityFrom}} - {{array.stateTo}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'SPECIAL RULES' && array.stateFrom.length === 0 && array.stateTo.length === 0 && array.cityFrom.length>0 && array.cityTo.length==0 && array.directions !== 'INTRASTATE'">
+                        [{{array.cityFrom}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'SPECIAL RULES' && array.stateFrom.length === 0 && array.stateTo.length === 0 && array.cityFrom.length === 0 && array.cityTo.length>0 && array.directions !== 'INTRASTATE'">
+                        [{{array.cityTo}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'SPECIAL RULES' && array.stateFrom.length === 0 && array.stateTo.length ==0 && array.cityFrom.length>0 && array.cityTo.length >0 && array.directions !== 'INTRASTATE'">
+                        [{{array.cityFrom}} - {{array.cityTo}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions !== 'INTRASTATE' && array.directions === 'SPECIAL RULES'  && array.stateFrom.length >0 && array.stateTo.length ==0 && array.cityFrom.length ==0 && array.cityTo.length ==0">
+                        [{{array.stateFrom}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions !== 'INTRASTATE' && array.directions === 'SPECIAL RULES'  && array.stateFrom.length === 0 && array.stateTo.length > 0 && array.cityFrom.length === 0 && array.cityTo.length ==0">
+                        [{{array.stateTo}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'INTRASTATE' && array.directions !== 'SPECIAL RULES'  && array.stateFrom.length >0 && array.stateTo.length === 0 && array.cityFrom.length === 0 && array.cityTo.length === 0">
+                        [{{array.stateFrom}}]</td>
+                      <td class="text-center" style="padding-left: 23px;"
+                        *ngIf="array.directions === 'INTRASTATE' && array.directions !== 'SPECIAL RULES'  && array.stateFrom.length ==0 && array.cityFrom.length >0 && array.stateTo.length === 0 && array.cityTo.length === 0">
+                        [{{array.cityFrom}}]</td>
+                    </tr>
+                    </td>
+                    <td class="text-center">{{array.discount}}%</td>
+                    <td class="text-center">${{array.minCharge}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="text-center" *ngIf="showErrorMessageRuleAlreadyExist">
+              <h5 class="text-center" style="color:#ff0000; padding-top: 20px;">Rule exists already</h5>
+            </div>
+            <div class="text-center" *ngIf="accessDeniedMsg">
+              <h5 class="text-center" style="color:#ff0000; padding-top: 20px;">Access Denied</h5>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <!-- <div class="col-sm-6 col-md-6 text-left">
+              <button class="blulogisticsBtn" *ngIf="editMode && !addNewRuleMode" data-toggle="modal" data-target="#password-modal"> Change Password </button>
+
+
+              </div> -->
+            <div class="col-sm-12 col-md-12 text-right">
+              <button _ngcontent-c3="" class="blulogisticsBtn" *ngIf="!editMode && !addNewRuleMode"
+                [disabled]="!customerForm.controls['referenceId'].valid || !customerForm.controls['salesRepId'].valid  || !customerForm.controls['companyName'].valid || saveUserCredentials === true"
+                (click)="saveCustomerDetail(customerForm)">Save</button>
+              <button _ngcontent-c3="" class="blulogisticsBtn" *ngIf="editMode && !addNewRuleMode"
+                (click)="editSave(customerForm)"> Update </button>
+              <button _ngcontent-c3="" class="blulogisticsBtn" *ngIf="!editMode  && addNewRuleMode"
+                [disabled]="enableSaveNewRule === false" (click)="updateNewRule(customerForm)">Save New Rule</button>
+              <button _ngcontent-c3="" class="blulogisticsBtn" (click)="cancel()"> Cancel </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="showDetailTable">
+      <div>
+        <table>
+          <tr>
+            <th>Carrier</th>
+            <th>Carrier</th>
+          </tr>
+          <tr *ngFor="let array of array">
+            <td>{{array['carrier']}}</td>
+            <td>{{array['carrier']}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="clearfix">&nbsp;</div>
+  </div>
+</div>
+
+<!--  -->

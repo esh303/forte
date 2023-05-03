@@ -1,0 +1,9 @@
+.selectField{
+        width: 100%;
+        padding: 10px;
+        background: rgba(29, 31, 31, 0.7);
+        border: 1px solid #182d32;
+        font-size: 14px;
+        color: #fff;
+        opacity: 0.9;
+      }

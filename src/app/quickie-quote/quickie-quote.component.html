@@ -1,0 +1,516 @@
+<div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+
+      <div class="clearfix"></div>
+    </nav>
+  </div>
+<div class="container-fluid">
+    <div class="row">
+        <app-sidemenu></app-sidemenu>
+        <div class="col-md-10 main_cont">
+            <!-- <h2 class="main-head">Quickie Quote<span class="legend" data-toggle="modal" data-target="#legend-modal"><em class="fa fa-info-circle"></em></span></h2> -->
+              <h2 class="main-head">Quickie Quote</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                    	<div class="col-md-10 col-md-push-1 button-group">
+							<div class="btn-group" style="width: 100%">
+								<button *ngIf="showTruckloadForm"(click)="quickieQuoteTruckLoad('truckload')" class="btn btn-primary active col-md-3"><em class="fa fa-truck" style="margin-right: 5px"></em>Truckload</button>
+								<button *ngIf="!showTruckloadForm"(click)="quickieQuoteTruckLoad('truckload')" class="btn btn-primary col-md-3"><em class="fa fa-truck" style="margin-right: 5px"></em>Truckload</button>
+								<button *ngIf="showVolumeForm"(click)="quickieQuoteTruckLoad('volume')"class="btn btn-primary active col-md-3"><em class="fa fa-cube" style="margin-right: 5px"></em>Volume</button>
+                <button *ngIf="!showVolumeForm"(click)="quickieQuoteTruckLoad('volume')"class="btn btn-primary col-md-3"><em class="fa fa-cube" style="margin-right: 5px"></em>Volume</button>
+                <button *ngIf="showAirForm"(click)="quickieQuoteTruckLoad('air')" class="btn btn-primary active col-md-3"><em class="fa fa-plane" style="margin-right: 5px"></em>Air</button>
+                <button *ngIf="!showAirForm"(click)="quickieQuoteTruckLoad('air')" class="btn btn-primary col-md-3"><em class="fa fa-plane" style="margin-right: 5px"></em>Air</button>
+                <button *ngIf="showOceanForm"(click)="quickieQuoteTruckLoad('ocean')" class="btn btn-primary active col-md-3"><em class="fa fa-life-saver" style="margin-right: 5px"></em>Ocean</button>
+                <button *ngIf="!showOceanForm"(click)="quickieQuoteTruckLoad('ocean')" class="btn btn-primary col-md-3"><em class="fa fa-life-saver" style="margin-right: 5px"></em>Ocean</button>
+							</div>
+                </div>
+                  <form [formGroup]="quickieForm" *ngIf="showForm">
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 div-border">
+                            <h4 class="sub-head">Shipper Information<button class="leg" data-toggle="modal" data-target="#shipper-address-save-modal"
+                                                                            [disabled] ="!quickieForm.controls['shipperZip'].valid
+                                                                  || !quickieForm.controls['shipperCity'].valid
+                                                                  || !quickieForm.controls['shipperState'].valid">
+                              <em class="fa fa-save" style="margin-right:5px"></em>Save Template</button></h4>
+                            <div class="col-md-4">
+                              <div class="input-group">
+
+                              <label>Shipper Zip</label><span style="color:#FF0000">*</span>
+                                    <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Shipper Zip" formControlName="shipperZip" maxlength="5" (keydown)="eventHandler($event)" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" (change)="getCityState(quickieForm.controls['shipperZip'].value, 'origin', 'truckload')" autocomplete="nope">
+
+                                  <div class="input-group-btn">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 22px" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                                    <div class="dropdown-menu" style="padding: 0px">
+                                      <table class="table table-bordered" style="margin-bottom: 0px">
+                                        <div class="scrollit">
+
+                                          <thead>
+                                          <tr>
+                                            <td>Template Name</td>
+                                            <td>Zip/Post</td>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr *ngFor="let addressTemplates of shipperTemplate" class="noIbar" (click)="getAddressClickValues(addressTemplates.id, 'shipperid')">
+                                            <td>{{addressTemplates?.templateName}}</td>
+                                            <td>{{addressTemplates?.zip}}</td>
+                                          </tr>
+                                          </tbody>
+                                          <label *ngIf="shipperTemplatesPresent">No Templates Available</label>
+                                        </div>
+                                      </table>
+                                    </div>
+                                  </div>
+                              </div>
+                                  <app-error-message [control]="$any(quickieForm).controls['shipperZip']"
+                                         style="font-size: 13px;"></app-error-message>
+                                <span *ngIf="shipperErrorMessage" style="color: #FF0000">Zip is not Found</span>
+                            </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Shipper City</label><span style="color:#FF0000">*</span>
+                                    <input (keydown)="eventHandler($event)" type="text"
+                                     class="form-control"  
+                                    placeholder="Shipper City" formControlName="shipperCity">
+                                    <app-error-message [control]="$any(quickieForm).controls['shipperCity']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Shipper State</label><span style="color:#FF0000">*</span>
+                                    <input (keydown)="eventHandler($event)" type="text" class="form-control"  placeholder="Shipper State" formControlName="shipperState" readonly>
+                                    <app-error-message [control]="$any(quickieForm).controls['shipperState']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                           </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 div-border">
+                            <h4 class="sub-head">Consignee Information<button class="leg" data-toggle="modal" data-target="#address-save-modal"
+                                                                              [disabled] ="!quickieForm.controls['consigneeZip'].valid
+                                                                  || !quickieForm.controls['consigneeCity'].valid
+                                                                  || !quickieForm.controls['consigneeState'].valid">
+                              <em class="fa fa-save" style="margin-right:5px"></em>Save Template</button></h4>
+                            <div class="col-md-4">
+                              <div class="input-group">
+
+                              <label>Consignee Zip</label><span style="color:#FF0000">*</span>
+                                    <input type="text" (keydown)="eventHandler($event)" class="form-control" aria-label="Text input with dropdown button" placeholder="Consignee Zip" formControlName="consigneeZip" maxlength="5" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" 
+                           (change)="getCityState(quickieForm.controls['consigneeZip'].value, 'consignee', 'truckload')" autocomplete="nope">
+
+                                  <div class="input-group-btn">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 22px" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                                    <div class="dropdown-menu" style="padding: 0px">
+                                      <table class="table table-bordered" style="margin-bottom: 0px">
+                                        <div class="scrollit">
+
+                                          <thead>
+                                          <tr>
+                                            <td>Template Name</td>
+                                            <td>Zip/Post</td>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr *ngFor="let addressTemplates of consigneeTemplate" class="noIbar" (click)="getAddressClickValues(addressTemplates.id, 'otherid')">
+                                            <td>{{addressTemplates?.templateName}}</td>
+                                            <td>{{addressTemplates?.zip}}</td>
+                                          </tr>
+                                          </tbody>
+                                          <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                                        </div>
+                                      </table>
+                                     </div>
+                                  </div>
+                              </div>
+                                  <app-error-message [control]="$any(quickieForm).controls['consigneeZip']"
+                                         style="font-size: 13px;"></app-error-message>
+                      <span *ngIf="consigneeErrorMessage" style="color: #FF0000">Zip is not Found</span>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Consignee City</label><span style="color:#FF0000">*</span>
+                                <input type="text" (keydown)="eventHandler($event)" class="form-control"  
+                                placeholder="Consignee City" formControlName="consigneeCity">
+                                <app-error-message [control]="$any(quickieForm).controls['consigneeCity']"
+                                         style="font-size: 13px;"></app-error-message>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Consignee State</label><span style="color:#FF0000">*</span>
+                                <input type="text" (keydown)="eventHandler($event)" class="form-control"  placeholder="Consignee State" formControlName="consigneeState" readonly>
+                                <app-error-message [control]="$any(quickieForm).controls['consigneeState']"
+                                         style="font-size: 13px;"></app-error-message>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 div-border">
+                            <h4 class="sub-head">Shipment Information<span style="color:#FF0000">*</span><button class="leg" data-toggle="modal" data-target="#item-save-modal"
+                                                                                                                 [disabled] ="!quickieForm.controls['description'].valid">
+                              <em class="fa fa-save" style="margin-right:5px"></em>Save Template</button></h4>
+                            <div class="table-quote">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <td>Hazmat</td>
+                                            <td width="20%">Pieces<span style="color:#FF0000">*</span></td>
+                                            <td>Weight (lbs)<span style="color:#FF0000">*</span><br><span *ngIf="showContactCallCenterMsg" style="color: #FF0000">Contact Call center 800-501-9922, Weight is more.</span></td>
+                                            <td>Description<span style="color:#FF0000">*</span></td>
+                                            <td>NMFC# <span style="color:#FF0000">*</span> (111111s11)<span style="color: #FF0000" *ngIf="showNmfcErrorMsg">Format is (111111s11)</span></td>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                            <input type="checkbox" class="option-input radio" name="example" style="top:0px;" value ="true" formControlName="hazMat"/>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex">
+                                              <input (keydown)="eventHandler($event)" type="text" class="form-control"  placeholder="Pieces" formControlName="pieces" maxlength="2"
+                                                       ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" style="width:50%"
+                                                       (change)="checkForNumber(quickieForm.controls['pieces'].value, 'pieces', 'truckload');" autocomplete="nope">
+                                                       <select class="form-control" id="handlingUnitType" formControlName="handlingUnitType" (keydown)="checkEnterKey($event, 'handlingUnitType')" [disabled]="true">
+                                                        <option *ngFor="let unit of handlingUnitTypeArray" value="{{unit}}">{{unit}}</option>
+                                
+                                                      </select>
+                                                      </div>
+                                                      </td>
+                                            <td><div class="input-group">
+                                                <input (keydown)="eventHandler($event)" type="text" class="form-control" placeholder="Weight" name="search" formControlName="weight" maxlength="5" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope"
+                                                       (change)="checkForNumber(quickieForm.controls['weight'].value, 'weight', 'truckload');">
+
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-default"(click)="changedUnit(weightUnit,quickieForm.controls['weight'].value,'pieces')">{{weightUnit}}</button>
+                                                </div>
+                                            </div></td>
+                                            <td><div class="input-group">
+                                                <textarea (keydown)="eventHandler($event)" class="form-control" rows="1" placeholder="Description" formControlName="description" (input)="checkDescription(quickieForm.controls['description'].value)" autocomplete="nope"></textarea>
+                                              <div class="input-group-btn">
+                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                                                <div class="dropdown-menu" style="padding: 0px; right: 0; left: auto">
+                                                  <table class="table table-bordered dropdown-table" style="margin-bottom: 0px">
+                                                    <div class="scrollit">
+                                                      <thead>
+                                                      <tr>
+                                                        <td>Template Name</td>
+                                                        <td>Description</td>
+                                                        <td>NMFC#</td>
+                                                      </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                      <tr *ngFor="let itemTemplates of itemTemplate" class="noIbar" (click)="getItemClickValues(itemTemplates.id)">
+                                                        <td>{{itemTemplates?.templateName}}</td>
+                                                        <td>{{itemTemplates?.description}}</td>
+                                                        <td>{{itemTemplates?.nmfcNumber}}</td>
+                                                      </tr>
+                                                      </tbody>
+                                                      <label *ngIf="itemTemplatesPresent">No Templates Available</label>
+                                                    </div>
+                                                  </table>
+                                                </div>
+                                              </div>
+                                                </div></td>
+                                            <!-- <td width="18%"><input (keydown)="eventHandler($event)" type="text" class="form-control" name="cpf3" mask="999999s99"  pattern="000000s00" placeholder="NMFC#" formControlName="nmfc" minlength="9" maxlength="9" id="cpf3"
+                                                 (change)="changedDecimal($event.target.value)"autocomplete="nope"></td> -->
+
+                                                 <td width="18%"><input type="text"class="form-control" id="nmfc" name="cpf3" mask="999999S99" pattern="000000S00" ngPattern="/[0-9Ss]/" 
+                                                  onkeyup="this.value=this.value.replace(/[^0-9Ss]+/g,'')" formControlName="nmfc" (change)="changedDecimal($event)" minlength="4" maxlength="9" id="cpf3" (keydown)="checkEnterKey($event, 'nmfc')" autocomplete="nope" >
+                                                  </td>
+                                        </tr>
+                                        </tbody>
+                                        </table>
+                                        <table class="table table-bordered">
+                                          <tbody>
+                                        <tr>
+                                          <td colspan="3"><span class="brown">Total Pieces:</span> <span class="green">{{totalPieces}}</span></td>
+                                          <td colspan="4"><span class="brown">Total Weight:</span> <span class="green">{{totalWeight}} lbs</span> </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2" *ngIf="showTruckloadForm">
+                                                <label>Type of Equipment</label><span style="color:#FF0000">*</span>
+                                                <select class="form-control" formControlName="typeOfEquipment">
+                                                    <option value="">Select Equipment</option>
+                                                    <optgroup label="Over the Road">
+                                                        <option value="53 Foot Van">53 Foot Van</option>
+                                                        <option value="Flatbed">Flatbed</option>
+                                                    </optgroup>
+                                                    <optgroup label="Rail / Intermodal">
+                                                        <option value="20 Foot Container">20 Foot Container</option>
+                                                        <option value="40 Foot Container">40 Foot Container</option>
+                                                        <option value="53 Foot Container">53 Foot Container</option>
+                                                        <option value="Trailer On Flat Car (TOFC)">Trailer On Flat Car (TOFC)</option>
+                                                    </optgroup><optgroup label="--------------">
+                                                    <option value="Other">Other</option>
+                                                </optgroup></select>
+                                            <app-error-message [control]="$any(quickieForm).controls['typeOfEquipment']"
+                                                               style="font-size: 13px;"></app-error-message>
+                                                </td>
+                                          <td colspan="2" *ngIf="showVolumeForm">
+                                          <label>Linear Feet of Trailer</label><span style="color:#FF0000">*</span>
+                                          <div class="input-group" style = "width:100%">
+                                          <input (keydown)="eventHandler($event)" type="text" class="form-control" placeholder="Linear Feet of Trailer" formControlName="linearFeetOfTrailer" autocomplete="nope">
+                                           <span class="input-group-addon">Feet.</span>
+                                          </div>
+                                          <app-error-message [control]="$any(quickieForm).controls['linearFeetOfTrailer']"
+                                          style="font-size: 12px;"></app-error-message>
+                                        </td>
+                                          <td colspan="2" *ngIf="showAirForm">
+                                            <label>Service Level</label><span style="color:#FF0000">*</span>
+                                            <select class="form-control" formControlName="serviceLevel">
+                                              <option value="Next Flight Out">Next Flight Out</option>
+                                              <option value="Priority Flight">Priority Flight</option>
+                                              <option value="Next Day Regular">Next Day Regular</option>
+                                              <option value="2 Days">2 Days</option>
+                                              <option value="3-5 Day Economy"> 3-5 Day Economy</option>
+                                            </select></td>
+                                        <td colspan="1"*ngIf="showTruckloadForm || showVolumeForm || showAirForm" >
+                                                <label>Competitive Price</label>
+                                                <div class="input-group" style = "width:100%">
+                                                    <span class="input-group-addon"><em class="fa fa-dollar"></em></span>
+                                                    <input (keydown)="eventHandler($event)" type="text" class="form-control" formControlName="competitivePrice" ngPattern="/[0-9.]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" autocomplete="nope">
+                                           </div>
+
+                                            </td>
+                                            <td colspan="3" *ngIf="showOceanForm" text-align="center">
+                                            <label>Competitive Price</label>
+                                            <div class="input-group" style = "width:100%" >
+                                              <span class="input-group-addon"><em class="fa fa-dollar"></em></span>
+                                              <input (keydown)="eventHandler($event)" type="text" class="form-control" formControlName="competitivePrice" ngPattern="/[0-9.]/"
+                                                     onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" autocomplete="nope">
+                                              </div>
+                                        </td>
+                                            <td colspan="2" rowspan="2">
+                                                <label>Special Instructions</label>
+                                                <textarea (keydown)="eventHandler($event)" class="form-control" rows="5" placeholder="Notes" formControlName="notes" autocomplete="nope"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <label>Shipment Ready Date</label><span style="color:#FF0000">*</span>
+                                                <!-- <div class="input-group" style = "width:100%">
+                                                    <span class="input-group-addon">Date</span> -->
+                                                    <input (keydown)="eventHandler($event)" class="form-control" placeholder="" [minDate]="currentDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                                                           date-only="true" formControlName="shipmentReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">
+                                                    <!-- </div> -->
+                                                <app-error-message [control]="$any(quickieForm).controls['shipmentReadyDate']"style="font-size: 12px;"></app-error-message>
+                                            </td>
+                                            <td colspan="1">
+                                                <label>Requested Delivery Date</label><span style="color:#FF0000">*</span><br>
+                                              <span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>
+                                                <!-- <div class="input-group" style = "width:100%">
+                                                <span class="input-group-addon">Date</span> -->
+                                              <input (keydown)="eventHandler($event)"class="form-control" placeholder="" ngModel [minDate]="currentDate" bsDatepicker
+                                                     date-only="true" (bsValueChange)="onValueChange($event, 'delivery')" [bsConfig]="{ showWeekNumbers: false }"
+                                                     formControlName="requestedDeliveryDate">
+                                              <!-- </div> -->
+                                                <app-error-message [control]="$any(quickieForm).controls['requestedDeliveryDate']"style="font-size: 12px;"></app-error-message>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-md-push-4 green-button text-center">
+                                <button [disabled]="quickieForm.controls['shipperZip'].value === '' || quickieForm.controls['shipperCity'].value === '' || quickieForm.controls['shipperState'].value === '' || quickieForm.controls['consigneeZip'].value === '' || quickieForm.controls['consigneeCity'].value === '' || quickieForm.controls['consigneeState'].value === '' || quickieForm.controls['pieces'].value === '' || quickieForm.controls['description'].value === ''  ||
+                                        quickieForm.controls['shipmentReadyDate'].value === '' || quickieForm.controls['requestedDeliveryDate'].value === '' || showMessageForDatePicker === true || quickieForm.controls['nmfc'].value === ''"
+                                        (click)="submit(quickieForm.value, 'Quickie quote')">Submit</button>
+                                <div *ngIf="showLoader">
+                                <span class="text-center" style="padding: 35px; color: #a2705c; font-size: 20px;"><em class="fa fa-spinner" aria-hidden="true"  style="color: #a2705c; font-size: 20px;"></em> &nbsp;Loading</span>
+                              </div>
+                              <div *ngIf="showQuoteErrorMsg">
+                                <span class="text-center" style="padding: 35px; color: #a2705c; font-size: 20px;">&nbsp;Quote is not created</span>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</div>
+    <app-footer></app-footer>
+<!-- Confirmation Modal -->
+<app-dialog [visible]="showAlrightPopUp">
+<div>
+  <div class="">
+<!-- Modal content-->
+        <div class="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><em class="fa fa-check-circle"></em>&nbsp;Success</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="brown bold">Your Rate Quote Request have been submitted.</p>
+                        <p>Please wait while Forte Operations either quotes or returns your request.</p>
+                        <p>You can view your rate quote in your active rate quote requests list by clicking on the corresponding row.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-md-4 col-md-push-4 green-button text-center">
+                        <a (click)="activeRequest()"><em class="fa fa-check" aria-hidden="true" style="margin-right:5px;"></em>Alright!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</app-dialog>
+<!-- Confirmation Modal -->
+
+<!-- Shipper Address Save Modal -->
+<div id="shipper-address-save-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form [formGroup]="addressTemplateNameForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF"><em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p>This will save the information in the Shipper section as a new template.</p>
+              <div class="form-group">
+                <label>Template Name</label>
+                <input type="text" formControlName="addressTempName" placeholder="Please enter a template name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" (click)="addressTemplateSave(quickieForm.value, 'shipperAddress', addressTemplateNameForm.value)" [disabled] = "addressTemplateNameForm.invalid"><em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+            </div>
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Shipper Address Save Modal -->
+
+<!-- Address Save Modal -->
+<div id="address-save-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form [formGroup]="addressTemplateNameForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF"><em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p>This will save the information in the Consignee section as a new template.</p>
+              <div class="form-group">
+                <label>Template Name</label>
+                <input type="text" formControlName="addressTempName" placeholder="Please enter a template name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" (click)="addressTemplateSave(quickieForm.value, 'address', addressTemplateNameForm.value)" [disabled] = "addressTemplateNameForm.invalid"><em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+            </div>
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Address Save Modal -->
+
+<!-- Item Save Modal -->
+<div id="item-save-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form [formGroup]="itemTemplateNameForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF"><em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p>This will save the information in the Items section as a new template.</p>
+              <div class="form-group">
+                <label>Template Name</label>
+                <input formControlName="itemTempName" type="text" class="form-control" placeholder="Please enter a template name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-4 green-button text-center">
+              <button class="green-button" (click)="itemTemplateSave(quickieForm.value, 'item', itemTemplateNameForm.value)" [disabled] = "itemTemplateNameForm.invalid"><em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+            </div>
+            <div class="col-md-4 col-md-push-4 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Item Save Modal -->
+  <!--DescriptionModal-->
+  <div id="description-modal" class="modal" style="z-index: 9999;" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+       
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF">DESCRIPTION</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              
+              <textarea   autofocus class="form-control" id="tasknote" rows="5" [(ngModel)]="description" (input)="checkDescription(description)" (keydown)="checkForEnterKey($event, 'descr')">{{description}}</textarea>
+              <!-- <textarea  *ngIf ="showAddedValue" autofocus class="form-control" id="tasknote" rows="5" [(ngModel)]="description" (input)="checkDescription1(description)" (keydown)="checkForEnterKey($event, 'descr')">{{description}}</textarea> -->
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <span style="font-size:17px;color:#f56557;"> Note: Please hit enter twice to go to Quickie Quote main screen</span>
+            <!-- <div class="col-md-4 col-md-push-4 green-button text-center">
+              <button class="green-button" id = "closeDescriptionBtn" (keydown)="checkForEnterKey($event, 'close')" ><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div> -->
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <!--DescriptionModal-->

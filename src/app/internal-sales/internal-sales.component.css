@@ -1,0 +1,119 @@
+.selectField
+{
+  width: 100%;
+  padding: 11px;
+  background: rgba(76, 122, 113, 0.61);
+  border: 2px solid #00000052;
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.9;
+}
+.selected-list[_ngcontent-c4] .c-btn[_ngcontent-c4] {
+  width: 100%;
+  box-shadow: 0px 1px 5px black;
+  padding: 10px;
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  position: relative;
+
+
+
+}
+
+.table-hover tbody tr:hover,
+            .table-hover tbody tr:hover td,
+            .table-hover tbody tr:hover th{
+                background:#22313F !important;
+                color:#fff !important;
+            }
+
+.hoveringtable {
+  background:#22313F !important;
+                color:#fff !important;
+}
+.cuppa-dropdown .selected-list .c-btn[_ngcontent-c3] {
+  display: inline-block;
+  background: rgba(76, 122, 113, 0.61)!important;
+  border: 2px solid #00000052!important;
+  border-radius: 3px;
+  font-size: 14px;
+  color: #333;
+}
+input:focus {
+  border-color: red;
+}
+
+.imgBlock {
+  display: none;
+}
+.imgShow {
+  display: block;
+}
+
+.logisticsBtn{
+  margin-top: 20px;
+  width:100%;
+  height: 44px;
+  font-size: 12.5px;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  /* border: none; */
+  background: #525252;
+  transition: 0.5s all;
+  padding:12px 23px;
+}
+.text-danger {
+  color: #9c7457;
+}
+.text-center {
+  text-align:center
+}
+.table-height{
+  height: 150px;
+}
+input[type=submit]:focus {
+border: 2px solid red;
+}
+
+.blulogisticsBtn
+{
+    /*width: 100%;*/
+    margin-top: 0px;
+    padding: 12px 25px;
+    font-size: 12.5px;
+    color: #fff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    /* background: #525252; */
+    -webkit-transition: 0.5s all;
+    -o-transition: 0.5s all;
+    -moz-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    transition: 0.5s all;
+    background: #134c3e!important;
+    width:100% !important;
+}
+/* .blulogisticsBtn :focus {
+outline: 2px solid red!important;
+} */
+
+button:focus {
+
+  outline: 2px solid rgb(229, 50, 82) !important;
+  background: rgba(76, 122, 113, 0.61) !important;
+  /* outline-offset: -4px; */
+
+}
+
+
+
+button:active {
+
+  transform: scale(0.99);
+
+}
+
+

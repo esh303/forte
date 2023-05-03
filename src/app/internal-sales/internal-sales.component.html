@@ -1,0 +1,1647 @@
+<style>
+  .table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid #a9a0a0;
+    text-align: -webkit-center;
+    }
+</style>
+<div class="banner-w3layoutsSales">
+  <!--Top-Bar-->
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"></div>
+    </nav>
+  </div>
+
+  <!--main screen-->
+  <div class="w3l_banner_info" id="name">
+    <h1 class="text-center" style="font-size:20px;">LTL Rates</h1>
+    <div *ngIf="!emergencyStop" class="col-md-12 col-sm-12 banner-form-agileinfo">
+      <h1 class="text-center" style="font-size:20px; color:red"><span>
+        <b *ngIf="!emergencyStopYRC">YRC, </b><b *ngIf="!emergencyStopEconomy"> FEDEX ECONOMY, </b> <b *ngIf="!emergencyStopPriority">FEDEX PRIORITY, </b> <b *ngIf="!emergencyStopReddaway">REDDAWAY</b>
+      </span>Rates are currently unavailable due to system maintenance. Please contact Forte customer service @ 253.926.5456.</h1>
+
+    </div>
+    <div class="col-md-12 col-sm-12 banner-form-agileinfo">
+      <form action="#" method="post" id="formTransportOrigin" [formGroup]="transportOrigin" autocomplete="nope">
+        <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2 list-div">
+          <label>Company &nbsp;&nbsp;<span *ngIf="showErrorCustomer" style="color: Red">Please choose different customer</span></label>
+           <div class="form-group">
+             <select class="selectField" id="customer" formControlName="customer" #customer (change)="getRatingNotes(transportOrigin.controls['customer'].value)" (options)="getRatingNotes($event)" (keydown.enter)="getRatingNotes($event)">
+               <option value="" hidden>Select</option>
+               <option *ngFor="let customer of customerFeaturesAll" value="{{customer.id}}">{{customer.companyName
+                 }}</option>
+             </select>
+            </div>
+          <div>
+            <label for="rating">Rating Notes</label>
+            <textarea class="form-control" style="font-size:10px" rows="5" id="ratingNotesName" name="ratingNotes"
+                      formControlName="ratingNotes"  readonly ></textarea>
+            <a *ngIf="showRatingNotes" (click)="ratingNotes()"style="color: #525252;font-weight: 600;font-size: 13px"> <em class="fa fa-info-circle" style="margin-right:5px;"></em><b>Show More</b></a>
+           </div>
+          </div>
+        <div class="col-sm-12 col-md-10 col-md-push-1" style="margin-top: 6px;">
+          <div class="col-sm-6">
+            <div class="col-sm-7 text-right oplace">
+              <div *ngIf="showZipcodes"> 
+                <span readOnly><b>{{filterValues}}, {{filterValuesState}}</b></span>
+              </div>
+              <div *ngIf="errorMessage">
+                <span><b>Invalid Zipcode</b></span>
+              </div>
+              <!-- <div *ngIf="noshipmentData">
+                <span><b> No shipments to  {{filterValues.state}} </b></span>
+              </div> -->
+            </div>
+            <div class="col-sm-5 zipcode">
+              <label>Origin Zipcode &nbsp;</label>
+              <input type="text" class="email-sm-3" id="originZipCode" name="originZipcode"
+                     formControlName="origin" ngPattern="/[0-9]/" maxlength="5"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" (keyup)="checkForZipCode($event, 'origin')"
+                     required="" [readonly]="false"  autocomplete="nope">
+              <em class="fa fa-times-circle-o form-control-feedback" *ngIf="showRemoveIcon"
+                 style="font-size: 16px; color: #ff0000;" aria-hidden="true" (click)="remove('origin')"></em>
+              <app-error-message
+                [control]="$any(transportOrigin).controls['origin']" style="font-size: 13px;"></app-error-message>
+                <span *ngIf="showTableZip"> * Please select a city below</span>
+                <table *ngIf="showTableZip" id ="consigneeTableId" class="table table-bordered" >
+                  <div class="scrollit">
+                    <!-- <thead>
+                  <tr>
+                    <td>City Name</td>
+                    
+                  </tr>
+                  </thead> -->
+                  <tbody>
+                  <tr  *ngFor="let addressTemplates of originZipArray; let i = index" class="noIbar" tabindex='{{i}}' id={{i}} (keydown)="scroll($event, i, 'origin')" (keyup)="scroll($event, i, 'origin')" (click)="getCityNameValue(addressTemplates,'origin')">
+                    <td ><input  value={{addressTemplates?.cityName}}  readonly style="background-color: aqua; border-color: red blue gold teal;"/></td>
+                    
+                  </tr>
+                  </tbody>
+                    <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                  </div>
+                </table> 
+            </div>
+           </div>
+        <div class="col-sm-6">
+           <div class="col-sm-4 text-left dplace">
+              <div *ngIf="showZipcodeDest" style="float:right;margin-right: 5px;">
+                <span readOnly><b>{{filterValuesDest.city}}, {{filterValuesDest.state}}</b></span>
+              </div>
+              <div *ngIf="errorMessageDest">
+                <span><b>Invalid Zipcode</b></span>
+              </div>
+              <!-- <div *ngIf="noshipmentDestData">
+                <span><b> No shipments to  {{filterValuesDest.state}} </b></span>
+              </div> -->
+            </div> 
+            <div class="col-sm-5 zipcode">
+              <label>Destination Zipcode &nbsp;</label>
+              <input type="text" class="email-sm-3" id="destinationZipCode" name="destinationZipcode"
+                     formControlName="destination" ngPattern="/[0-9]/" maxlength="5"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"
+                     (keyup)="checkForZipCode($event, 'destination')" autocomplete="nope" required=""/>
+              <em class="fa fa-times-circle-o form-control-feedback" *ngIf="showRemoveIconDest"
+                 style="font-size: 16px; color: #ff0000;" aria-hidden="true" (click)="remove('destination')"></em>
+              <span style="font-size: 13px;"><app-error-message
+                [control]="$any(transportOrigin).controls['destination']"></app-error-message></span>
+                <span *ngIf="showTableZip1"> * Please select a city below</span>
+
+                <table  *ngIf="showTableZip1" id ="consigneeTableId1" class="table table-hover table-bordered">
+                  <div class="scrollit">
+                    <!-- <thead>
+                  <tr>
+                    <td>City Name</td>
+                    
+                  </tr>
+                  </thead> -->
+                  <tbody>
+                  <tr *ngFor="let addressTemplates of destinationZipArray; let i = index" class="noIbar" tabindex='{{i}}' id={{i}} (keydown)="scroll($event, i, 'destination')" (keyup)="scroll($event, i, 'destination')" (click)="getCityNameValue(addressTemplates,'destination')">
+                    <td ><input  value={{addressTemplates?.cityName}}  readonly/></td>
+                    
+                  </tr>
+                  </tbody>
+                    <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                  </div>
+                </table> 
+            </div>
+          </div>
+         </div>
+
+        <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2" style="margin-top: 15px;">
+          <div class="col-sm-5">
+            <label>Class</label>
+            <input class="selectField" id="classification" type="text" name="classification" formControlName="classification"
+                   [typeahead]="classArray" 
+                    (keyup.enter)="checkForClass($event)" ngPattern="/[0-9.]/" maxlength="5"
+                    onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+            <span *ngIf="pricingDetail.length === 0" style="font-size: 13px"><app-error-message
+              [control]="$any(transportOrigin).controls['classification']"></app-error-message> </span>
+            <span style="font-size: 14px;color: red" *ngIf="showErrorMessageForClass">The class is invalid</span>
+            <span style="font-size: 14px;color: red" *ngIf="showChooseClass">Choose a class</span>
+           </div>
+          <div class="col-sm-5">
+            <label>Weight</label>
+            <input type="text" class="email col-sm-3" id="weight" name="weight" tabindex="0" autofocus="true"
+                   formControlName="weight" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"
+                   (change)="checkForWeight(transportOrigin.controls['classification'].value,transportOrigin.controls['weight'].value)"
+                    autocomplete="nope" required=""/><br>
+            <span *ngIf="pricingDetail.length === 0" style="font-size: 13px;"><app-error-message
+              [control]="$any(transportOrigin).controls['weight']"></app-error-message></span>
+            <span style="font-size: 14px;color: red;" *ngIf="invalidErrorWeightMessage">Enter the valid weight</span>
+            <span style="font-size: 14px;color: red;" *ngIf="operationMessage">To achieve the most favorable rates, please contact Forte Customer Service</span>
+            <span style="font-size: 14px;color: red;" *ngIf="showCheckForWeight">The weight is more,Please Contact the Call centre</span>
+          </div>
+          <div class="col-sm-2">
+            <button type="submit" class="logisticsBtn" [disabled]="!transportOrigin.controls['classification'].valid ||
+              !transportOrigin.controls['weight'].valid" (click)="addItem(transportOrigin.value)">Add</button>
+          </div>
+        </div>
+
+        <div class="col-sm-10 col-md-8 col-md-push-2 col-sm-push-1" *ngIf="showTable"
+             style="padding-left: 30px !important; padding-right: 30px !important; padding-top: 10px !important;">
+          <table class="table table-responsive table-bordered">
+            <thead>
+            <tr style="color: #9c7357 !important;">
+              <th class="text-center"style="width: 31%;" >Class</th>
+              <th class="text-center" style="width: 36%;">Weight</th>
+              <th class="text-center">Delete</th>
+            </tr>
+            </thead>
+          </table>
+
+          <div class="secTable" id="style-3" style="width:100%;overflow:auto; max-height:132px; margin-top: -21px;">
+            <table class="table table-responsive table-bordered">
+              <tbody>
+              <tr *ngFor="let pricing of pricingDetail;let i = index;" style="color: #9c7357 !important;">
+                <td class="text-center" style="width: 31%;">{{pricing.classification}}</td>
+                <td class="text-center" style="width: 36%;">{{pricing.weight}}</td>
+                <td class="text-center"><em class="fa fa-minus-circle" aria-hidden="true"
+                                           (click)="delete(pricing,i)"></em></td>
+              </tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2" style="margin-top: 15px;" >
+          <div class="col-sm-6">
+            <label>Accessorials &nbsp;</label>
+            <ng-multiselect-dropdown
+  [placeholder]="'Choose Accessorials'"
+  [settings]="dropdownSettings"
+  [data]="dropdownList"
+  [(ngModel)]="selectedItems"
+  (onSelect)="onItemSelect($event)"
+  [ngModelOptions]="{standalone: true}"
+></ng-multiselect-dropdown>
+<!-- 
+            <ng-multiselect-dropdown class="selectBox" id="selectedItems" name="selectedItems"
+                                  style="color: #9c7357;" [data]="dropdownList" [(ngModel)]="selectedItems" [settings]="dropdownSettings"
+                                  (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)"
+                                  [ngModelOptions]="{standalone: true}" required></ng-multiselect-dropdown> -->
+              </div>
+          <app-dialog [(visible)]="showForOthers">
+            <div tabindex="-1" role="dialog">
+              <div role="document">
+                <div class="agileits-login" style="background: #275867 !important; color: #9c7357 !important;">
+                  <h4 class="text-center">Give Details</h4>
+                  <form action="#" method="post" style="margin-top: 20px !important;" [formGroup]="formForOthers">
+                  <div class="row">
+                    <div class="col-md-offset-1 col-md-10">
+                      <div class="form-group">
+                        <label>Reason</label>
+                        <textarea class="form-control" rows="5" id="reason" formControlName="reason"
+                                  autofocus></textarea>
+                    </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-offset-1 col-md-10">
+                      <div class="form-group">
+                        <label class="radio-inline">
+                          <input type="radio" name="amountIncDec" formControlName="amountIncDec" value="increment"
+                                 [checked]="true"> Increment amount
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="amountIncDec" formControlName="amountIncDec" value="decrement">
+                          Decrement amount
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-offset-1 col-md-10">
+                      <div class="form-group">
+                        <label>Amount</label>
+                        <input type="text" class="form-control" id="amt" formControlName="amount" ngPattern="/[0-9.]/"
+                               maxlength="3"
+                               onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" (change)="checkForAmt(formForOthers.controls['amount'].value)">
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-md-offset-3 col-md-6">
+                      <div class="w3ls-submit" style="margin-top: 1.5em !important; ">
+                        <input type="submit"  [disabled]="!formForOthers.controls['reason'].valid ||
+                        !formForOthers.controls['amountIncDec'].valid || !formForOthers.controls['amount'].valid || errorForOthers === true" (click)="saveOthers(formForOthers.value)">
+                      </div>
+                    </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </app-dialog>
+
+          <div class="col-sm-6">
+            <div class="clearfix">&nbsp;</div>
+            <button type="submit" id="getQuote" name="getQuote" [disabled]="!transportOrigin.controls['customer'].valid  || !transportOrigin.controls['origin'].valid ||
+            !transportOrigin.controls['destination'].valid || pricingDetail.length ==0 ||
+             errorMessageDest === true || errorMessage === true || getQuoteFlag === false "
+                   (click)="getQuote(transportOrigin.value, selectedItems, pricingDetail)"
+                    class="blulogisticsBtn pull-right">
+           Get Quote
+            </button>
+            <!-- <input type="submit" id="getQuote" name="getQuote" [disabled]="!transportOrigin.controlscustomer.valid  || !transportOrigin.controlsorigin.valid ||
+            !transportOrigin.controlsdestination.valid || pricingDetail.length ==0 ||
+             errorMessageDest === true || errorMessage === true || getQuoteFlag === false "
+                   (click)="getQuote(transportOrigin.value, selectedItems, pricingDetail)"
+                   class="hvr-shutter-in-vertical" value="Get Quote"> -->
+          </div>
+        </div>
+        <!--AP and AR Table-->
+        <div class="col-sm-12" *ngIf="showTableAp" style="padding: 0; margin-left: -6px;">
+          <div class="col-sm-6 table-responsive">
+            <form [formGroup]="APForm">
+              <h3 class="text-center" style="color: #000;">AP</h3>
+              <table class="table table-responsive table-bordered">
+                <thead>
+                <tr style="color:  rgba(36, 92, 82, 0.82) !important;">
+                  <th style="font-weight: 500;" class="text-center">Company</th>
+                  <th style="font-weight: 500;" class="text-center">Discount(%)</th>
+                  <th style="font-weight: 500;" class="text-center">FSC(%)</th>
+                  <th style="font-weight: 500;" class="text-center">AMC($)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <tr style="color: #9c7357 !important; font-size: 14px !important;"
+                    *ngFor="let listAp of listOfApValues;let i=index">
+                  <td class="text-center" *ngIf="!tableEditAp">{{listAp.companyName}}</td>
+                  <td class="text-center" *ngIf="tableEditAp">{{listAp.companyName}}</td>
+                  <td class="text-center" *ngIf="tableEditAp!=i">{{listAp.discount}}</td>
+                  <!-- (blur)="TableUpsert(listAp,listAp.recentRateId, i)" -->
+
+                  <td class="text-center" *ngIf="tableEditAp===i" contenteditable='true'><input type="text"
+                                                                                                id="apDiscount"
+                                                                                                [(ngModel)]="listAp.discount"
+                                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                                style="background: rgba(116, 121, 121, 0.7) !important; padding: 0px 15px !important;"
+                                                                                                [autofocus]
+                                                                                                ngPattern="/[0-9.]/"
+                                                                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                  </td>
+                  <td class="text-center" *ngIf="tableEditAp!=i">{{listAp.fuelsurcharge}}</td>
+                  <!-- (blur)="TableUpsert(listAp,listAp.recentRateId, i)" -->
+
+                  <td class="text-center" *ngIf="tableEditAp===i" contenteditable='true'><input type="text"
+                                                                                                [(ngModel)]="listAp.fuelsurcharge"
+                                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                                style="background: rgba(116, 121, 121, 0.7) !important; padding: 0px 15px !important;"
+                                                                                                ngPattern="/[0-9.]/"
+                                                                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                  </td>
+                  <td class="text-center" *ngIf="tableEditAp!=i">{{listAp.amc}}</td>
+                  <!--                                                                                                 (blur)="TableUpsert(listAp, listAp.recentRateId, i)"
+ -->
+                  <td class="text-center" *ngIf="tableEditAp===i" contenteditable='true'><input type="text"
+                                                                                                [(ngModel)]="listAp.amc"
+                                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                                style="background: rgba(116, 121, 121, 0.7) !important; padding: 0px 15px !important;"
+                                                                                                ngPattern="/[0-9.]/"
+                                                                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                  </td>
+                  </tr>
+                </tbody>
+             </table>
+            </form>
+          </div>
+         <div class="col-sm-6 table-responsive">
+            <form [formGroup]="ARForm">
+              <h3 class="text-center" style="color: #000;">AR</h3>
+              <table class="table table-responsive table-bordered">
+                <thead>
+                <tr style="color:  rgba(36, 92, 82, 0.82) !important;">
+                  <th style="font-weight: 500;" class="text-center">Company</th>
+                  <th style="font-weight: 500;" class="text-center">Discount(%)</th>
+                  <th style="font-weight: 500;" class="text-center">FSC(%)</th>
+                  <th style="font-weight: 500;" class="text-center">AMC($)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="color: #9c7357 !important; font-size: 14px !important;"
+                    *ngFor="let listAr of listOfArValues; let j = index">
+                  <td class="text-center" *ngIf="!tableEditAr">{{listAr.companyName}}</td>
+                  <td class="text-center" *ngIf="tableEditAr">{{listAr.companyName}}</td>
+                  <td class="text-center" *ngIf="tableEditAr!=j">{{listAr.discount}}</td>
+                   <!-- (blur)="TableArUpsert(listAr, listAr.recentRateId,j)" -->
+                  <td class="text-center" *ngIf="tableEditAr===j" contenteditable='true'><input type="text"
+                                                                                               
+                                                                                                [(ngModel)]="listAr.discount"
+                                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                                style="background: rgba(116, 121, 121, 0.7) !important; padding: 0px 15px !important;"
+                                                                                                ngPattern="/[0-9.]/"
+                                                                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                  </td>
+                  <td class="text-center" *ngIf="tableEditAr!=j">{{listAr.fuelsurcharge}}</td>
+                  <!-- (blur)="TableArUpsert(listAr, listAr.recentRateId,j)" -->
+
+                  <td class="text-center" *ngIf="tableEditAr===j" contenteditable='true'><input type="text"
+                                                                                                [(ngModel)]="listAr.fuelsurcharge"
+                                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                                style="background: rgba(116, 121, 121, 0.7) !important; padding: 0px 15px !important;"
+                                                                                                ngPattern="/[0-9.]/"
+                                                                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                  </td>
+                  <td class="text-center" *ngIf="tableEditAr!=j">{{listAr.amc}}</td>
+                  <!-- (blur)="TableArUpsert(listAr, listAr.recentRateId,j)" -->
+
+                  <td class="text-center" *ngIf="tableEditAr===j" contenteditable='true'><input type="text"
+                                                                                                [(ngModel)]="listAr.amc"
+                                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                                style="background: rgba(116, 121, 121, 0.7) !important; padding: 0px 15px !important;"
+                                                                                                ngPattern="/[0-9.]/"
+                                                                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                  </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </div>
+        </div>
+        <!--main screen-->
+
+        <div class="col-sm-12">
+          <div class="col-sm-6" *ngIf="showTableAp">
+            <button type="button" tabindex="-1" class="blulogisticsBtn pull-right" (click)="refresh()">
+              <span class="fa fa-refresh" aria-hidden="true"></span> Default
+            </button>
+          </div>
+          <div class="col-sm-6" *ngIf="showClearAll">
+            <button class="blulogisticsBtn" id="clear" (click)="clear()">Clear All</button>
+          </div>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+      </form>
+    </div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
+  </div>
+  <!--//Slider-->
+  <div class="clearfix"></div>
+</div> 
+
+<!--//banner-->
+<div class="col-sm-12 text-center" *ngIf="showErrorInternetConnection" style="margin-top: 20px !important; margin-bottom: 20px !important;">
+  <span style="font-size: 28px; margin: 30px !important;" *ngIf="onlineOffline">Check your internet connection</span>
+</div>
+<div id="myDiv" class="col-sm-12 imgBlock">
+  <img src="../../assets/images/cycling-dude.gif" id="myImage" class="img-responsive center-block"
+       style="margin-top:10px;width: 300px">
+</div>
+<!--Result data-->
+<div class="team" id="team" tabindex="-1">
+  <div class="col-md-12 team-grid-text-agile" id="showAllData" *ngIf="showAllData">
+<div class="row" *ngIf="hideFedexPriData">
+  <div class="col-sm-2">
+      <div class="clearfix">&nbsp;</div>
+      <div class="clearfix">&nbsp;</div>
+    <img src="../../assets/images/fedexPriority.png" alt="" style="margin-top: 20px" class="img-responsive center-block">
+  </div>
+  <div class="col-sm-10 text-center"  style="padding-top: 30px !important;">
+    <span style="font-size: 25px">No rates are available</span>
+  </div>
+</div>
+<div class="row" *ngIf="nofedexpriData">
+  <div class="col-sm-2">
+      <div class="clearfix">&nbsp;</div>
+      <div class="clearfix">&nbsp;</div>
+    <img src="../../assets/images/fedexPriority.png" alt="" style="margin-top: 20px" class="img-responsive center-block">
+  </div>
+  <div class="col-sm-10 text-center"  style="padding-top: 30px !important;">
+    <span style="font-size: 25px">Shipments cannot be done to Alaska and Hawaii state. Please contact customer care.</span>
+  </div>
+</div>
+    <div class="row" *ngIf="showFedexPriData">
+      <div class="col-sm-2">
+          <div class="clearfix">&nbsp;</div>
+          <div class="clearfix">&nbsp;</div>
+        <img src="../../assets/images/fedexPriority.png" alt="" style="margin-top: 20px" class="img-responsive center-block">
+      </div>
+
+      <div class="col-sm-3 table-responsive" >
+        <h4 class="text-center"><b>AP</b></h4>
+        <table class="table table-bordered table-responsive table-height">
+          <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="!priority[0]?.showMinimumCharge">$/CWT</th>
+            <th class="text-center" *ngIf="!priority[0]?.showMinimumCharge">Total <br> Gross Charge</th>
+            <th class="text-center" *ngIf="priority[0]?.showMinimumCharge">Minimum  <br>  Charge</th>
+            </tr>
+          <tr>
+            <td style = "height:87px" style="text-align:center">
+			<table style="width:100%;margin:0px;">
+          <tr class="text-center text-danger">
+            <td *ngFor="let total of priority[0]?.totalCharge"><b id="priorityApTotalValue">${{total}}</b><br>
+              <span  id="priorityApShipment" style="color: #124c3f">{{priority[0]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" *ngIf="priority[0]?.highCostDeliveryCharge!==0"></em></td>
+          </tr>
+          <tr *ngFor="let class1 of priority[0]?.classification1">
+            <td>&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValueFedex">
+            <td>Deficit WT</td>
+          </tr>
+		  </table>
+          </td>
+         <td *ngIf="!priority[0]?.showMinimumCharge" style="text-align:center">
+		 <table style="width:100%;margin:0px">
+            <tr *ngFor="let rate of priority[0]?.rate">
+              <td class="text-center text-danger" id="priorityAAPRate">${{rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td id="priorityApcrtRate" class="text-center text-success" *ngFor="let crtRate of priority[0]?.crtRate">
+                ${{crtRate}}
+              </td>
+            </tr>
+			</table>
+          </td>
+          <td class="text-center text-danger"><b id="priorityApTotal">${{priority[0]?.totalGrossCharge}}</b></td>
+          <!-- <td *ngIf="!priority[0]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of priority[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of priority[0]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td>
+          <td *ngIf="priority[0]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of priority[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of priority[0]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td> -->
+         </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="col-sm-6 table-responsive" *ngIf="showFedexPriData">
+        <h4 class="text-center"><b>AR</b></h4>
+        <table class="table table-bordered table-responsive table-height">
+          <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="!priority[1]?.showMinimumCharge">$/CWT</th>
+            <th class="text-center" *ngIf="!priority[1]?.showMinimumCharge">Total <br> Gross Charge</th>
+            <th class="text-center" *ngIf="priority[1]?.showMinimumCharge">Minimum Charge</th>
+            <th class="text-center" *ngIf="showQuoteId">Quote Number</th>
+            <th class="text-center">Est Transit Time <br>(In Business Days)</th>
+
+          </tr>
+          <tr>
+            <td style="text-align:center">
+			<table style="width:100%;margin:0px;">
+          <tr class="text-center text-danger">
+            <td *ngFor="let total of priority[1]?.totalCharge"><b id="priorityArTotal">${{total}}</b><br>
+              <span  style="color: #124c3f" id="priorityArShipTypes">{{priority[1]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" *ngIf="priority[1]?.highCostDeliveryCharge!==0"></em>
+              <em class="fa fa-plus" *ngIf="priority[1]?.factor =='COSTPLUS'"></em>
+            </td>
+          </tr>
+          <tr *ngFor="let class1 of priority[1]?.classification1">
+            <td>&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValueFedex">
+            <td>Deficit WT</td>
+          </tr>
+		  </table>
+          </td>
+          <td *ngIf="!priority[1]?.showMinimumCharge" style="text-align:center">
+		  <table style="width:100px;margin:0px;">
+            <tr *ngFor="let rate of priority[1]?.rate">
+              <td class="text-center text-danger" id="priorityArrate">${{rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let crtRate of priority[1]?.crtRate" id="priorityArcrtRate">
+                ${{crtRate}}
+              </td>
+            </tr>
+			</table>
+          </td>
+          <td class="text-center text-danger">
+           <b id="priorityArTotalGross">${{priority[1]?.totalGrossCharge}}</b> 
+          </td>
+          <!-- <td *ngIf="!priority[1]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of priority[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of priority[1]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td> -->
+          <!-- <td *ngIf="priority[1]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of priority[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of priority[1]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td> -->
+          <td class="text-center text-danger" *ngIf="showQuoteId">
+            <b id="priorityQuoteNumber">{{quoteIdFedexPri}}</b>
+          </td>
+          <td style="text-align:center">
+            <img src="../../assets/images/transit.png" alt="" class="img-responsive center-block" style="height:33px;margin-bottom: 10px">
+            <span style="font-weight:600;color: #9c7457;" id="priorityTransit">{{transitTimeFedexPriority?.fedexPriorityResult}}</span>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="col-sm-1" *ngIf="!hideFedexPriData" style="margin-top: 40px!important">
+          <div class="clearfix">&nbsp;</div>
+          <div class="clearfix">&nbsp;</div>
+       <button id="view2" tabindex="-1"  style="margin-top: 55px!important" class="logisticsBtn" (click)="viewAllDetailsFedexPri()"
+                style="padding: 8px 21px !important;">
+          <span id="priorityView" *ngIf="!viewAllShowFedexPriData">View</span>
+          <span id="priorityHide" *ngIf="viewAllShowFedexPriData">Hide</span>
+        </button>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="viewAllShowFedexPriData">
+      <div class="col-lg-2 col-sm-2">
+        <div>&nbsp;</div>
+      </div>
+      <div class="col-sm-10 col-sm-10 col-xs-10 table-responsive" *ngIf="viewAllShowFedexPriData">
+        <table class="table table-bordered table-responsive">
+          <tbody>
+          <tr>
+            <th class="text-center">Type</th>
+            <th class="text-center">Fuel Surcharge(%)</th>
+            <th class="text-center">Discount(%)</th>
+            <th class="text-center">Discounted Rate</th>
+            <th class="text-center">Net Charge</th>
+            <th class="text-center">Accessorial Charge</th>
+            <!-- <th class="text-center">Total Gross Charge</th> -->
+            <th class="text-center">Ship Type</th>
+          </tr>
+          <tr>
+            <td class="text-center text-danger" style="color: #025f5f;" id="priorityApfactor">
+             {{priority[0]?.factor}}
+            </td>
+            <td>
+          <tr class="text-center text-danger" *ngFor="let fuelCharge of priority[0]?.fuelCharge">
+            <td class="text-center text-danger" id="priorityApfuelCharge">{{fuelCharge}}</td>
+          </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discount of priority[0]?.discount">
+              <td class="text-center text-danger" id="priorityApdiscount">{{discount}}</td>
+            </tr>
+            </td>
+          <td>
+            <tr *ngFor="let discountedRate of priority[0]?.discountedRate">
+              <td class="text-center text-danger" id="priorityApDiscountedRate">${{discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let netCharge of priority[0]?.netCharge">
+              <td class="text-center text-danger" id="priorityApnetcharge">${{netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+		  
+            Total - ${{priority[0]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger"
+                *ngFor="let assessorialDataList of priority[0]?.assessorialDataList">
+              <td id="priorityApAceessorial">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[0]?.singleShipmentCharge!==0">
+              <td id="priorityApSingleShipment"> Single Shipment - ${{priority[0]?.singleShipmentCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[0]?.highCostDeliveryCharge!==0">
+              <td id="priorityApHighCost">High Cost - ${{priority[0]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[0]?.deliveryCharge!==0">
+              <td id="priorityApSingleShipment"> Delivery Charge - ${{priority[0]?.deliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[0]?.additionalCharge!==0 && (priority[0]?.additionalCACharge ==='0' || priority[0]?.additionalCACharge ==='')">
+              <td id="priorityApAdditionalCharge">Additional Charge - ${{priority[0]?.additionalCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[0]?.additionalCACharge!==0" id="priorityAPCaCharge"><td> CA Charge - ${{priority[0]?.additionalCACharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="priority[0]?.peakSurcharge!==0" id="priorityAPCaCharge"><td> Peak Charge - ${{priority[0]?.peakSurcharge}}</td></tr>
+
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValueFedex">
+            <b>${{priority[0]?.diffFinalRate}}</b>
+          </td> -->
+          <!-- <td class="text-center text-danger" *ngIf="!showDeficitValueFedex">
+            <b>${{priority[0]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="priorityApDirect">Direct</tr>
+            <tr *ngIf="priority[0]?.highCostDeliveryCharge!==0"><span id="priorityApHighCostValue">High Cost</span></tr>
+          </td>
+          </tr>
+          <tr>
+            <td class="text-center text-danger" style="color: #025f5f;" id="priorityArFactor" >
+             {{priority[1]?.factor}}
+            </td>
+            <td>
+          <tr class="text-center text-danger" *ngFor="let fuelCharge of priority[1]?.fuelCharge">
+            <td style="text-align:center" id="priorityArFuelCharge">{{fuelCharge}}</td>
+          </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discount of priority[1]?.discount">
+              <td class="text-center text-danger" id="priorityARDiscount">{{discount}}</td>
+            </tr>
+            </td>
+          <td>
+            <tr *ngFor="let discountedRate of priority[1]?.discountedRate">
+              <td class="text-center text-danger" id="priorityARDiscountedRate">${{discountedRate}}</td>
+            </tr>
+         </td>
+          <td>
+            <tr *ngFor="let netCharge of priority[1]?.netCharge">
+              <td class="text-center text-danger" id="priorityARNetCharge">${{netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+		  
+            Total - ${{priority[1]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger"
+                *ngFor="let assessorialDataList of priority[1]?.assessorialDataList">
+              <td id="priorityARAccessorial">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[1]?.singleShipmentCharge!==0">
+              <td id="priorityARSingleshipment"> Single Shipment - ${{priority[1]?.singleShipmentCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[1]?.highCostDeliveryCharge!==0">
+              <td id="priorityArHighCost">High Cost - ${{priority[1]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[1]?.deliveryCharge!==0">
+              <td id="priorityApSingleShipment"> Delivery Charge - ${{priority[1]?.deliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="(priority[1]?.additionalCharge!==0 && priority[1]?.additionalCharge!=='0.00') && (priority[1]?.additionalCACharge ==='0' || priority[1]?.additionalCACharge ==='')">
+              <td id="priorityArAdditionalCharge">Additional Charge - ${{priority[1]?.additionalCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="priority[1]?.additionalCACharge!==0"><td id="priorityArCACharge"> CA Charge - ${{priority[1]?.additionalCACharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="priority[1]?.peakSurcharge!==0" id="priorityAPCaCharge"><td> Peak Charge - ${{priority[1]?.peakSurcharge}}</td></tr>
+
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValueFedex">
+            <b>${{priority[1]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValueFedex">
+            <b>${{priority[1]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="priorityArDirect">Direct</tr>
+            <tr *ngIf="priority[1]?.highCostDeliveryCharge!==0"><span id="priorityArHighCostValue">High Cost</span></tr>
+          </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="border-bottom: 1px solid black;margin-top: 15px;margin-bottom: 20px" *ngIf="showBorder1"></div>
+    <div class="row" *ngIf="hideFedexEcoData">
+      <div class="col-sm-2">
+        <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-10 text-center"  style="padding-top: 30px !important;">
+        <span style="font-size: 25px">No rates are available</span>
+      </div>
+    </div>
+    <div class="row" *ngIf="nofedexpriData">
+      <div class="col-sm-2">
+        <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-10 text-center"  style="padding-top: 30px !important;">
+        <span style="font-size: 25px">Shipments cannot be done to Alaska and Hawaii state. Please contact customer care.</span>
+      </div>
+    </div>
+    <div class="row" *ngIf="showFedexEcoData">
+      <div class="col-sm-2">
+        <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-3 table-responsive" >
+        <table class="table table-bordered table-responsive table-height">
+          <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="!fedexArray[0]?.showMinimumCharge">$/CWT</th>
+            <th class="text-center" *ngIf="!fedexArray[0]?.showMinimumCharge">Total <br>Gross Charge</th>
+            <th class="text-center" *ngIf="fedexArray[0]?.showMinimumCharge">Minimum  <br>  Charge</th>
+            </tr>
+
+          <tr>
+            <td style = "height:87px; text-align:center" >
+			<table style="width:100%;margin:0px;">
+              <tr class="text-center text-danger">
+            <td *ngFor="let total of fedexArray[0]?.totalCharge"><b id="economyApTotal">${{total}}</b><br>
+              <span style="color: #124c3f" id="economyAPShipTypes">{{fedexArray[0]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" *ngIf="fedexArray[0]?.highCostDeliveryCharge!==0"> </em>
+            </td>
+          </tr>
+          <tr *ngFor="let class1 of fedexArray[0]?.classification1">
+            <td>&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValueFedex">
+            <td>Deficit WT</td>
+          </tr>
+		  </table>
+          </td>
+          <td *ngIf="!fedexArray[0]?.showMinimumCharge">
+            <tr *ngFor="let rate of fedexArray[0]?.rate">
+              <td class="text-center text-danger" id="economyAPrate">${{rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let crtRate of fedexArray[0]?.crtRate" id="economyAPcrtRate">
+                ${{crtRate}}
+              </td>
+            </tr>
+          </td>
+          <td class="text-center text-danger"><b id="economyAPtotalGrossCharge">${{fedexArray[0]?.totalGrossCharge}}</b></td>
+          <!-- <td *ngIf="!fedexArray[0]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of fedexArray[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of fedexArray[0]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td>
+          <td *ngIf="fedexArray[0]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of fedexArray[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            </td> -->
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="col-sm-6 table-responsive" *ngIf="showFedexEcoDataAR">
+        <table class="table table-bordered table-responsive table-height">
+          <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="!fedexArray[1]?.showMinimumCharge">$/CWT</th>
+            <th class="text-center" *ngIf="!fedexArray[1]?.showMinimumCharge">Total <br>Gross Charge</th>
+            <th class="text-center" *ngIf="fedexArray[1]?.showMinimumCharge">Minimum Charge</th>
+            <th class="text-center" *ngIf="showQuoteId">Quote Number</th>
+            <th class="text-center">Est Transit Time <br>(In Business Days)</th>
+
+            </tr>
+
+          <tr>
+            <td style="text-align:center">
+			<table style="margin:0px;width:100%">
+          <tr class="text-center text-danger">
+            <td *ngFor="let total of fedexArray[1]?.totalCharge"><b id="economyArTotal">${{total}}</b><br>
+              <span style="color: #124c3f" id="ecocnomyARShipTypes">{{fedexArray[1]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" *ngIf="fedexArray[1]?.highCostDeliveryCharge!==0"></em>
+              <em class="fa fa-plus" *ngIf="fedexArray[1]?.factor =='COSTPLUS'"></em>
+            </td>
+          </tr>
+          <tr *ngFor="let class1 of fedexArray[1]?.classification1">
+            <td>&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValueFedex">
+            <td>Deficit WT</td>
+          </tr>
+		  </table>
+          </td>
+          <td *ngIf="!fedexArray[1]?.showMinimumCharge" style="text-align:center">
+		  <table style="margin:0px; width:100%">
+            <tr *ngFor="let rate of fedexArray[1]?.rate">
+              <td class="text-center text-danger" id="economyArRate">${{rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let crtRate of fedexArray[1]?.crtRate" id="economyARCrtrate">
+                ${{crtRate}}
+              </td>
+            </tr>
+			</table>
+          </td>
+          <td class="text-center text-danger"><b id="economyARTotalGrossCharge">${{fedexArray[1]?.totalGrossCharge}}</b></td>
+          <!-- <td *ngIf="!fedexArray[1]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of fedexArray[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of fedexArray[1]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td>
+          <td *ngIf="fedexArray[1]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of fedexArray[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValueFedex">
+              <td class="text-center text-success" *ngFor="let diffRate of fedexArray[1]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td> -->
+          <td class="text-center text-danger" *ngIf="showQuoteId">
+            <b id="economyQuoteNumer">{{quoteIdFedexEco}}</b>
+          </td>
+          <td style="text-align:center">
+            <img src="../../assets/images/transit.png" alt="" class="img-responsive center-block" style="height:33px;margin-bottom: 10px">
+            <span style="font-weight:600;color: #9c7457;" id="economyETA">{{transitTimeFedexEconomy?.fedexEconomyResult}}</span>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="col-sm-1" *ngIf="!hideFedexEcoData">
+          <div class="clearfix">&nbsp;</div>
+          <div class="clearfix">&nbsp;</div>
+        <button id="view" tabindex="-1" style= "margin-top: 55px" class="logisticsBtn" (click)="viewAllDetailsFedexEco()"
+                style="padding: 8px 21px !important;">
+          <span *ngIf="!viewAllShowFedexEcoData" id="economyView">View</span>
+          <span *ngIf="viewAllShowFedexEcoData" id="economyHide">Hide</span>
+        </button>
+        </div>
+    </div>
+     <div class="row" *ngIf="viewAllShowFedexEcoData">
+      <div class="col-lg-2 col-sm-2">
+        <div>&nbsp;</div>
+      </div>
+      <div class="col-sm-10 col-sm-10 col-xs-10 table-responsive" *ngIf="viewAllShowFedexEcoData">
+        <table class="table table-bordered table-responsive">
+          <tbody>
+          <tr>
+            <th class="text-center">Type</th>
+            <th class="text-center">Fuel Surcharge(%)</th>
+            <th class="text-center">Discount(%)</th>
+            <th class="text-center">Discounted Rate</th>
+            <th class="text-center">Net Charge</th>
+            <th class="text-center">Accessorial Charge</th>
+            <!-- <th class="text-center" >Total Gross Charge</th> -->
+            <th class="text-center">Ship Type</th>
+          </tr>
+          <tr>
+            <td class="text-center text-danger" style="color: #025f5f;" id="economyAPFactor">{{fedexArray[0]?.factor}}</td>
+            <td >
+          <tr class="text-center text-danger" *ngFor="let fuelCharge of fedexArray[0]?.fuelCharge">
+            <td id="economyAPFuelCharge" >{{fuelCharge}}</td>
+          </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discount of fedexArray[0]?.discount">
+              <td class="text-center text-danger" id="economyAPDiscount">{{discount}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discountedRate of fedexArray[0]?.discountedRate">
+              <td class="text-center text-danger" id="economyAPdiscountedRate">${{discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let netCharge of fedexArray[0]?.netCharge">
+              <td class="text-center text-danger" id="economyAPNetcharge">${{netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+		  
+            Total - ${{fedexArray[0]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger"
+                *ngFor="let assessorialDataList of fedexArray[0]?.assessorialDataList">
+              <td id="economyAPAccessorial">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[0]?.singleShipmentCharge!==0">
+              <td id="economyAPSingleShipment"> Single Shipment - ${{fedexArray[0]?.singleShipmentCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[0]?.highCostDeliveryCharge!==0">
+              <td id="economyAPHighCostDeliveryCharge">High Cost - ${{fedexArray[0]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[0]?.deliveryCharge!==0">
+              <td id="economyAPSingleShipment"> Delivery Charge - ${{fedexArray[0]?.deliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[0]?.additionalCharge!==0  && (fedexArray[0]?.additionalCACharge === '0' || fedexArray[0]?.additionalCACharge ==='')">
+              <td id="economyAPAdditionalCharge">Additional Charge - ${{fedexArray[0]?.additionalCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[0]?.additionalCACharge!==0"><td id="economyAPCACharge"> CA Charge - ${{fedexArray[0]?.additionalCACharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[0]?.peakSurcharge!==0" id="priorityAPCaCharge"><td> Peak Charge - ${{fedexArray[0]?.peakSurcharge}}</td></tr>
+
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValueFedex">
+            <b>${{fedexArray[0]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValueFedex">
+            <b>${{fedexArray[0]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="economyAPDirect">Direct</tr>
+            <tr *ngIf="fedexArray[0]?.highCostDeliveryCharge!==0"><span id="economyAPHighCost">High Cost</span></tr>
+          </td>
+          </tr>
+          <tr>
+            <td class="text-center text-danger" style="color: #025f5f;" id="economyARFactor">{{fedexArray[1]?.factor}}</td>
+            <td >
+          <tr class="text-center text-danger" *ngFor="let fuelCharge of fedexArray[1]?.fuelCharge">
+            <td  id="economyARFuelCharge">{{fuelCharge}}</td>
+          </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discount of fedexArray[1]?.discount">
+              <td class="text-center text-danger" id="economyARDiscount">{{discount}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discountedRate of fedexArray[1]?.discountedRate">
+              <td class="text-center text-danger" id="economyARDiscountedRate">${{discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let netCharge of fedexArray[1]?.netCharge">
+              <td class="text-center text-danger" id="economyARNetCharge">${{netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+		  
+            Total - ${{fedexArray[1]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger"
+                *ngFor="let assessorialDataList of fedexArray[1]?.assessorialDataList">
+              <td id="economyARAccessorials">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[1]?.singleShipmentCharge!==0">
+              <td id="economyARSingleShipment"> Single Shipment - ${{fedexArray[1]?.singleShipmentCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[1]?.highCostDeliveryCharge!==0">
+              <td id="economyARHighCost">High Cost - ${{fedexArray[1]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[1]?.deliveryCharge!==0">
+              <td id="economyAPSingleShipment"> Delivery Charge - ${{fedexArray[1]?.deliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="(fedexArray[1]?.additionalCharge!==0 && fedexArray[1]?.additionalCharge!=='0.00') && (fedexArray[1]?.additionalCACharge === '0' || fedexArray[1]?.additionalCACharge ==='')">
+              <td id="economyARAdditionalCharge">Additional Charge - ${{fedexArray[1]?.additionalCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[1]?.additionalCACharge!==0"><td id="economyARCACharge"> CA Charge - ${{fedexArray[1]?.additionalCACharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="fedexArray[1]?.peakSurcharge!==0" id="priorityAPCaCharge"><td> Peak Charge - ${{fedexArray[1]?.peakSurcharge}}</td></tr>
+
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValueFedex">
+            <b>${{fedexArray[1]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValueFedex">
+            <b>${{fedexArray[1]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="economyARDirect">Direct</tr>
+            <tr *ngIf="fedexArray[1]?.highCostDeliveryCharge!==0"><span id="economyARHighCostValue">High Cost</span></tr>
+          </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="border-bottom: 1px solid black;margin-top: 15px;margin-bottom: 20px" *ngIf="showBorder"></div>
+
+<div class="row" *ngIf="hideYrcData">
+  <div class="col-sm-2">
+    <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+  </div>
+      <div class="col-sm-10 text-center" style="padding-top: 30px !important;">
+        <span style="font-size: 25px">No rates are available</span>
+      </div>
+</div>
+<div class="row" *ngIf="noyrcShipment">
+  <div class="col-sm-2">
+    <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+  </div>
+      <div class="col-sm-10 text-center" style="padding-top: 30px !important;">
+        <span style="font-size: 25px">Shipments cannot be done to Alaska and Hawaii state. Please contact customer care.</span>
+      </div>
+</div>
+<div class="row" *ngIf="waitForProcessMessage">
+<div class="col-sm-10 text-center" style="padding-top:30px !important;">
+  <span style="font-size: 20px">Please wait while we process your request</span>
+</div>
+</div>
+    <div class="row" *ngIf="showYrcData">
+      <div class="col-sm-2">
+        <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+      </div>
+
+      <div class="col-sm-3 table-responsive">
+       <table id="tableMenu" class="table table-bordered table-responsive table-height">
+        <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="!YRCArray[0]?.showMinimumCharge">$/CWT</th>
+            <th class="text-center" *ngIf="!YRCArray[0]?.showMinimumCharge">Total <br> Gross Charge</th>
+            <th class="text-center" *ngIf="YRCArray[0]?.showMinimumCharge">Minimum  <br>  Charge</th>
+            </tr>
+        <tr>
+          <td style = "height:87px;">
+            <tr id="yrcTotalAP" class="text-center text-danger">
+            <td ><b id="yrcTotalAP">${{YRCArray[0]?.totalCharge}}</b><br>
+              <span  id ="yrcshipTypesAP" style="color: #124c3f">{{YRCArray[0]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" aria-hidden="true" *ngIf="YRCArray[0].highCostDeliveryCharge!==0"></em>
+              
+            </td>
+          </tr>
+           <tr *ngFor="let class1 of YRCArray[0]?.classification1">
+            <td>&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValue">
+            <td>Deficit WT</td>
+          </tr>
+          </td>
+          <td *ngIf="!YRCArray[0]?.showMinimumCharge">
+            <tr >
+              <td id="yrcAPRate" class="text-center text-danger">${{YRCArray[0]?.rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success" id ="yrcAPcrtRate" *ngFor="let crtRate of YRCArray[0]?.crtRate">${{crtRate}}</td>
+            </tr>
+          </td>
+          <td  class="text-center text-danger"><b id ="yrcAPGrosscharge">${{YRCArray[0]?.totalGrossCharge}}</b></td>
+          <!-- <td *ngIf="!YRCArray[0]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of YRCArray[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success" *ngFor="let diffRate of YRCArray[0]?.diffRate">${{diffRate}}</td>
+            </tr>
+          </td>
+          <td *ngIf="YRCArray[0]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of YRCArray[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+          </td> -->
+          </tr>
+        </tbody>
+        </table>
+      </div>
+
+      <div class="col-sm-6 table-responsive" *ngIf="showYrcDataAR">
+        <table class="table table-bordered table-responsive table-height">
+          <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="!YRCArray[1]?.showMinimumCharge">$/CWT</th>
+            <th class="text-center" *ngIf="!YRCArray[1]?.showMinimumCharge">Total <br>Gross Charge</th>
+            <th class="text-center" *ngIf="YRCArray[1]?.showMinimumCharge">Minimum Charge</th>
+            <th class="text-center" *ngIf="showQuoteId">Quote Number</th>
+            <th class="text-center">Est Transit Time <br>(In Business Days)</th>
+            </tr>
+            <tr>
+            <td>
+          <tr class="text-center text-danger">
+		  <table style="width:100%;margin:0px;">
+            <td  *ngFor="let total of YRCArray[1]?.totalCharge" style="text-align:center"><b id="yrcTotalAR">${{total}}</b><br>
+              <span id ="yrcshipTypesAR" style="color: #124c3f">{{YRCArray[1]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" aria-hidden="true" *ngIf="YRCArray[1]?.highCostDeliveryCharge!==0"></em>
+              <em class="fa fa-plus" aria-hidden="true" *ngIf="YRCArray[1]?.factor === 'COSTPLUS'"></em>
+            </td>
+			</table>
+          </tr>
+          <tr>
+            <td *ngFor="let class1 of YRCArray[1]?.classification1" style="text-align:center">&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValue">
+            <td style="text-align:center">Deficit WT</td>
+          </tr>
+          </td>
+          <td *ngIf="!YRCArray[1]?.showMinimumCharge" style="text-align:center">
+            <tr *ngFor="let rate of YRCArray[1]?.rate">
+              <td id="yrcArRate" class="text-center text-danger">${{rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td id="yrcArCrtRate" class="text-center text-success" *ngFor="let crtRate of YRCArray[1]?.crtRate">${{crtRate}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger"><b id="yrcARGross">${{YRCArray[1]?.totalGrossCharge}}</b></td>
+          <!-- <td *ngIf="!YRCArray[1]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of YRCArray[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success" *ngFor="let diffRate of YRCArray[1]?.diffRate">${{diffRate}}</td>
+            </tr>
+          </td>
+          <td *ngIf="YRCArray[1]?.showMinimumCharge">
+            <tr *ngFor="let finalRate of YRCArray[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+          </td> -->
+          <td  class="text-center text-danger" *ngIf="showQuoteId">
+            <b id ="yrcQuoteNumber">{{quoteIdYRC}}</b>
+          </td>
+          <td style="text-align:center">
+            <img src="../../assets/images/transit.png" alt="" class="img-responsive center-block" style="height:33px;margin-bottom: 10px">
+            <span id="yrcETA" style="font-weight:600;color: #9c7457;">{{transitTimeyrc?.yrcResult}}</span>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+
+      <div class="col-sm-1" *ngIf="!hideYrcData">
+        <div class="clearfix">&nbsp;</div>
+        <div class="clearfix">&nbsp;</div>
+        <button id="view" tabindex="-1" class="logisticsBtn" (click)="viewAllDetails()"
+                style="padding: 8px 21px !important;">
+          <span id ="yrcView" *ngIf="!viewAllShowYrcData">View</span>
+          <span id ="yrcHide" *ngIf="viewAllShowYrcData">Hide</span>
+        </button>
+        </div>
+      </div>
+      <div class="row" *ngIf="viewAllShowYrcData">
+      <div class="col-sm-2">&nbsp;
+      </div>
+
+      <div class="col-sm-10 col-sm-10 col-xs-10 table-responsive">
+        <table class="table table-bordered table-responsive">
+          <tbody>
+          <tr>
+            <th class="text-center">Type</th>
+            <th class="text-center">Fuel Surcharge(%)</th>
+            <th class="text-center">Discount(%)</th>
+            <th class="text-center">Discounted Rate</th>
+            <th class="text-center">Net Charge</th>
+            <th class="text-center">Accessorial Charge</th>
+            <!-- <th class="text-center">Total Gross Charge</th> -->
+            <th class="text-center">Ship Type</th>
+            </tr> 
+          <tr>
+            <td  id="yrcApFactor" class="text-center text-danger" style="color:#025f5f;">
+              {{YRCArray[0]?.factor}}
+            </td>
+            <td>
+          <tr  class="text-center text-danger" *ngFor="let fuelChargeYrc of YRCArray[0]?.fuelChargeYrc">
+            <td id="yrcApFSC" style="text-align:center">{{fuelChargeYrc}}</td>
+          </tr>
+          </td>
+          <td >
+            <tr >
+              <td id="yrcApDiscount" class="text-center text-danger">{{ YRCArray[0]?.discount}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discountedRate of YRCArray[0]?.discountedRate">
+              <td id="yrcApDiscountedRate" class="text-center text-danger">${{discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr >
+              <td  id="yrcApNetCahrge" class="text-center text-danger">${{YRCArray[0]?.netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+            Total - ${{YRCArray[0]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger" *ngFor="let assessorialDataList of YRCArray[0]?.assessorialDataList">
+              <td id="yrcAPAccessorail" style="text-align:center">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="YRCArray[0]?.singleShipmentCharge!==0">
+                <td id="yrcApSingle" style="text-align:center"> Single Shipment - ${{YRCArray[0]?.singleShipmentCharge}}</td>
+              </tr>
+            <tr class="text-center text-danger" *ngIf="YRCArray[0]?.highCostDeliveryCharge!==0">
+              <td id="yrcApHighCost" style="text-align:center"> High Cost - ${{YRCArray[0]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="YRCArray[0]?.additionalCharge!==0"><td id="yrcApAdditional"> CA Charge - ${{YRCArray[0]?.additionalCharge}}</td></tr>
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValue">
+            <b>${{YRCArray[0]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValue">
+            <b>${{YRCArray[0]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="yrcApshiptypes">{{YRCArray[0]?.shipTypes}}</tr>
+            <tr *ngIf="YRCArray[0]?.highCostDeliveryCharge!==0"><span id="yrcApHighcostAvailable">High Cost</span></tr>
+          </td>
+          </tr>
+          <tr *ngIf="showYrcDataAR">
+            <td id="yrcArFactor" class="text-center text-danger" style="color: #025f5f;">
+              {{YRCArray[1]?.factor}}
+            </td>
+            <td>
+          <tr class="text-center text-danger" *ngFor="let fuelChargeYrc of YRCArray[1]?.fuelChargeYrc">
+            <td id="yrcArFSC" style="text-align:center">{{fuelChargeYrc}}</td>
+          </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discount of YRCArray[1]?.discount">
+              <td id="yrcArDiscount" class="text-center text-danger">{{discount}}</td>
+            </tr>
+            </td>
+          <td>
+            <tr *ngFor="let discountedRate of YRCArray[1]?.discountedRate">
+              <td id="yrcArDiscountedRate" class="text-center text-danger">${{discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let netCharge of YRCArray[1]?.netCharge">
+              <td id="yrcArNetCahrge" class="text-center text-danger">${{netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+		  
+            Total - ${{YRCArray[1]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger" *ngFor="let assessorialDataList of YRCArray[1]?.assessorialDataList">
+              <td id="yrcARAccessorial" style="text-align:center">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="YRCArray[1]?.singleShipmentCharge!==0">
+              <td id="yrcArSingle" style="text-align:center"> Single Shipment - ${{YRCArray[1]?.singleShipmentCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="YRCArray[1]?.highCostDeliveryCharge!==0">
+              <td id="yrcArHighCost"  style="text-align:center"> High Cost - ${{YRCArray[1]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="YRCArray[1]?.additionalCharge!==0">
+              <td id="yrcArAdditional" style="text-align:center"> CA Charge - ${{YRCArray[1]?.additionalCharge}}</td>
+            </tr>
+			
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValue">
+            <b>${{YRCArray[1]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValue">
+            <b>${{YRCArray[1]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+		  
+            <tr id="yrcArshiptypes">{{YRCArray[1]?.shipTypes}}</tr>
+            <tr id="yrcArHighcostAvailable" *ngIf="YRCArray[1]?.highCostDeliveryCharge!==0"><span>High Cost</span></tr>
+			
+          </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="border-bottom: 1px solid black;margin-top: 15px;margin-bottom: 20px" *ngIf="showBorder"></div>
+    <div class="row" *ngIf="waitForProcessMessageForReddaway">
+        <div class="col-sm-10 text-center" style="padding-top:30px !important;">
+          <span style="font-size: 20px">Please wait while we process your request</span>
+        </div>
+        </div>
+    <div class="row" *ngIf="hideReddawayData">
+      <div class="col-sm-2">
+          <div class="clearfix">&nbsp;</div>
+          <div class="clearfix">&nbsp;</div>
+        <img src="../../assets/images/reddaway.png" alt=""  style="margin-top: 20px" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-10 text-center"  style="padding-top: 30px !important;">
+        <span style="font-size: 25px">No rates are available</span>
+      </div>
+    </div>
+    <div class="row" *ngIf="noredShipmentData">
+      <div class="col-sm-2">
+          <div class="clearfix">&nbsp;</div>
+          <div class="clearfix">&nbsp;</div>
+        <img src="../../assets/images/reddaway.png" alt=""  style="margin-top: 20px" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-10 text-center"  style="padding-top: 30px !important;">
+        <span style="font-size: 25px">No rates are available</span>
+      </div>
+    </div>
+    <div class="row" *ngIf="showMessageForAp">
+        <div class="col-sm-2">
+            <div class="clearfix">&nbsp;</div>
+            <div class="clearfix">&nbsp;</div>
+            <img src="../../assets/images/reddaway.png" alt="" style="margin-top: 20px" class="img-responsive center-block">
+          </div>
+        <div class="col-sm-10 text-center" style="padding-top: 30px !important;">
+        <span style="font-size: 25px" id="servicenotavailable">Service is not available for these zipcodes</span>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="showReddawayData">
+      <div class="col-sm-2">
+        <img src="../../assets/images/reddaway.png" alt="" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-3 table-responsive" >
+        <table id="" class="table table-bordered table-responsive table-height">
+          <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center">$/CWT</th>
+            <th class="text-center">Total Gross Charge</th>
+            </tr>
+          <tr>
+            <td style = "height:87px; text-align:center">
+			<table style="margin:0px; width: 100%">
+              <tr class="text-center text-danger">
+            <td ><b id="reddawayAPTotal">${{reddawayArray[0]?.totalCharge}}</b><br>
+              <span  style="color: #124c3f" id="reddawayAPShipTypes">{{reddawayArray[0]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" *ngIf="reddawayArray[0]?.highCostDeliveryCharge!==0"></em>
+            </td>
+          </tr>
+         <tr *ngFor="let class1 of reddawayArray[0]?.classification1">
+            <td>&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValue">
+            <td>Deficit WT</td>
+          </tr>
+		  </table>
+          </td>
+          <td style="text-align:center">
+		  <table style="width:100%;margin:0px;">
+            <tr >
+              <td class="text-center text-danger" id="reddawayAPrate">${{reddawayArray[0]?.rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success"  id="reddawayAPCrtrate">${{reddawayArray[0]?.crtRate}}</td>
+            </tr>
+			</table>
+          </td>
+          <td class="text-center text-danger"><b id="reddawayAPTotalGrossCharge">${{reddawayArray[0]?.totalGrossCharge}}</b></td>
+          <!-- <td>
+            <tr *ngFor="let finalRate of reddawayArray[0]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success" *ngFor="let diffRate of reddawayArray[0]?.diffRate">${{diffRate}}
+              </td>
+            </tr>
+          </td> -->
+          </tr>
+        </tbody>
+        </table>
+      </div>
+
+      <div class="col-sm-6 table-responsive" *ngIf="showReddawayDataAR">
+       <table class="table table-bordered table-responsive table-height">
+        <tbody>
+          <tr>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center">$/CWT</th>
+            <th class="text-center">Total <br> Gross Charge</th>
+            <th class="text-center" *ngIf="showQuoteId">Quote Number</th>
+            <th class="text-center">Est Transit Time <br>(In Business Days)</th>
+
+            </tr>
+          <tr>
+            <td style="text-align:center">
+			<table style="width:100%;margin:0px">
+          <tr class="text-center text-danger">
+            <td *ngFor="let total of reddawayArray[1]?.totalCharge"><b id="reddawayARTotal">${{total}}</b><br>
+              <span style="color: #124c3f" id="reddawayARShipTypes">{{reddawayArray[1]?.shipTypes}}</span>
+              <em class="fa fa-arrow-up" *ngIf="reddawayArray[1]?.highCostDeliveryCharge!==0"></em>
+              <em class="fa fa-plus" aria-hidden="true" *ngIf="reddawayArray[1]?.factor === 'COSTPLUS'"></em>
+            </td>
+          </tr>
+          <tr>
+            <td *ngFor="let class1 of reddawayArray[1]?.classification1">&nbsp;</td>
+          </tr>
+          <tr *ngIf="showDeficitValue">
+            <td style="text-align:center">Deficit WT</td>
+          </tr>
+		  </table>
+          </td>
+          <td style="text-align:center">
+		  <table style="width:100%;margin:0px;">
+            <tr *ngFor="let rate of reddawayArray[1]?.rate">
+              <td class="text-center text-danger" id="reddawayARRate">${{rate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success" *ngFor="let crtRate of reddawayArray[1]?.crtRate" id="reddawayARCrtrate">${{crtRate}}
+              </td>
+            </tr>
+			</table>
+          </td>
+          <td class="text-center text-danger"><b id="reddawayARTotalGrossCharge">${{reddawayArray[1]?.totalGrossCharge}}</b></td>
+          <!-- <td>
+            <tr *ngFor="let finalRate of reddawayArray[1]?.finalRate">
+              <td class="text-center text-danger">${{finalRate}}</td>
+            </tr>
+            <tr *ngIf="showDeficitValue">
+              <td class="text-center text-success" *ngFor="let diffRate of reddawayArray[1]?.diffRate">
+                ${{diffRate}}
+              </td>
+            </tr>
+          </td> -->
+          <td class="text-center text-danger" *ngIf="showQuoteId">
+            <b id="reddawayQuoteNumber">{{quoteIdReddaway}}</b>
+          </td>
+          <td style="text-align:center">
+            <img src="../../assets/images/transit.png" alt="" class="img-responsive center-block" style="height:33px;margin-bottom: 10px">
+            <span style="font-weight:600;color: #9c7457;" id="reddawayTransit">{{transitTimeReddaway?.reddawayResult}}</span>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+     <div class="col-sm-1" *ngIf="!hideReddawayData && !showMessageForAp">
+        <div class="clearfix">&nbsp;</div>
+        <div class="clearfix">&nbsp;</div>
+        <button id="view1" tabindex="-1" class="logisticsBtn" (click)="viewAllDetailsReddaway()"
+                style="padding: 8px 21px !important;">
+          <span *ngIf="!viewAllShowReddawayData" id="reddawayView">View</span>
+          <span *ngIf="viewAllShowReddawayData" id="reddawayHide">Hide</span>
+        </button>
+        </div>
+     </div>
+
+    <div class="row" *ngIf="viewAllShowReddawayData">
+      <div class="col-sm-2">
+        &nbsp;
+      </div>
+      <div class="col-sm-10 col-sm-10 col-xs-10 table-responsive">
+        <table class="table table-bordered table-responsive">
+          <tbody>
+          <tr>
+            <th class="text-center">Type</th>
+            <th class="text-center">Fuel Surcharge(%)</th>
+            <th class="text-center">Discount(%)</th>
+            <th class="text-center">Discounted Rate</th>
+            <th class="text-center">Net Charge</th>
+            <th class="text-center">Accessorial Charge</th>
+            <!-- <th class="text-center">Total Gross Charge</th> -->
+            <th class="text-center">Ship Type</th>
+          </tr>
+          <tr>
+            <td class="text-center text-danger" style="color:#025f5f;" id="reddawayAPFactor">{{reddawayArray[0]?.factor}}
+            </td>
+            <td>
+          <tr class="text-center text-danger" >
+            <td style="text-align:center" id="reddawayAPFuelCharge">{{reddawayArray[0]?.fuelCharge}}</td>
+          </tr>
+        </td>
+          <td >
+            <tr >
+              <td class="text-center text-danger" id="reddawayAPDiscount">{{reddawayArray[0]?.discount}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr >
+              <td class="text-center text-danger" id="reddawayAPDiscountedRate">${{reddawayArray[0]?.discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr >
+              <td class="text-center text-danger" id="reddawayAPNetCharge">${{reddawayArray[0]?.netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+            Total - ${{reddawayArray[0]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger"
+                *ngFor="let assessorialDataList of reddawayArray[0]?.assessorialDataList">
+              <td style="text-align:center" id="reddawayAPAccessorials">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="reddawayArray[0]?.highCostDeliveryCharge!==0">
+              <td style="text-align:center" id="reddawayApHighCost"> High Cost - ${{reddawayArray[0]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="reddawayArray[0]?.additionalCharge">
+              <td style="text-align:center" id="reddawayAPCACharge"> CA Charge - ${{reddawayArray[0]?.additionalCharge}}</td>
+            </tr>
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValue">
+            <b>${{reddawayArray[0]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValue">
+            <b>${{reddawayArray[0]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="reddawayAPShiptypes">{{reddawayArray[0]?.shipTypes}}</tr>
+            <tr *ngIf="reddawayArray[0]?.highCostDeliveryCharge!==0"><span id="reddawayApHighCostValue">High Cost</span></tr>
+          </td>
+          </tr>
+          <tr *ngIf="showReddawayDataAR">
+            <td class="text-center text-danger" style="color: #025f5f;" id="reddawayARFactor">
+              {{reddawayArray[1]?.factor}}
+            </td>
+            <td>
+          <tr class="text-center text-danger" *ngFor="let fuelCharge of reddawayArray[1]?.fuelCharge">
+            <td style="text-align:center" id="reddawayArFuelCharge">{{fuelCharge}}</td>
+          </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discount of reddawayArray[1]?.discount">
+              <td class="text-center text-danger" id="reddawayARDiscount">{{discount}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let discountedRate of reddawayArray[1]?.discountedRate">
+              <td class="text-center text-danger" id="reddawayARDiscountedrate">${{discountedRate}}</td>
+            </tr>
+          </td>
+          <td>
+            <tr *ngFor="let netCharge of reddawayArray[1]?.netCharge">
+              <td class="text-center text-danger" id="reddawayARNetCharge">${{netCharge}}</td>
+            </tr>
+          </td>
+          <td class="text-center text-danger">
+            Total - ${{reddawayArray[1]?.assessorialChargeValue}}<br>
+            <tr class="text-center text-danger"
+                *ngFor="let assessorialDataList of reddawayArray[1]?.assessorialDataList">
+              <td style="text-align:center" id="reddawayARAccessorials">{{assessorialDataList}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="reddawayArray[1]?.singleShipmentCharge">
+              <td style="text-align:center" id="reddawayARSingleShipment"> Single Shipment - ${{reddawayArray.singleShipmentCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="reddawayArray[1]?.highCostDeliveryCharge">
+              <td style="text-align:center" id="reddawayARHighCost"> High Cost - ${{reddawayArray[1]?.highCostDeliveryCharge}}</td>
+            </tr>
+            <tr class="text-center text-danger" *ngIf="reddawayArray[1]?.additionalCharge">
+              <td style="text-align:center" id="reddawayARCACharge"> CA Charge - ${{reddawayArray[1]?.additionalCharge}}</td>
+            </tr>
+          </td>
+          <!-- <td class="text-center text-danger" *ngIf="showDeficitValue">
+            <b>${{reddawayArray[1]?.diffFinalRate}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="!showDeficitValue">
+            <b>${{reddawayArray[1]?.totalGrossCharge}}</b>
+          </td> -->
+          <td class="text-center text-danger">
+            <tr id="reddawayARShipmentTyoes">{{reddawayArray[1]?.shipTypes}}</tr>
+            <tr *ngIf="reddawayArray[1]?.highCostDeliveryCharge!==0"><span id="reddawayARHighCostValue">High Cost</span></tr>
+          </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="clearfix">
+  </div>
+
+</div>
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" id="ratingBootstrap" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog " role="document">
+       <div class="modal-content">
+          <div class="agileits-login" style="background: #275867 !important;border: 2px solid #fff">
+            <button type="button" style="color: #fff;opacity: 1;" class="close" data-dismiss="modal" (click)="windowClose()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="text-center" style="color: #9c7357 !important;">Rating Notes</h4>
+           <div class="row">
+              <div class="col-md-12">
+                <div class="form-group" style="color: #fff">
+                  {{customerData}}
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--Rating notes Modal-->
+<div id="ratingNotes-moal" class="modal" role="dialog">
+  <div class="modal-dialog modal-lg">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">&nbsp;Rating Notes</h4>
+        </div>
+        <div class="modal-body">
+       <div class="legend-body">
+            <div class="row">
+              <div class="col-md-6 form-group" *ngIf="customerData !==''">
+              {{customerData}}
+             </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+<!--End of Rating Notes Modal-->
+<div class="clearfix">&nbsp;</div>
+<div class="copy">
+  <p>© 2018 Logistics . All Rights Reserved </p>
+</div>
+<a href="#" tabindex="-1" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+<!-- //smooth scrolling -->
+<style>
+  h2, .h2 {
+    font-size: 12px !important;
+  }
+  h3, .h3 {
+    font-size: 14px !important;
+  }
+</style>

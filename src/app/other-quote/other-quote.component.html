@@ -1,0 +1,44 @@
+<div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"></div>
+    </nav>
+  </div>
+<div class="container-fluid">
+    <div class="row">
+        <app-sidemenu></app-sidemenu>
+        <div class="col-md-10 main_cont">
+            <h2 class="main-head">Rate Quote Select</h2>
+            <div class="row">
+                <div class="col-md-6" >
+                    <a href="" [routerLink]="[('/quickie_Quote')]"><div class="card">
+                        <div class="card-head">
+                            <img src="../../assets/images/lighting.png" alt="" class="icon-img img-responsive center-block">
+                            <h4 class="dash-head">Quickie Quote</h4>
+                            </div>
+                        <div class="card-body">
+                           <p>Just enough information to give you a quote.<br>
+                               Additional information will be required if you decide to book a shipment at a later point using this information.</p>
+                            <p>(<b>Truckload, Volume, Air, Ocean</b>).</p>
+                        </div>
+                        </div></a>
+                    </div>
+                <div class="col-md-6" >
+                    <a href="" [routerLink]="[('/fullltl_Quote')]"><div class="card">
+                        <div class="card-head">
+                            <img src="../../assets/images/list.png" alt="" class="icon-img img-responsive center-block">
+                            <h4 class="dash-head">Full Rate Quote Request</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>All of the information required for a complete rate quote.<br>
+                                No additional information will be required if you decide to book a shipment at a later point using this information.</p>
+                            <p>(<b>Truckload, Volume, Air, Ocean</b>).</p>
+                        </div>
+                    </div></a>
+                </div>
+                </div>
+        </div>
+        </div>
+</div>
+<app-footer></app-footer>
+

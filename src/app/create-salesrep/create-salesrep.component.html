@@ -1,0 +1,70 @@
+<div class="banner-w3layoutsSales" id="home">
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2">
+        <h3 class="text-center" style="color: #ffffff;">Create Sales Representative</h3>
+        <div class="clearfix">&nbsp;</div>
+        <div class="card">
+          <form action="#" method="post" [formGroup]="salesRepForm">
+            <div class="row">
+              <div class="col-sm-6">
+                <label class="labelText">Sales Rep Name</label>
+                <input class="form-control fieldsGrey" placeholder="" formControlName="salesRepName" ngPattern="/^[a-zA-Z\s]*$/"
+                       onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="30" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="labelText">Sales Rep Id</label>
+                <input class="form-control fieldsGrey" placeholder="" formControlName="salesRepId" ngPattern="/^[a-zA-Z0-9\s]*$/"
+                       onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');">
+              </div>
+</div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label class="labelText">Mobile Number</label>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/[0-9]/" maxlength="10"
+                       onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" formControlName="mobileNumber">
+              </div>
+              <div class="col-sm-6">
+                <label>Type</label>
+                <select formControlName="type" class="selectField">
+                  <option value="">select</option>
+                  <option value="customerServiceRep">CustomerService Rep</option>
+                  <option value="internalSalesRep">Internal sales Rep</option>
+                </select>
+              </div>
+            </div>
+         <div class="row">
+              <div class="col-sm-6">
+                <label class="labelText">Email</label>
+                <input class="form-control fieldsGrey" placeholder="" formControlName="email">
+              </div>
+              <div class="col-sm-6">
+                <label class="labelText">Password</label>
+                <input class="form-control fieldsGrey " type="password" id="password" formControlName="password">
+              </div>
+         </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="clearfix">&nbsp;</div>
+         <div class="row">
+              <div class="col-sm-6 ">
+              <button _ngcontent-c3=""  class="blulogisticsBtn pull-right" (click)="saveSalesRep(salesRepForm.value)">Save</button>
+                </div>
+              <div class="col-sm-6">
+              <button _ngcontent-c3="" class="logisticsBtn" [routerLink]="[('/internal')]"> Cancel </button>
+              </div>
+            </div>
+       </form>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix">&nbsp;</div>
+  </div>
+</div>
+

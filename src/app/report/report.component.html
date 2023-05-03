@@ -1,0 +1,832 @@
+<style>
+  .table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid #a9a0a0;
+    text-align: -webkit-center;
+   }
+</style>
+<div class="banner-w3layoutsSales" id="home">
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+
+  </div>
+  <div class="w3l_banner_info" id="name">
+    <div class="col-md-12 col-sm-12 banner-form-agileinfo quote_report">
+      <h3 style="color:#a2705c;text-align: center; margin-bottom: 30px;">QUOTE REPORT</h3>
+
+      <!--Customer Added-->
+      <form action="#"  [formGroup]="reportForm" autocomplete="off">
+        <div class="row">
+          <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2">
+            <div class="col-md-6">
+              <label>From Date</label>
+              <!-- <input class="form-control" [bsConfig]="{ showWeekNumbers: false,containerClass: this.colorPicker }" bsDatepicker fromControlName="from_date"  (bsValueChange)="fromDate($event)" [maxDate]='maxDate'
+                id="fromDate" > -->
+                <input class="form-control"  fromControlName="from_date"  (bsValueChange)="fromDate($event)" [maxDate]='maxDate'
+                id="fromDate" bsDatepicker
+                [bsConfig]="{showWeekNumbers: false, containerClass: this.colorPicker}">
+            </div>
+
+            <div class="col-md-6">
+              <label>To Date</label>
+              <input class="form-control" [bsConfig]="{ showWeekNumbers: false,containerClass: this.colorPicker }" bsDatepicker fromControlName="to_date" (bsValueChange)="toDate($event)" [maxDate]='maxDate'
+                id="toDate"> 
+            </div>
+
+            <div class="col-md-12">
+              <label>Company Name</label>
+              <select class="selectField" id="customer" formControlName="customerName" (change)="getCustomerName(reportForm.controls['customerName'].value)">
+                <option value="" hidden>Select</option>
+                <option *ngFor="let customer of customerNamesAll" value="{{customer.companyName}}">{{customer.companyName}}({{customer.referenceId}})</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label>Quote No</label>
+              <input type="text" class="form-control" id="quoteNo" formControlName="quoteNo" ngPattern="/[0-9]/" 
+              onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope" >
+            </div>
+
+            <div class="col-md-4">
+              <label>Origin</label>
+              <input type="text" class="form-control" id="originZipCode" formControlName="origin" maxlength="5" ngPattern="/[0-9]/" 
+              onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope">
+            </div>
+
+            <div class="col-md-4">
+              <label>Destination</label>
+              <input type="text" class="form-control" id="destinationZipCode" formControlName="destination" maxlength="5" ngPattern="/[0-9]/" 
+              onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope">
+            </div>
+            <div class="col-md-4">
+            <label>Carrier</label>
+            <select class="selectField" id="carrier" formControlName="carrier">
+              <option value="" hidden>Select</option>
+              <option value="YRC">YRC</option>
+              <option value="FEDEX ECONOMY">FEDEX ECONOMY</option>
+              <option value="FEDEX PRIORITY">FEDEX PRIORITY</option>
+              <option value="REDDAWAY">REDDAWAY</option>
+            </select>
+          </div>
+
+            <div class="col-md-3">
+              <label>Category</label>
+              <select class="selectField" id="category" formControlName="category">
+                <option value="" hidden>Select</option>
+                <option value="AP">AP</option>
+                <option value="AR">AR</option>
+              </select>
+            </div>
+            <div class="col-md-5" *ngIf="disableDropDown">
+              <label>Sales Rep</label>
+              <select class="selectField" id="salesrep" formControlName="salesRepName" [disabled]="true">
+                <option value="" hidden>Select</option>
+                <option [disabled]  *ngFor="let salesRepName of salesRepArray" value="{{salesRepName.id}}">{{salesRepName.salesRepName}}</option>
+                </select>
+            </div>
+            <div class="col-md-5" *ngIf="!disableDropDown">
+              <label>Sales Rep</label>
+              <select class="selectField" id="salesrep1" formControlName="salesRepName">
+                <option value="" hidden>Select</option>
+                <option *ngFor="let salesRepName of salesRepArray" value="{{salesRepName.id}}">{{salesRepName.salesRepName}}</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+              <div class="clearfix">&nbsp;</div>
+              <button type="submit" (click)="getRecordsValue(reportForm.value)" [disabled]="" id="search"  class="blulogisticsBtn" value="Search" style="width: 100% !important;">Search</button>
+            </div>
+
+            <div class="col-md-6">
+              <div class="clearfix">&nbsp;</div>
+              <button type="submit" (click)=reportClear() id="clear" class="logisticsBtn" value="Clear" style="width: 100% !important;">Clear</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-12 text-center" *ngIf="searchDataErrorMessage">
+          <h4 style="color:#ff0000">Please Enter the value</h4>
+        </div>
+
+      </form>
+    </div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="col-sm-12 text-center" *ngIf="showLoader">
+      <span class="text-center" style="padding: 35px; color: #a2705c; font-size: 20px;"><em class="fa fa-spinner" aria-hidden="true"  style="color: #a2705c; font-size: 20px;"></em> &nbsp;Loading</span>
+    </div>
+    <div class="col-sm-12" *ngIf="showErrorMessage">
+      <p class="text-center" style="padding: 35px; color: #fff; font-size: 20px; color: #a2705c"><b>No Matching Records Found</b></p>
+    </div>
+    
+  </div>
+
+  <div class="clearfix">&nbsp;</div>
+  <div class="clearfix">&nbsp;</div>
+  <div class="clearfix">&nbsp;</div>
+  <div class="container" >
+    <div class="pull-right" *ngIf="showDownloadButton">
+      <button class="btn btn-primary" style="background-color: #13afc3; border:0px !important;" id="download" (click)="downloadData()" ><em class="fa fa-download" aria-hidden="true"></em> Download</button>
+      <button class="btn btn-primary" style="background-color: #13afc3; border:0px !important;" id="sendMail" (click)="sendMail()" ><em class="fa fa-paper-plane" aria-hidden="true"></em> Send Mail</button>
+    </div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="row">
+      <div *ngIf="showTable" class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-responsive table-bordered" style="color: #9c7457 !important;">
+            <thead style="color: #4c7a71 !important;">
+            <tr>
+              <th style="font-weight: 500;">Quote No</th>
+              <th style="font-weight: 500;">Date Created</th>
+              <th style="font-weight: 500;">Company</th>
+              <th style="font-weight: 500;">Created By</th>
+              <th style="font-weight: 500;">Carrier</th>
+              <th style="font-weight: 500;">Origin</th>
+              <th style="font-weight: 500;">Destination</th>
+              <th style="font-weight: 500;">Class</th>
+              <th style="font-weight: 500;">Weight(Pounds)</th>
+              <th style="font-weight: 500;">SMC3 AP </th>
+              <th style="font-weight: 500;">Web AP</th>
+              <th style="font-weight: 500;">AR</th>
+              <th  style="font-weight: 500;">Cost Plus</th>
+              <th style="font-weight: 500;">Margin</th>
+           </tr>
+            </thead>
+            <tbody>
+
+            <tr *ngFor="let items of responseAP | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+              <td align="center">
+                {{items?.quoteReferenceId}}</td>
+              <td align="center">{{items?.createdOn}}<br>{{items?.time}}</td>
+              <td align="center">{{items?.companyName}}</td>
+              <td align="center">{{items?.createdByName}}</td>
+              <td align="center">{{items?.carrier}}</td>
+              <td align="center">{{items?.originZip}}</td>
+              <td align="center">{{items?.destinationZip}}</td>
+              <td *ngFor="let x of items?.h">{{x}}</td>
+              <td *ngFor="let r of items?.x">{{r}}</td>
+              <td align="center">
+                <a href="#quote_details" style="color: #4c7a71;text-decoration: underline;" (click)="getResponseFromQuoteId(items?.quoteIdAP, 'matrix', undefined)" data-toggle="modal" data-hover="Quote">
+                  ${{items?.totalCharge}}</a></td>
+              <td align="center" *ngIf="items?.webRate !== undefined && items?.webRate !== null && items?.webRate !== 0 && items?.webRate !== '' && items?.webRate!== '0'">
+                  <a  href="#webRate_details" style="color: #4c7a71;text-decoration: underline;" (click)="getResponseForWebRate(items?.quoteReferenceId)" data-toggle="modal" data-hover="Quote">
+                      ${{items?.webRate}}
+                    </a> 
+                <!-- <a href="#webRate_details" style="color: #4c7a71;text-decoration: underline;" (click)="getResponseForWebRate(items?.quoteId, items?.webRateQuoteId,  'matrix')" data-toggle="modal" data-hover="Quote">
+                  ${{items?.webRate}}</a>  -->
+                <!-- ${{items?.webRate}} -->
+                <!-- <a *ngIf="items.carrier !== 'REDDAWAY'"style="color: #4c7a71;text-decoration: underline;" (click)="getResponseFromQuoteId(items?.quoteId, 'matrix')" data-toggle="modal" data-hover="Quote">
+                    ${{items?.webRate}}</a>  -->
+              </td>
+              <td align="center" *ngIf="items?.webRate === undefined || items?.webRate === null || items?.webRate === 0  || items?.webRate === '' || items?.webRate === '0'">
+              
+               NA
+              </td>
+              <!-- <td align="center" *ngIf="items?.webRate !== undefined && items?.carrier !== 'REDDAWAY'">
+                
+                    ${{items?.webRate}}</td> -->
+              <!-- <a href="#webRate_details" style="color: #4c7a71;text-decoration: underline;" (click)="getResponseForWebRate(items?.quoteId, items?.webRateQuoteId,  'matrix')" data-toggle="modal" data-hover="Quote">
+                ${{items?.webRate}}</a>  -->
+              <!-- ${{items?.webRate}} -->
+              <!-- <a *ngIf="items.carrier !== 'REDDAWAY'"style="color: #4c7a71;text-decoration: underline;" (click)="getResponseFromQuoteId(items?.quoteId, 'matrix')" data-toggle="modal" data-hover="Quote">
+                  ${{items?.webRate}}</a>  -->
+            
+
+              
+          
+              <td align="center"   style="text-decoration: underline;" *ngIf="items?.totalChargeAR !== undefined && items?.totalChargeAR !== null && items?.totalChargeAR !== 0  && items?.totalChargeAR !== '' && items?.totalChargeAR!== '0'">
+                <a href="#quote_details"  [class.blue]="items.showcolor === true" [class.green]="items.showcolor === false"  (click)="getResponseFromQuoteId(items?.quoteIdAR, 'matrix',items?.totalCharge)" data-toggle="modal" data-hover="Quote">
+                  ${{items?.totalChargeAR}}
+                </a></td>
+                
+              <td align="center" *ngIf="items?.totalChargeAR === undefined || items?.totalChargeAR === null || items?.totalChargeAR === 0  || items?.totalChargeAR === '' || items?.totalChargeAR === '0'">
+                &nbsp;-
+                  </td>
+                  <td align="center" *ngIf="items?.costPlusRate !== undefined && items?.costPlusRate !== null && items?.costPlusRate !== 0  && items?.costPlusRate !== '' && items?.costPlusRate !== '0'">
+                    <a href="#costplus_Quote_details" style="color: #4c7a71;text-decoration: underline;" (click)="getResponseFromQuoteId(items?.costPlusRateQuoteId, 'matrix',undefined)" data-toggle="modal" data-hover="Quote">
+                      ${{items?.costPlusRate}}
+                    </a></td>
+                    
+                  <td align="center" *ngIf="items?.costPlusRate === undefined || items?.costPlusRate === null || items?.costPlusRate === 0 || items?.costPlusRate === '' || items?.costPlusRate === '0'">
+                    &nbsp;-
+                      </td>
+              <td align="center" >{{items?.totalDifference}}%</td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+        <div class="row" *ngIf="count>0">
+          <div class="col-sm-4 pull-right">
+            <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+          </div>
+          <div class="col-sm-4">
+            <label>Items per page</label>
+            <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)">
+              <option value="" hidden>Select</option>
+              <option *ngFor="let number of numberOfPages"> {{number}}</option>
+            </select>
+          </div>
+        </div>
+  </div>
+
+</div>
+  <div class="modal about-modal w3-agileits" id="quote_details" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-body quote_modal"><!-- login-page -->
+          <div class="login-top sign-top">
+            <div class="quote_body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="close()"><span aria-hidden="true" style="color:rgb(245, 220, 145);">&times;</span></button>
+              </div>
+              <div class="quote_det">
+                <div class="row">
+                  <div class="col-sm-6 text-right">
+                    <p class="qt_hd">Company :<span class="qt_bd">{{singleCustomerName}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                   <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Origin :</span>
+                    </div>
+                   <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{specificQuoteIdObject?.originZip}}({{city}},{{state}})</span>
+                    </div>
+                  </div>
+               </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Quote ID &nbsp;:<span class="qt_bd">{{specificQuoteIdObject?.quoteReferenceId}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                    <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Destination :</span>
+                    </div>
+                    <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{specificQuoteIdObject?.destinationZip}}({{destCity}},{{destState}})</span>
+                    </div>
+                  </div>
+              </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Category &nbsp;:<span class="qt_bd" >{{category}}</span></p>
+                    
+                  </div>
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Carrier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:<span class="qt_bd">{{specificQuoteIdObject?.carrier}}</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Class</th>
+                    <th>Weight&nbsp;(Pounds)</th>
+                    <th>Rate</th>
+                    <th>Charge</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td></td>
+                    <td class="td_right">
+                      <div *ngFor="let classData of rateDetailObject?.classification" >{{classData}}</div></td>
+                    <td class="td_right">
+                      <div *ngFor="let weight of rateDetailObject?.weight">{{weight}}</div>
+                      <!-- <div *ngFor="let diffWeight of rateDetailObject?.diffWeight">{{diffWeight}}</div> -->
+                    </td>
+                    <td class="td_right">
+                      <div *ngFor="let rate of rateDetailObject?.rate" >${{rate}}</div>
+                        <div *ngFor="let crtRate of rateDetailObject?.crtRate" >${{crtRate}}</div>
+                      
+                    </td>
+                    <td class="td_right">
+                      <div *ngFor="let finalRate of rateDetailObject?.finalRate" >${{finalRate}}</div>
+                      <div *ngFor="let diffRate of rateDetailObject?.diffRate">${{diffRate}}</div>
+                    </td>
+                  </tr>
+                   <tr>
+                    <td class="td_left">Total Weight and Discount({{rateDetailObject?.discount}}%)<br> <tr ><td colspan="2" class="td_left" style="padding:0px">High Cost</td></tr>
+                    <tr *ngFor="let high of highcostArray"><td *ngIf="high.origin !== 0" class="td_left" style="padding:0px" id="modalAccessorialName">Origin - {{high.origin}}</td><td *ngIf="high.destination !== 0" class="td_right" style="padding:0px" id="modalAccessorialCostTotal"> Destination - {{high.destination}}</td></tr></td>
+                    <td></td>
+                    <td class="td_right">{{rateDetailObject?.totalWeight}}</td>
+                    <td></td>
+                    <td class="td_right">${{charge}}<br><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${{rateDetailObject?.highCostDeliveryCharge}}</td></td>
+                   </tr>
+                   <tr>
+                    <td class="td_left">Fuel Surcharge({{rateDetailObject?.fuelCharge}}%)</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{fuelCharges}}</td><!-- fuelcharge will not come for certain result-->
+                  </tr>
+                     <!-- <td class="td_left">High Cost</td> -->
+                  <!-- <tr>
+                 
+                    <table>
+                      <tr ><td colspan="2" class="td_left" style="padding:0px">High Cost</td></tr>
+                      <tr *ngFor="let high of highcostArray"><td *ngIf="high.origin !== 0" class="td_left" style="padding:0px" id="modalAccessorialName">Origin - {{high.origin}}</td><td *ngIf="high.destination !== 0" class="td_right" style="padding:0px" id="modalAccessorialCostTotal"> Destination - {{high.destination}}</td></tr>
+                      </table>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{rateDetailObject?.highCostDeliveryCharge}}</td>
+                  </tr> -->
+                  <tr>
+                      <td class="td_left">Single Shipment Charge</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="td_right">${{rateDetailObject?.singleShipmentCharge}}</td>
+                    </tr>
+                  <tr *ngIf="rateDetailObject?.additionalCharge !== 0">
+                    <td class="td_left">Additional Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{rateDetailObject?.additionalCharge}}</td>
+                  </tr>
+                  <tr *ngIf="rateDetailObject?.peakSurcharge !== 0">
+                    <td class="td_left">Peak Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{rateDetailObject?.peakSurcharge}}</td>
+                  </tr>
+                  
+                  <tr>
+                      <td class="td_left">
+                      <table>
+                      <tr ><td colspan="2" class="td_left" style="padding:0px">Accessorial Charge</td></tr>
+                      <tr *ngFor="let assessorial of assessorialList"><td class="td_left" style="padding:0px">{{assessorial.name}}</td><td class="td_right" style="padding:0px">- {{assessorial.cost}}</td></tr>
+                      <!-- <tr><span *ngFor="let assessorial of assessorialList">{{assessorial.name}} &nbsp;<b> - {{assessorial.cost}}</b><br></span></tr> -->
+                      </table></td>
+                      <td ></td>
+                      <td ></td>
+                      <td ></td>
+                      <td class="td_right" style="vertical-align: bottom">${{rateDetailObject?.assessorialCharge}}</td>
+                      </tr>
+                      <tr *ngIf="totalapData !== 0">
+                        <td class="td_left">AP Charge for 5% margin (AP/0.95) </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="td_right">${{totalapData}}</td>
+                      </tr>
+                  <tr>
+                    <td class="td_left">Total Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{specificQuoteIdObject?.totalCharge}}</td>
+                  </tr>
+                
+                </tbody>
+                </table>
+                <div class="alert alert-success" id="success-alert">
+                  <button type="button" class="close" data-dismiss="alert">x</button>
+                  <strong>Success! </strong>
+                  Email Sent Successfully
+              </div>
+                <div *ngIf ="sendEmailArFlag">
+                <button  class="btn btn-primary" style="background-color: transparent;
+               border: 2px solid #fff;
+              float: right;
+               margin: 1em;" id="sendMail" (click)="sendMailAr(specificQuoteIdObject?.quoteId, specificQuoteIdObject?.salesRepId, 'externalCustomer', specificQuoteIdObject?.category )" data-toggle="tooltip" data-placement="left" title="Send Email"><em class="fa fa-envelope" aria-hidden="true"></em>&nbsp;Send Email</button>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- //login-page -->
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="modal about-modal w3-agileits" id="webRate_details" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-body quote_modal"><!-- login-page -->
+          <div class="login-top sign-top">
+            <div class="quote_body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="close()"><span aria-hidden="true" style="color:rgb(245, 220, 145);">&times;</span></button>
+              </div>
+              <div class="quote_det">
+                <div class="row">
+                  <div class="col-sm-6 text-right">
+                    <p class="qt_hd">Company :<span class="qt_bd">{{singleCustomerName}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                   <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Origin :</span>
+                    </div>
+                   <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{specificQuoteIdObject?.originZip}}({{city}},{{state}})</span>
+                    </div>
+                  </div>
+               </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Quote ID &nbsp;:<span class="qt_bd">{{specificQuoteIdObject?.quoteReferenceId}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                    <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Destination :</span>
+                    </div>
+                    <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{specificQuoteIdObject?.destinationZip}}({{destCity}},{{destState}})</span>
+                    </div>
+                  </div>
+              </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Category &nbsp;:<span class="qt_bd">AP & WEB</span></p>
+                  </div>
+                  <div class="col-sm-6 text-center">
+                      <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                          <span style="text-align: right; font-weight: 600;">Carrier :</span>
+                        </div>
+                        <div class="col-sm-8 text-left" style="padding-left: 0px !important; padding-right: 0px !important;">
+                          <span class="qt_bd">{{specificQuoteIdObject?.carrier}}</span>
+                        </div>
+                    <!-- <p class="qt_hd">Carrier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:<span class="qt_bd">{{specificQuoteIdObject?.carrier}}</span></p> -->
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th colspan="3">Description</th>
+                    <th rowspan="2">Class</th>
+                    <th rowspan="2">Weight&nbsp;(Pounds)</th>
+                    <th colspan="2">Rate</th>
+                    <th colspan="2">Charge</th>
+                  </tr>
+                  <tr>
+                      <th></th>
+                      <th>Web Rate</th>
+                      <th>AP Price</th>
+                      <th>Web Rate</th>
+                      <th>AP Price</th>
+                      <th>Web Rate</th>
+                      <th>AP Price</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td colspan="3"></td>
+                          <td class="td_right">
+                            <div *ngFor="let classData of rateDetailObject?.classification" >{{classData}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let weight of rateDetailObject?.weight">{{weight}}</div>
+                            
+                          </td>
+                            <td class="td_right">
+                              <div *ngFor="let rateWeb of rateDetailObjectForWeb?.rate" >${{rateWeb}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let rate of rateDetailObject?.rate" >${{rate}}</div></td>
+                              <td class="td_right">
+                                    <div *ngFor="let finalRateWeb of rateDetailObjectForWeb?.finalRate" >${{finalRateWeb}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let finalRate of rateDetailObject?.finalRate" >${{finalRate}}</div></td>
+                        </tr>
+						<!--<tr>
+                          <td colspan="3" >Deficit Weight</td>
+                          <td class="td_right">
+                            <div *ngFor="let classData of rateDetailObject?.classification" >{{classData}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let weight of rateDetailObject?.weight">{{weight}}</div></td>
+                            <td class="td_right">
+                              <div *ngFor="let rateWeb of rateDetailObjectForWeb?.rate" >${{rateWeb}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let rate of rateDetailObject?.rate" >${{rate}}</div></td>
+                              <td class="td_right">
+                                    <div *ngFor="let finalRateWeb of rateDetailObjectForWeb?.finalRate" >${{finalRateWeb}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let finalRate of rateDetailObject?.finalRate" >${{finalRate}}</div></td>
+                        </tr>-->
+                         <tr *ngIf="rateDetailObjectForWeb?.crtRate?.length >0 && rateDetailObjectForWeb?.diffRate?.length >0 && rateDetailObjectForWeb?.diffWeight?.length >0">
+                          <td colspan="3" class="td_left">Deficit Weight</td>
+                          <td class="td_right">
+                            <div>-</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let diffWeight of rateDetailObjectForWeb?.diffWeight">{{diffWeight}}</div></td>
+                            <td class="td_right">
+                              <div *ngFor="let crtRateWeb of rateDetailObjectForWeb?.crtRate" >${{crtRateWeb}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let crtRate of rateDetailObject?.crtRate" >${{crtRate}}</div></td>
+                              <td class="td_right">
+                                    <div *ngFor="let diffRateWeb of rateDetailObjectForWeb?.diffRate" >${{diffRateWeb}}</div></td>
+                          <td class="td_right">
+                            <div *ngFor="let diffRate of rateDetailObject?.diffRate" >${{diffRate}}</div></td>
+                        </tr>
+                         <tr>
+                          <td class="td_left" id="totalWeightId">Total weight and Discount</td>
+  
+                          <td class="td_right">{{rateDetailObjectForWeb?.discount}}%</td>
+                          <td class="td_right">{{rateDetailObject?.discount}}%</td>
+                          
+                          <td colspan="4"></td>
+                          <td class="td_right">${{chargeWeb}}</td>
+                          <td class="td_right">${{charge}}</td>
+                         </tr>
+                         <tr>
+                          <td class="td_left" id="fuelChargeId">Fuel Surcharge</td>
+                          <td class="td_right">{{rateDetailObjectForWeb?.fuelCharge}}%</td>
+                          <td class="td_right">{{rateDetailObject?.fuelCharge}}%</td>
+                          <td colspan="4"></td>
+                          <td class="td_right">${{fuelChargesWeb}}</td>
+                          <td class="td_right">${{fuelCharges}}</td><!-- fuelcharge will not come for certain result-->
+                        </tr>
+                        
+                        <tr>
+                          <td class="td_left" id="additionalChargeId" colspan="3">Additional Charge</td>
+                          <td colspan="4"></td>
+                          <td class="td_right" *ngIf="rateDetailObjectForWeb?.additionalCharge!=='' && rateDetailObjectForWeb?.additionalCharge !== 0">${{rateDetailObjectForWeb?.additionalCharge}}</td>
+                          <td class="td_right" *ngIf="rateDetailObjectForWeb?.additionalCharge==''">$0</td>
+                          <td class="td_right">${{rateDetailObject?.additionalCharge}}</td>
+                          
+                        </tr>
+                        
+                        <tr>
+                          <td class="td_left" style="padding: 0px">
+                          <table>
+                          <tr><td class="td_left" id="AccessorialChargeId">Accessorial Charge</td></tr>
+                          <!-- <tr><td class="td_left">hgh</td></tr>
+                          <tr><td class="td_left">hgh</td></tr> -->
+                          <!-- <tr><span *ngFor="let assessorial of assessorialList">{{assessorial.name}} &nbsp;<b> - {{assessorial.cost}}</b><br></span></tr> -->
+                          <!-- <tr><td><span *ngFor="let assessorial of assessorialList">{{assessorial.name}}</span></td></tr> -->
+                           <tr *ngFor="let assessorial of assessorialList">{{assessorial.name}}</tr>
+                          </table>
+                          </td>
+                          <td class="td_right" style="padding: 0px">
+                            <table style="width: 100%">
+                              <tr><td>&nbsp;</td></tr>
+                              <!-- <tr><td class="td_right">$20.00</td></tr>
+                              <tr><td class="td_right">$20.00</td></tr> -->
+                              <tr *ngFor="let assessorial of assessorialListForWeb">${{assessorial.cost}}</tr>
+                              
+                              </table>
+                          </td>
+                          <td class="td_right" style="padding: 0px"> 
+                            <table style="width: 100%">
+                              <tr><td>&nbsp;</td></tr>
+                              <!-- <tr><td class="td_right">$20.00</td></tr>
+                              <tr><td class="td_right">$20.00</td></tr> -->
+                              <tr *ngFor="let assessorial of assessorialList">{{assessorial.cost}}</tr>
+                              </table>
+                          </td>
+                          
+                          <td colspan="4"></td>
+                          <td class="td_right" style="vertical-align: middle" *ngIf="rateDetailObjectForWeb?.assessorialChargeValue!== ''&& rateDetailObjectForWeb?.assessorialChargeValue!== undefined && rateDetailObjectForWeb?.assessorialChargeValue!==0 &&rateDetailObjectForWeb?.assessorialDataList.length > 0">${{rateDetailObjectForWeb?.assessorialChargeValue}}</td>
+                          <td class="td_right" style="vertical-align: middle" *ngIf="rateDetailObjectForWeb?.assessorialChargeValue== '' || rateDetailObjectForWeb?.assessorialChargeValue== undefined">$0</td>
+                          <td class="td_right" style="vertical-align: middle">${{rateDetailObject?.assessorialCharge}}</td>
+                          </tr>
+                          <tr *ngIf="rateDetailObjectForWeb?.extraCharges!== ''">
+                            <td class="td_left" style="padding: 0px">
+                              <table>
+                              <tr><td class="td_left" id="extraChargeId">Extra Charge</td></tr>
+                              <tr><td class="td_left" *ngIf="rateDetailObjectForWeb?.extraCharges !== ''">Metero Delivery Fee</td></tr>
+                              <!-- <tr><td class="td_left">xxx charge</td></tr> -->
+                              <!-- <tr><span *ngFor="let assessorial of assessorialList">{{assessorial.name}} &nbsp;<b> - {{assessorial.cost}}</b><br></span></tr> -->
+                              </table>
+                              </td>
+                              <td class="td_right" style="padding: 0px">
+                                <table style="width: 100%">
+                                  <tr><td>&nbsp;</td></tr>
+                                  <tr>
+                                    <td class="td_right" *ngIf="rateDetailObjectForWeb?.extraCharges !== ''">${{rateDetailObjectForWeb?.extraCharges}}</td>
+                                    <!-- <td class="td_right" *ngIf="rateDetailObjectForWeb?.extraCharges === ''">$0</td> -->
+                                  </tr>
+                                  <!-- <tr><td class="td_right">$0.00</td></tr> -->
+                                  </table>
+                              </td>
+                              <td class="td_right" style="padding: 0px"> 
+                                <table style="width: 100%">
+                                  <tr><td>&nbsp;</td></tr>
+                                  <tr><td class="td_right" >$0.00</td></tr>
+                                
+                                  </table>
+                              </td>
+                             
+                              <td colspan="4"></td>
+                              
+                              <td class="td_right" style="vertical-align:middle" *ngIf="rateDetailObjectForWeb?.extraCharges !== ''">${{rateDetailObjectForWeb?.extraCharges}}</td>
+                              <td class="td_right" style="vertical-align:middle">$0.00</td>
+                            </tr>
+                            <tr>
+                              <td class="td_left" colspan="3" id="highCostId">High Cost</td>
+                              <td colspan="4"></td>
+                              <td class="td_right" *ngIf="rateDetailObjectForWeb?.highCostDeliveryCharge!== '' && rateDetailObjectForWeb?.highCostDeliveryCharge!== undefined && rateDetailObjectForWeb?.highCostDeliveryCharge!== 0">${{rateDetailObjectForWeb?.highCostDeliveryCharge}}</td>
+                              <td class="td_right" *ngIf="rateDetailObjectForWeb?.highCostDeliveryCharge== '' || rateDetailObjectForWeb?.highCostDeliveryCharge === undefined">$0</td>
+                              <td class="td_right" >${{rateDetailObject?.highCostDeliveryCharge}}</td>
+                              
+                            </tr>
+                            <tr>
+                                <td class="td_left" colspan="3" id="singleShipmentId">Single Shipment Charge</td>
+             
+                                <td colspan="4"></td>
+                                <!-- <td class="td_right" >${{rateDetailObjectForWeb?.singleShipmentCharge}}</td> -->
+                                <td class="td_right" >${{rateDetailObjectForWeb?.singleShipmentCharge}}</td>
+                                
+                                <td class="td_right" >${{rateDetailObject?.singleShipmentCharge}}</td>
+                                <!-- <td class="td_right">${{rateDetailObject?.singleShipmentCharge}}</td> -->
+                              </tr>
+                        <tr>
+                          <td class="td_left" colspan="7" id="totalChargeId">Total Charge</td>
+                       
+                          <td class="td_right">${{specificQuoteIdObjectWeb?.totalCharge}}</td>
+                          <td class="td_right">${{specificQuoteIdObject?.totalCharge}}</td>
+                        </tr>
+                      
+                </tbody>
+                </table>
+                <!-- <div class="alert alert-success" id="success-alert">
+                  <button type="button" class="close" data-dismiss="alert">x</button>
+                  <strong>Success! </strong>
+                  Email Sent Successfully
+              </div>
+                <div *ngIf ="sendEmailArFlag">
+                <button  class="btn btn-primary" style="background-color: transparent;
+               border: 2px solid #fff;
+              float: right;
+               margin: 1em;" id="sendMail" (click)="sendMailAr()" data-toggle="tooltip" data-placement="left" title="Send Email"><em class="fa fa-envelope" aria-hidden="true"></em>&nbsp;Send Email</button>
+              </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- //login-page -->
+
+    </div>
+
+
+  </div>
+
+  <div class="modal about-modal w3-agileits" id="costplus_Quote_details" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-body quote_modal"><!-- login-page -->
+          <div class="login-top sign-top">
+            <div class="quote_body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="close()"><span aria-hidden="true" style="color:rgb(245, 220, 145);">&times;</span></button>
+              </div>
+              <div class="quote_det">
+                <div class="row">
+                  <div class="col-sm-6 text-right">
+                    <p class="qt_hd">Company :<span class="qt_bd">{{singleCustomerName}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                   <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Origin :</span>
+                    </div>
+                   <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{specificQuoteIdObject?.originZip}}({{city}},{{state}})</span>
+                    </div>
+                  </div>
+               </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Quote ID &nbsp;:<span class="qt_bd">{{specificQuoteIdObject?.quoteReferenceId}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                    <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Destination :</span>
+                    </div>
+                    <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{specificQuoteIdObject?.destinationZip}}({{destCity}},{{destState}})</span>
+                    </div>
+                  </div>
+              </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Category &nbsp;:<span class="qt_bd" style="text-transform: uppercase">{{specificQuoteIdObject?.category}}</span></p>
+                    
+                  </div>
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Carrier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:<span class="qt_bd">{{specificQuoteIdObject?.carrier}}</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Class</th>
+                    <th>Weight&nbsp;(Pounds)</th>
+                    <th>Rate</th>
+                    <th>Charge</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td></td>
+                    <td class="td_right">
+                      <div *ngFor="let classData of rateDetailObject?.classification" >{{classData}}</div></td>
+                    <td class="td_right">
+                      <div *ngFor="let weight of rateDetailObject?.weight">{{weight}}</div>
+                      <!-- <div *ngFor="let diffWeight of rateDetailObject?.diffWeight">{{diffWeight}}</div> -->
+                    </td>
+                    <td class="td_right">
+                      <!-- <div *ngFor="let rate of rateDetailObject?.rate" >${{rate}}</div></td> -->
+                      <div >&nbsp;</div>
+                    </td> 
+                    <td class="td_right">
+                        <div>&nbsp;</div>
+                      </td>
+                      <!-- <div *ngFor="let finalRate of rateDetailObject?.finalRate" >${{finalRate}}</div></td> -->
+                  </tr>
+                   <tr>
+                    <td class="td_left">Total Weight and Charge</td>
+                    <td></td>
+                    <!-- <td></td> -->
+                    <td class="td_right">{{rateDetailObject?.totalWeight}}</td>
+                    <td></td>
+                    <td class="td_right">${{charge}}</td>
+                   </tr>
+                   <tr>
+                    <td class="td_left">Fuel Surcharge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{fuelCharges}}</td><!-- fuelcharge will not come for certain result-->
+                  </tr>
+                  <tr>
+                    <td class="td_left">High Cost</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{rateDetailObject?.highCostDeliveryCharge}}</td>
+                  </tr>
+                  <tr>
+                      <td class="td_left">Single Shipment Charge</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="td_right">${{rateDetailObject?.singleShipmentCharge}}</td>
+                    </tr>
+                  <tr *ngIf="rateDetailObject?.additionalCharge !== 0">
+                    <td class="td_left">Additional Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{rateDetailObject?.additionalCharge}}</td>
+                  </tr>
+                  
+                  <tr>
+                      <td class="td_left">
+                      <table>
+                      <tr ><td colspan="2" class="td_left" style="padding:0px">Accessorial Charge</td></tr>
+                      <tr *ngFor="let assessorial of assessorialList"><td class="td_left" style="padding:0px">{{assessorial.name}}</td><td class="td_right" style="padding:0px">- {{assessorial.cost}}</td></tr>
+                      <!-- <tr><span *ngFor="let assessorial of assessorialList">{{assessorial.name}} &nbsp;<b> - {{assessorial.cost}}</b><br></span></tr> -->
+                      </table></td>
+                      <td ></td>
+                      <td ></td>
+                      <td ></td>
+                      <td class="td_right" style="vertical-align: bottom">${{rateDetailObject?.assessorialCharge}}</td>
+                      </tr>
+                  <tr>
+                    <td class="td_left">Total Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{specificQuoteIdObject?.totalCharge}}</td>
+                  </tr>
+                
+                </tbody>
+                </table>
+                <!-- <div class="alert alert-success" id="success-alert">
+                  <button type="button" class="close" data-dismiss="alert">x</button>
+                  <strong>Success! </strong>
+                  Email Sent Successfully
+              </div> -->
+                <div *ngIf ="sendEmailArFlag">
+                <button  class="btn btn-primary" style="background-color: transparent;
+               border: 2px solid #fff;
+              float: right;
+               margin: 1em;" id="sendMail" (click)="sendMailAr(specificQuoteIdObject?.quoteId, specificQuoteIdObject?.salesRepId, 'externalCustomer', specificQuoteIdObject?.category )" data-toggle="tooltip" data-placement="left" title="Send Email"><em class="fa fa-envelope" aria-hidden="true"></em>&nbsp;Send Email</button>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- //login-page -->
+
+    </div>
+
+
+  </div>

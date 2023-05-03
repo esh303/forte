@@ -1,0 +1,250 @@
+<!--<div id="rate-modal" class="modal" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    &lt;!&ndash; Modal content&ndash;&gt;
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 style="color: #FFFFFF" class="modal-title">Forte Rate Quote</h4>
+      </div>-->
+<div class="col-sm-12 text-center" *ngIf="showLoader">
+  <span class="text-center" style="padding: 35px; color: #a2705c; font-size: 20px;"><em class="fa fa-spinner" aria-hidden="true"  style="color: #a2705c; font-size: 20px;"></em> &nbsp;Loading</span>
+</div>
+      <div class="col-md-10 col-sm-12 col-md-push-1" style="margin-top: 20px" *ngIf="showTable">
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+            <h2 style="color: #134c3e; text-align: center; font-weight: bold;" class="modal-title">Forte Rate Quote
+            <button class="btn green-update-button" style="color: #ffffff; float: right;" [routerLink]="[('/internalsalesreplogin')]">Go to login</button>
+            </h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="div-margin text-left">
+              <p><span class="green bold">Status :</span><span class="brown bold">{{responseData?.status}}</span></p>
+              <p><span class="green bold">Created Date :</span><span class="brown bold">{{responseData?.createdOn | date: 'MM/dd/yyyy'}}</span></p>
+              <p><span class="green bold">Forte Reference Number :</span><span class="brown bold">{{responseData?.quoteReferenceNumber}}</span></p>
+              <p><span class="green bold">Customer Name :</span><span class="brown bold">{{responseData?.customerName}}</span></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="div-margin text-center">
+              <h3 style="text-transform: uppercase" class="green bold"><em class="fa fa-truck"></em>  {{responseData?.transportationType}}</h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="div-margin text-right">
+              <p *ngIf="responseData?.salomonReferenceNumber!== null"><span class="green bold">Control Number :</span><span class="brown bold">{{responseData?.salomonReferenceNumber}}</span></p>
+              <p *ngIf="responseData?.salomonReferenceNumber== null"><span class="green bold">Control Number :</span><span class="brown bold">Not Assigned</span></p>
+              <p><span class="green bold">Time Created :</span><span class="brown bold">{{responseData?.createdOn | date:'shortTime'}}</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="sub-head text-left">Shipper Information</h4>
+            <div class="track-quote" *ngIf="fullQuote">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <tbody>
+                  <tr>
+                    <th width="40%">Shipper</th>
+                    <td width="60%">{{responseData?.shipperCompanyName}}</td>
+                  </tr>
+                  <tr>
+                    <th>Contact Name</th>
+                    <td>{{responseData?.shipperContactName}}</td>
+                  </tr>
+
+                  <tr>
+                    <th>Phone Number</th>
+                    <td>{{responseData?.shipperPhone}}</td>
+                  </tr>
+                  <tr>
+                    <th>Shipper Address</th>
+                    <td>{{responseData?.shipperStreet1}}, {{responseData?.shipperStreet2}}, {{responseData?.shipperZip}}, {{responseData?.shipperCity}},
+                      {{responseData?.shipperState}}, {{responseData?.shipperCountry}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="track-quote" *ngIf="quikeQuote">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <tbody>
+                  <tr>
+                    <th>City</th>
+                    <td>{{responseData?.shipperCity}}</td>
+                  </tr>
+                  <tr>
+                    <th>State</th>
+                    <td>{{responseData?.shipperState}}</td>
+                  </tr>
+                  <tr>
+                    <th>Zip</th>
+                    <td>{{responseData?.shipperZip}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="col-md-6">
+            <h4 class="sub-head text-left">Consignee Information</h4>
+            <div class="track-quote" *ngIf="fullQuote">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <tbody>
+                  <tr>
+                    <th width="40%">Consignee</th>
+                    <td width="60%">{{responseData?.consigneeCompany}}</td>
+                  </tr>
+                  <tr>
+                    <th>Contact Name</th>
+                    <td>{{responseData?.consigneeContactName}}</td>
+                  </tr>
+
+                  <tr>
+                    <th>Phone Number</th>
+                    <td>{{responseData?.consigneePhone}}</td>
+                  </tr>
+                  <tr>
+                    <th>Consignee Address</th>
+                    <td>{{responseData?.consigneeStreet1}}, {{responseData?.consigneeStreet2}}, {{responseData?.consigneeZip}}, {{responseData?.consigneeCity}},
+                      {{responseData?.consigneeState}}, {{responseData?.consigneeCountry}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="track-quote" *ngIf="quikeQuote">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <tbody>
+                  <tr>
+                    <th>City</th>
+                    <td>{{responseData?.consigneeCity}}</td>
+                  </tr>
+<tr>
+  <th>State</th>
+  <td>{{responseData?.consigneeState}}</td>
+</tr>
+                  <tr>
+                    <th> Zip</th>
+                    <td>{{responseData?.consigneeZip}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="sub-head text-left">Shipment Information</h4>
+          <div class="table-div">
+            <div class="table-responsive">
+
+              <table class="table table-bordered" *ngIf="nonVolumeType">
+                <thead>
+                <tr>
+
+                  <td>Pieces</td>
+                  <td>HM(X)</td>
+                  <td>Weight(lbs)</td>
+                  <td>Description</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let val of responseData.lineItem">
+                  <td>{{val.Pieces}}</td>
+                  <td>{{this.hazmat}}</td>
+                  <td>{{val.Weight.Value}} {{val.Weight.Units}}</td>
+                  <td>{{val.Description}}</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><span class="green">Total Weight (LB) :</span> {{weightTotal}}</td>
+                  <td colspan="2"><span class="green">Total Pieces :</span> {{piecesTotal}}</td>
+                </tr>
+                <tr>
+                  <td colspan="3" *ngIf="responseData.transportationType === 'truckload'"><span class="green">Type of Equipment :</span> {{responseData?.typeOfEquipment}}</td>
+                  <td colspan="3" *ngIf="responseData.transportationType === 'volume'"><span class="green">Linear Feet of Trailer :</span> {{responseData?.linearFeetOfTrailer}}</td>
+                  <td colspan="3" *ngIf="responseData.transportationType === 'air'"><span class="green">Service Level :</span> {{responseData?.serviceLevel}}</td>
+                  <td colspan="5" *ngIf="responseData.transportationType === 'ocean'"><span class="green">Competitive Price :</span> $ {{responseData?.competitivePrice}}</td>
+                  <td colspan="2" *ngIf="forOther"><span class="green">Competitive Price :</span> $ {{responseData?.competitivePrice}}</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><span class="green">Shipment Ready Date :</span> {{responseData?.shipmentReadyDate | date: 'MM/dd/yyyy'}}</td>
+                  <td colspan="2"><span class="green">Requested Delivery Date :</span> {{responseData?.requestedDeliveryDate | date: 'MM/dd/yyyy'}}</td>
+                </tr>
+                <tr>
+                  <td colspan="6"><span class="green">Customer Notes :</span>{{responseData?.notes}} </td>
+                </tr>
+
+
+                <tr *ngIf="upDateSuccess">
+                  <td colspan="3"><span class="green"><label>Control Number:</label></span>{{responseData?.salomonReferenceNumber}}</td>
+                  <td colspan="3"><span class="green"><label> Rate:</label></span> $ {{responseData?.amount}}</td>
+                </tr>
+
+
+                </tbody>
+              </table>
+
+
+              <table class="table table-bordered" *ngIf="volumeType">
+                <thead>
+                <tr>
+
+                  <td>Pieces</td>
+                  <td>HM(X)</td>
+                  <td>Weight(lbs)</td>
+                  <td>Description</td>
+                  <td>Dimensions (in.) (L*W*H)</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let val of responseData.lineItem">
+                  <td>{{val?.Pieces}}</td>
+                  <td>{{this.hazmat}}</td>
+                  <td>{{val.Weight?.Value}} {{val.Weight.Units}}</td>
+                  <td>{{val?.Description}}</td>
+                  <td *ngIf="val.Dimensions?.Length !== null">{{val.Dimensions?.Length}}*{{val.Dimensions?.Width}}*{{val.Dimensions?.Height}}</td>
+                  <td *ngIf="val.Dimensions?.Length === null">No Dimensions</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><span class="green">Total Weight (LB) :</span> {{weightTotal}}</td>
+                  <td colspan="2"><span class="green">Total Pieces :</span> {{piecesTotal}}</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><span class="green">Type of Equipment :</span> {{responseData?.typeOfEquipment}}</td>
+                  <td colspan="2"><span class="green">Competitive Price :</span> $ {{responseData?.competitivePrice}}</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><span class="green">Shipment Ready Date :</span> {{responseData?.shipmentReadyDate | date: 'MM/dd/yyyy'}}</td>
+                  <td colspan="2"><span class="green">Requested Delivery Date :</span> {{responseData?.requestedDeliveryDate | date: 'MM/dd/yyyy'}}</td>
+                </tr>
+                <tr>
+                  <td colspan="6"><span class="green">Customer Notes :</span> {{responseData?.notes}} </td>
+
+                </tr>
+
+
+                </tbody>
+              </table>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    

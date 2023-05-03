@@ -1,0 +1,48 @@
+<div class="banner-w3layoutsSales" id="home">
+  <div class="header">
+    <nav class="navbar navbar-default">
+
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+  </div>
+  <div class="container-fluid">
+      <div class="row">
+          <app-sidemenu></app-sidemenu>
+        <!-- </div>
+  </div>
+  <div class="container">
+
+    <div class="row"> -->
+      <div class="col-sm-12 col-md-12" style="width: 56%!important; margin-left:12em;margin-top:3em;">
+        <div class="row">
+            <div class="col-md-6">
+            <div class="input-group " style="width: 31em!important;">
+                <select class="selectField" id="customer" placeholder="Search By Warehouse Name" >
+                  <option value="" hidden>Search By Warehouse Name</option>
+                  <!-- <option *ngFor="let company of companyFeatures" value="{{company.id}}">{{company.companyName}}</option> -->
+                </select>
+                <!-- <div class="input-group-btn" >
+                  <button class="btn btn-default"  type="submit">
+                    <em class="fa fa-times-circle"></em>
+                  </button>
+              </div> -->
+            </div>
+            </div>
+              <div class="col-md-6">
+                <a _ngcontent-c3="" class="blulogisticsBtn pull-right" id="addCustomer" href="javascript:void(0)">Add Warehouse</a>
+              </div>
+            </div>
+            <div class="row" style="padding: 20px 10px;background-color: #efefef;" *ngIf="showContact">
+                <div class="col-md-12 text-left">
+                  <p class="para" style="font-size:25px;">There is a problem with your request, Please contact
+                    <span style="color:#a4745b">admin@Fortetlc.com</span> or call
+                    <span style="color:#a4745b">800.501.9922</span>.</p>
+                </div>
+              </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- </div> -->

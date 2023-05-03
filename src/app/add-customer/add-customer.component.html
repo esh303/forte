@@ -1,0 +1,349 @@
+<div class="banner-w3layoutsSales" id="home">
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+  </div>
+
+  <div class="container">
+      <div class="row">
+      <div class="col-md-12" >
+          <div class="row">
+             
+                <div class="col-md-8">
+                  <h3 class="" style="color: #a2705c; margin-top: 30px !important; margin-bottom: 20px !important;">Customers List</h3>
+                </div>
+                <!-- <div class="col-md-2" *ngIf="showRefreshFlag">
+    
+                  <button _ngcontent-c3="" class="blulogisticsBtn pull-right" id="refresh" (click)="refresh()">Refresh</button>
+                 </div> -->
+                <div class="col-md-2">
+                  <button _ngcontent-c3="" class="blulogisticsBtn pull-right" style=" margin-top: 30px !important; margin-bottom: 20px; margin-left: 5px !important;" id="addCustomer" (click)="addCustomer('add')">Add Customer</button>
+                </div>
+    
+                <div class="col-md-2">
+                  <button _ngcontent-c3="" class="blulogisticsBtn pull-right" style="margin-top: 30px !important; margin-bottom: 20px !important;" id="downloadCustomer" (click)="returnToCompany()">Return to Company</button>
+                </div>
+    
+    
+                <!-- <div>
+                   <button class="button" (click)="upload()">Upload</button>
+                 </div>-->
+              
+              </div>
+              <!-- <div class="row">
+              <div class="col-md-12">
+                <h3 class="" style="color: #a2705c; margin-top: 30px !important; margin-bottom: 20px !important;">Customers List</h3>
+              </div>
+            </div> -->
+        <!-- <h4 class="text-center">Customers List <button class="text-left" (click)="addCustomer()">ADD</button><button class="text-left" (click)="cancel()">CANCEL</button></h4> -->
+        <div class="table-responsive" *ngIf="showCustomerTable">
+          <table class="table table-bordered table-responsive" style="color: #a2705c" >
+            <thead>
+            <tr>
+              <th class="text-center">Customer Name</th>
+              <th class="text-center">Type</th>
+              <th class="text-center">User Name</th>
+              <!-- <th class="text-center">Contact Number</th> -->
+              <th class="text-center">Edit</th>
+              <th class="text-center">Delete</th>
+              <!-- <th class="text-center">View</th> -->
+            </tr>
+           
+            </thead>
+
+            <tr *ngFor="let customer of customerResponse |paginate: { itemsPerPage: numberPerPage, currentPage: currentPage}">
+              <!-- <td class="text-center" *ngIf="company.customerReferenceId!== ''">{{company.companyName}}<br>({{company.customerReferenceId}})</td> -->
+              <!-- *ngIf="company.customerReferenceId === ''" -->
+              <td class="text-center" >{{customer.customerName}}</td>
+              <td  class="text-center" *ngIf="customer.type === 'externalCustomer'">Web Customer</td>
+              <td  class="text-center" *ngIf="customer.type === 'others'">Non Web Customer</td>
+              <td class="text-center" *ngIf="customer.username!== undefined && customer.username!== null && customer.username!== ''">{{customer.username}}</td>
+              <td class="text-center" *ngIf="customer.username== undefined || customer.username== null || customer.username== ''">-</td>
+              <!-- <td class="text-center" >{{customer.contactNumber}}</td> -->
+              
+            <td class="text-center" style="cursor: pointer;"><a (click)="editCustomer(customer, 'edit')" style="color: #2a4e47;"><em class="fa fa-pencil-square-o" aria-hidden="true"></em></a></td>
+            <td class="text-center" style="cursor: pointer;"> <a class="btn btn-danger" style="padding: 0 6px;" id="deleteIconAr" data-toggle="modal" data-target="#DeleteModal" (click)="delete(customer.id)"><em class="fa fa-trash"></em></a></td>
+
+            </tr>
+          </table>
+        </div>
+        <div class="" *ngIf="showErrorMessageForCustomersList">
+          <div class="row">
+            <div class="col-md-12 text-center">
+          <span style="color:#a2705c;font-size: 16px;">No Customers Found For this Company</span>
+        </div>
+        </div>
+        </div>
+        <!-- <div class="row" *ngIf="customerData.length>2">
+          <div class="col-sm-4 pull-right">
+            <pagination-controls (pageChange)= "pageChanged($event)" [id]="customer" class="pull-right"></pagination-controls>
+          </div>
+          <div class="col-sm-4">
+            <label>Items per page</label>
+            <select [(ngModel)]="selectPagination" (change)="checkForPagination(selectPagination)">
+              <option value="5">5</option>
+              <option value="10">10</option>
+
+            </select>
+          </div>
+        </div> -->
+
+      </div>
+
+    </div>
+    <div class="modal fade bs-example-modal-sm" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 50px;">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            Are you sure?
+          </div>
+          <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm" id="deleteIconAp" (click)="deleteCustomerData()">Delete</button>
+            <button type="button" data-dismiss="modal" class="btn btn-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="showAddCustomer">
+      <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2">
+        <h3 class="text-center" style="color: #9a7459;">Customer Entry</h3>
+        <div class="clearfix">&nbsp;</div>
+        <div class="card">
+          <form action="#" method="post" [formGroup]="customerForm" autocomplete="off">
+            <div class="row" >
+              <div class="col-sm-6">
+                <label class="labelText">Company Name</label><span style="color: #FF0000">*</span>
+                <input class="form-control fieldsGrey" placeholder="" 
+                       formControlName="companyName" readonly>
+              </div>
+
+              <div class="col-sm-6">
+                <label class="labelText">Customer Type</label><span style="color: #FF0000">*</span>
+                <select formControlName="type" class="selectField" (change)="customerType(customerForm.controls['type'].value)" *ngIf="!showForExternalCustomer">
+                  <option value="" hidden>Select</option>
+                  <option value="externalCustomer">Web Customer</option>
+                  <option value="others">Non Web Customer</option>
+                </select>
+                <select formControlName="type" class="selectField"  *ngIf="showForExternalCustomer"  [disabled]="true">
+                  <option value="" hidden>Select</option>
+                  <option value="externalCustomer">Web Customer</option>
+                  <option value="others">Non Web Customer</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" >
+
+            <div class="col-sm-6">
+                <label class="labelText">Primary Contact Name</label><span style="color: #FF0000">*</span>
+                <input class="form-control fieldsGrey" placeholder="" formControlName="customerName" maxlength="30" autocomplete="nope"  required>
+              </div>
+              <!-- <div class="col-sm-6" *ngIf="!HideDetailsForEdit">
+                <label class="labelText">User Name</label><span style="color: #FF0000">*</span>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/^[a-zA-Z0-9\s]*$/"
+                       onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');" maxlength="15"
+                       formControlName="username" autocomplete="nope" >
+              </div> -->
+              <div class="col-sm-6" >
+                <label class="labelText">User Name</label><span style="color: #FF0000">*</span>
+                <input class="form-control fieldsGrey" placeholder=""  maxlength="20"
+                       formControlName="username" autocomplete="nope" >
+              </div>
+           </div>
+            <div class="row"  *ngIf="!HideDetailsForEdit && !showExistingEmail">
+                
+              <div class="col-sm-6">
+                <label class="labelText">Email</label><span style="color: #FF0000">*</span>
+                <input class="form-control fieldsGrey" placeholder="" formControlName="email" autocomplete="nope" >
+              </div>
+              <div class="col-sm-6">
+                <label class="labelText">Password</label><span style="color: #FF0000">*</span>
+                <input type="password" class="form-control fieldsGrey" placeholder="" formControlName="password" >
+              </div>
+              
+            </div>
+            <div class="row" *ngIf="showExistingEmail">
+                <div class="col-sm-12">
+                    <label class="labelText">Email</label><span style="color: #FF0000">*</span>
+                    <input class="form-control fieldsGrey" placeholder="" formControlName="email" autocomplete="nope" >
+                  </div>
+            </div>
+            <div class="row" *ngIf="hideDetailsForCustomer">
+              <div class="col-sm-4">
+                <label class="labelText">Zip</label>
+                <input type="text" class="form-control fieldsGrey" placeholder=""  ngPattern="/[0-9]/" maxlength="5"
+                       onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" formControlName="zip"  (change)="checkForZipcode(customerForm.controls['zip'].value)" autocomplete="nope" >
+              </div>
+              <div class="col-sm-4">
+                <label class="labelText">City</label>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/^[a-zA-Z\s]*$/"
+                       onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="30"
+                       formControlName="city" autocomplete="nope" >
+              </div>
+              <div class="col-sm-4">
+                <label class="labelText">State</label>
+                <input class="form-control fieldsGrey" placeholder="" ngPattern="/^[a-zA-Z\s]*$/"
+                onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="2" formControlName="state" autocomplete="nope" >
+              </div>
+
+            </div>
+         <div class="row" *ngIf="hideDetailsForCustomer">
+              <div class="col-sm-6">
+                <label class="labelText" for="rating">Street Address</label>
+                <textarea  class="form-control fieldsGrey" rows="2" id="address" formControlName="address" ngPattern="/^[a-zA-Z0-9.,\s]*$/"
+                           onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9.,\s]*$/g,'');" autocomplete="nope" ></textarea>
+              </div>
+          <div class="col-sm-6">
+                <label class="labelText" for="rating">Rating Notes</label>
+                <textarea  class="form-control fieldsGrey" rows="2" id="rating" formControlName="ratingNotes"
+				autocomplete="nope" ></textarea>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                  <label class="labelText">Contact Number</label><span style="color: #FF0000">*</span>
+                  <input class="form-control fieldsGrey" placeholder="" ngPattern="/[0-9 ()-]/" maxlength="10" minlength="10"
+                         onkeyup="this.value=this.value.replace(/[^0-9 ()-]+/g,'')" formControlName="contactNumber" (change)="checkContactNumber(customerForm.controls['contactNumber'].value)" autocomplete="nope">
+                </div>
+                <div class="col-sm-6">
+                  <label>Choose Sales Representative</label><span style="color: #FF0000">*</span>
+                  <select formControlName="salesRepId" class="selectField" [disabled]="true">
+                    <option value="" hidden>Select</option>
+                    <option *ngFor="let salesRepName of salesRepArray" value="{{salesRepName.id}}">{{salesRepName.salesRepName}}</option>
+                  </select>
+                </div>
+              </div>
+            
+            <style>
+              input[type="file"] {
+                display: none;
+              }
+              .custom-file-upload {
+                border: 1px solid #ccc;
+                display: inline-block;
+                padding: 12px 25px;
+                font-size: 12.5px;
+                cursor: pointer;
+                margin-top: 0px;
+              }
+            </style>  
+
+          </form>
+        </div>
+        <div class="row text-center">
+          <span *ngIf="showEmailExistMsg" style="color: #ff0000">{{customerResponseData?.result}}</span>
+          <span *ngIf="showRequiredFields" style="color: #ff0000">Please fill the Required fields</span>
+          <span *ngIf="showInactiveUser" style="color: #ff0000">User Email is in Inactive, Use Different Email</span>
+          <span *ngIf="accessDeniedMsg" style="color: #ff0000">Access Denied</span>
+          
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-sm-6 col-md-6 text-left">
+              <button class="blulogisticsBtn" *ngIf="editMode && salesRepValues.type=='administrator'" data-toggle="modal" data-target="#password-modal"> Change Password </button>
+
+
+              </div>
+            <div class="col-sm-6 col-md-6 text-right">
+              <button _ngcontent-c3=""  class="blulogisticsBtn" *ngIf="!editMode" [disabled]="!customerForm.controls['type'].valid" (click)="saveCustomerDetail(customerForm.value)">Save</button>
+              <button _ngcontent-c3="" class="blulogisticsBtn" *ngIf="editMode" [disabled]="!customerForm.controls['customerName'].valid || !customerForm.controls['type'].valid || !customerForm.controls['companyName'].valid" (click)="editSave(customerForm.value)"> Update </button>
+              <!-- <button _ngcontent-c3="" class="blulogisticsBtn" *ngIf="!editMode  && addNewRuleMode" [disabled]="enableSaveNewRule === false" (click)="updateNewRule(customerForm)">Save New Rule</button> -->
+              <button _ngcontent-c3="" class="blulogisticsBtn" (click)="cancel()"> Cancel </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+    <div class="clearfix">&nbsp;</div>
+  </div>
+</div>
+
+<!-- <div class="modal fade" id="mail-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="" style="color: #FFFFFF">Change Password</h4>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="customerUpdateForm">
+          <div class="row">
+
+            <div class="col-md-6">
+              <label>Change Password: </label>
+              <input type="password" class="form-control fieldsGrey" placeholder="" formControlName="password" (change)="checkPassword(customerForm.controls.password.value)">
+            </div>
+
+            <!--<div class="col-md-6 form-group">
+              <label>Requested Delivery Date(update): </label>
+              <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                     date-only="true" formControlName="requestedDeliveryDate" (bsValueChange)="onValueChange($event, 'shipment')">
+            </div>-->
+
+
+          <!--</div>
+
+
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="updatePassword(customerUpdateForm.value)">UPDATE</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="modal about-modal w3-agileits fade" id="password-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body login-page "><!-- login-page -->
+        <div class="login-top sign-top">
+          <div class="agileits-login">
+            <h5>Change Password</h5>
+            <form action="#" method="post" [formGroup]="customerUpdateForm">
+              <!--<div class="row">
+                <div class="col-md-3">
+                  <label style="padding-top:10px">Email ID</label>
+                </div>
+                <div class="col-md-9">
+                  <input type="email" class="email" name="Email" placeholder="Email" required=""/>
+
+                </div>
+
+              </div>-->
+              <div class="row">
+                <div class="col-md-3">
+                  <label style="padding-top: 10px">New Password</label>
+                </div>
+                <div class="col-md-9">
+                  <input type="password" class="form-control fieldsGrey" placeholder="Enter the password" formControlName="password" autocomplete="nope" required>
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" [disabled]="!customerUpdateForm.controls['password'].valid" (click)="updatePassword(customerUpdateForm.value)">UPDATE</button>
+              </div>
+
+
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div> <!-- //login-page -->
+  </div>
+</div>
+
+

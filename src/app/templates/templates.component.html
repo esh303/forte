@@ -1,0 +1,741 @@
+<div class="header">
+  <nav class="navbar navbar-default">
+    <app-header></app-header>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <app-sidemenu></app-sidemenu>
+    <div class="col-md-10 main_cont">
+      <h2 class="main-head" *ngIf="showForAddress">Templates<button class="legend" (click)="createNewTemplate('address')" data-toggle="modal" data-target="#address-modal"><em class="fa fa-arrow-circle-right"
+         style="margin-right: 5px"></em>Create
+      Template</button></h2>
+      <h2 class="main-head" *ngIf="showForItem">Templates<button class="legend" (click)="createNewTemplate('item')" data-toggle="modal" data-target="#item-modal"><em class="fa fa-arrow-circle-right"
+                                                                                                                                 style="margin-right: 5px"></em>Create
+        Template</button></h2>
+      <div class="row">
+        <div class="col-md-10 col-md-push-1 button-group">
+          <div class="btn-group btn-group-justified">
+            <button style="width:50%" *ngIf="showForAddress" (click)="clickedTemplate('address')" class="btn btn-primary active"><em class="fa fa-truck" style="margin-right: 5px"></em>Address</button>
+            <button style="width:50%" *ngIf="!showForAddress" (click)="clickedTemplate('address')" class="btn btn-primary"><em class="fa fa-truck" style="margin-right: 5px"></em>Address</button>
+            <button style="width:50%" *ngIf="showForItem" (click)="clickedTemplate('item')" class="btn btn-primary active"><em class="fa fa-cubes" style="margin-right: 5px"></em>Item</button>
+            <button style="width:50%" *ngIf="!showForItem" (click)="clickedTemplate('item')" class="btn btn-primary"><em class="fa fa-cubes" style="margin-right: 5px"></em>Item</button>
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf="showForAddress">
+        <div class="col-md-10 col-md-push-1 div-border">
+          <form [formGroup]="searchAddressForm">
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label>Template Name</label>
+              <input type="text" class="form-control"  placeholder="Template Name" formControlName="templateName" autocomplete="nope">
+            </div>
+            <div class="col-md-6 form-group">
+              <label>Company (Ship OR Cons)</label>
+              <ng-select [items]="uniqueCompanyNames" bindLabel="companyName" bindValue="companyName" [searchFn]="customSearchFn" formControlName="companyName" autofocus></ng-select>
+              <!-- <input type="text" class="form-control"  placeholder="Company (Ship OR Cons)" formControlName="companyName" autocomplete="nope"> -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 form-group">
+              <label>Contact Name</label>
+              <input type="text" class="form-control" placeholder="" formControlName="contactName" autocomplete="nope">
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Zip / Postal Code</label>
+              <input type="text" class="form-control" maxlength="5" placeholder="Zip/Postal" formControlName="zip" ngPattern="/[0-9]/"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope">
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Category</label>
+              <select class="form-control" formControlName="type">
+                <option value="" hidden>Select</option>
+                <option value="shipper">Shipper</option>
+                <option value="consignee">Consignee</option>
+                <option value="thirdParty">Third Party</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 square-button text-center">
+              <a (click)="search(searchAddressForm.value, 'address')"><em class="fa fa-search icon"></em>Search</a>
+            </div>
+            <div class="col-md-4 square-button text-center">
+              <a (click)="clear('address')"><em class="fa fa-close icon"></em>Clear</a>
+            </div>
+            <div class="col-md-4 square-button text-center">
+              <a (click)="refresh('address')"><em class="fa fa-refresh icon"></em>Refresh</a>
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+      <div class="row" *ngIf="showForItem">
+        <div class="col-md-10 col-md-push-1 div-border">
+          <form [formGroup]="searchItemForm">
+            <div class="row">
+              <div class="col-md-4 form-group">
+                <label>Template Name</label>
+                <input type="text" class="form-control"  placeholder="Template Name" formControlName="templateName" autocomplete="nope">
+              </div>
+              <div class="col-md-4 form-group">
+                <label>Description</label>
+                <input type="text" class="form-control"  placeholder="Company (Ship OR Cons)" formControlName="description" autocomplete="nope">
+              </div>
+              <div class="col-md-4 form-group">
+                <label>Weight</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" formControlName="weight" ngPattern="/[0-9]/"
+                         onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope">
+                  <span class="input-group-addon">lbs</span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 form-group">
+                <label>Class</label>
+                <select class="form-control" formControlName="class">
+                  <option value="" hidden>Select</option>
+                  <option *ngFor="let classification of classificationArray" value="{{classification}}">{{classification}}</option>
+                </select>
+              </div>
+              <div class="col-md-4 form-group">
+                <label>NMFC Item Number</label>
+                <span style="color: #FF0000" *ngIf="showNmfcErrorMsg">Format is (111111s11)</span>
+                <input type="text"class="form-control" placeholder="NMFC Item Number"  name="cpf3" mask="999999S99" pattern="000000S00" ngPattern="/[0-9Ss]/" 
+                onkeyup="this.value=this.value.replace(/[^0-9Ss]+/g,'')" formControlName="nmfcNumber" (change)="changedDecimal($any($event).target.value,'')" minlength="4" maxlength="9" id="cpf10" (keydown)="checkEnterKey($event, 'nmfc')" autocomplete="nope" >
+              </div>
+              <div class="col-md-4 form-group">
+                <label>Harmonized B Code</label>
+                <input type="text" class="form-control" placeholder="Harmonized B Code" formControlName="harmonizedBCode" autocomplete="nope">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 square-button text-center">
+                <a  (click)="search(searchItemForm.value, 'item')"><em class="fa fa-search icon"></em>Search</a>
+              </div>
+              <div class="col-md-4 square-button text-center">
+                <a (click)="clear('item')"><em class="fa fa-close icon"></em>Clear</a>
+              </div>
+              <div class="col-md-4 square-button text-center">
+                <a (click)="refresh('item')"><em class="fa fa-refresh icon"></em>Refresh</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:30px" *ngIf="showForAddress" >
+          <div class="table-responsive col-md-10 col-md-offset-1" *ngIf="showTemplateAddressValues">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <td>Template Name</td>
+                <td>Type</td>
+                <td>Company</td>
+                <td>Contact Name</td>
+                <td>Zip / Postal Code</td>
+                <td>Date Created</td>
+                <td>Edit</td>
+                <td>Delete</td>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let address of templateDetails | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+                <td>{{address?.templateName}}</td>
+                <td *ngIf="address?.type !== 'thirdParty'">{{address?.type}}</td>
+                <td *ngIf="address?.type === 'thirdParty'">Third Party</td>
+                <td *ngIf="address?.companyName !== null && address?.companyName !== undefined && address?.companyName !== ''">{{address?.companyName}}</td>
+                <td *ngIf="address?.companyName === null || address?.companyName === undefined || address?.companyName === ''"> - </td>
+                <td *ngIf="address?.contactName !== null && address?.contactName !== undefined && address?.contactName !== ''">{{address?.contactName}}</td>
+                <td *ngIf="address?.contactName === null || address?.contactName === undefined || address?.contactName === ''"> - </td>
+                <td>{{address?.zip}}<br> ({{address?.city}}, {{address?.state}})</td>
+                <td>{{address?.createdOn | date: 'MM/dd/yyyy'}}</td>
+                <td><button class="btn btn-default" style="padding: 0 6px;color: #0079FE" (click)="editTemplate(address, 'address')" data-toggle="modal" data-target="#address-modal"><em class="fa fa-pencil"></em></button></td>
+                <td> <button class="btn btn-danger" style="padding: 0 6px;" id="" (click)="deleteTemplate(address.id, 'address')" data-toggle="modal" data-target="#DeleteModal"><em class="fa fa-trash"></em></button></td>
+              </tr>
+              </tbody>
+            </table>
+
+            <div class="row">
+              <div class="col-sm-4 pull-right">
+                <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+              </div>
+              <div class="col-sm-4">
+                <label>Items per page</label>
+                <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+                  <option *ngFor="let number of numberOfPages"> {{number}}</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      <div class="col-md-10 main_cont" *ngIf="searchErrorMessage">
+        <div class="col-md-10 col-md-push-1 div-border">
+          <h4 class="sub-head">No Results to Show</h4>
+          <label>Not Found</label>
+          <div class="row">
+            <div class="col-md-4">
+              <label></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:30px" *ngIf="showForItem">
+        <div class="col-md-10 col-md-push-1 table-div" *ngIf="showTemplateItemValues">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <td>Template Name</td>
+                <td>Description</td>
+                <td>Class</td>
+                <td>NMFC Number</td>
+                <td>Date Created</td>
+                <td>Edit</td>
+                <td>Delete</td>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let itemValues of templateDetails | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+                <td>{{itemValues?.templateName}}</td>
+                <td>{{itemValues?.description}}</td>
+                <td>{{itemValues?.class}}</td>
+                <td *ngIf="itemValues?.nmfcNumber !== null && itemValues?.nmfcNumber !== undefined && itemValues?.nmfcNumber !== ''">{{itemValues?.nmfcNumber}}</td>
+                <td *ngIf="itemValues?.nmfcNumber === null || itemValues?.nmfcNumber === undefined || itemValues?.nmfcNumber === ''"> - </td>
+               <td>{{itemValues?.createdOn | date: 'MM/dd/yyyy'}}</td>
+                <td><a class="btn btn-default" style="padding: 0 6px;color: #0079FE" (click)="editTemplate(itemValues, 'item')" data-toggle="modal" data-target="#item-modal"><em class="fa fa-pencil"></em></a></td>
+                <td> <a class="btn btn-danger" style="padding: 0 6px;" (click)="deleteTemplate(itemValues.id, 'item')" data-toggle="modal" data-target="#DeleteModal"><em class="fa fa-trash"></em></a></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row">
+            <div class="col-lg-pull-1 pull-right; margin-right: 20px;">
+              <pagination-controls (pageChange)="p = $event" class="pull-right" style="margin-right: 20px;"></pagination-controls>
+            </div>
+            <div class="col-sm-3">
+              <label>Items per page</label>
+              <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+                <option *ngFor="let number of numberOfPages"> {{number}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+</div>
+
+  <app-footer></app-footer>
+  <div id="DeleteModal" class="modal fade">
+      <div class="modal-dialog" style="margin-top:137px">
+      <div class="modal-content" >
+      <form>
+      <div class="modal-header" style="border-bottom:1px solid #e5e5e5">            
+      <h4 class="modal-title">Delete Template</h4>
+      <button type="button" class="close" style="margin-top:-25px;" data-dismiss="modal" aria-hidden="true">&times;</button>
+      </div>
+      <div class="modal-body text-center" style="padding:40px 20px;margin-bottom:0px">          
+      <p>Are you sure, Do you want to delete these Records?</p>
+      </div>
+      <div class="modal-footer">
+      <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+      <input type="submit" class="btn btn-danger" value="Delete" data-dismiss="modal" (click)="deleteData()">
+      </div>
+      </form>
+      </div>
+      </div>
+      </div>
+
+<div class="modal fade bs-example-modal-sm" id="DeleteModal1" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        Are you sure?
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm" id="deleteIconAp" (click)="deleteData()">Delete</button>
+        <button type="button" data-dismiss="modal" class="btn btn-sm">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Legend Modal -->
+  <div id="legend-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><em class="fa fa-key"></em>&nbsp;Legend</h4>
+        </div>
+        <div class="modal-body">
+
+          <div class="legend-body">
+            <div class="row">
+              <div class="col-md-6 col-md-push-3 text-center">
+                <table class="table legend-table table-responsive">
+                  <caption>Rate Types</caption>
+                  <tbody>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-list-alt"></em></td><td class="th-body">Full Rate Quote</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-cube"></em></td><td class="th-body">LTL Rate Quote</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-bolt"></em></td><td class="th-body">Quickie Quote</td>
+                  </tr>
+                  </tbody>
+                </table>
+                <table class="table legend-table table-responsive">
+                  <caption>Status Types</caption>
+                  <tbody>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-clock-o"></em></td><td class="th-body">Pending Request</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-usd"></em></td><td class="th-body">Quoted Request</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-cog"></em></td><td class="th-body">Processing as a shipment</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-warning"></em></td><td class="th-body">Suspended Rate Quote</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-question-circle"></em></td><td class="th-body">Returned For Clarification</td>
+                  </tr>
+                  </tbody>
+                </table>
+                <table class="table legend-table table-responsive">
+                  <caption>Action Icons</caption>
+                  <tbody>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-file-text"></em></td><td class="th-body">Opens the BOL associated with that rate quote.</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-file-text-o"></em></td><td class="th-body">Opens a form to create a BOL out of that rate quote's info.</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-archive"></em></td><td class="th-body">Send that rate quote to the archive.</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head"><em class="fa fa-edit"></em></td><td class="th-body">Opens a form to edit the information of a rate quote request.</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- Legend Modal -->
+<!-- Address create Modal -->
+<!-- Legend Modal -->
+<div id="address-modal" class="modal" role="dialog" *ngIf="showForAddressCreateTemplate">
+  <div class="modal-dialog modal-lg">
+<form [formGroup]="addressTemplateForm">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><em class="fa fa-file"></em>&nbsp;Create Template</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="legend-body">
+          <div class="row">
+            <div class="col-md-12 form-group">
+              <label>Template Name</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control"  placeholder="Template Name"  formControlName="templateName"
+                     ngPattern="/^[a-zA-Z0-9\s]*$/" autocomplete="none"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');" maxlength="30">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label>Company</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control"  placeholder="Template Name"  formControlName="companyName"
+                     ngPattern="/^[a-zA-Z0-9\s]*$/" maxlength="30" autocomplete="none"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');">
+            </div>
+            <div class="col-md-6 form-group">
+              <label>Contact Name</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control" placeholder="Contact Name" formControlName="contactName"
+                     ngPattern="/^[a-zA-Z\s]*$/" autocomplete="none"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlenght="15">
+            </div>
+            </div>
+            <div class="row">
+            <div class="col-md-6 form-group">
+              <label>Phone</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control" placeholder="### ### ####" formControlName="contactNumber"
+                     ngPattern="/^[0-9\s]*$/" autocomplete="none"
+                     onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="10"
+                     (change)="checkForPhoneNumber(addressTemplateForm.controls['contactNumber'].value)" required>
+            </div>
+            <div class="col-md-6 form-group">
+              <label>Category</label><span style="color: #FF0000">*</span>
+              <select class="form-control" formControlName="type">
+                <option value="" hidden></option>
+                <option value="shipper">Shipper</option>
+                <option value="consignee">Consignee</option>
+                <option value="thirdParty">Third Party</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <!--<label>Address</label>-->
+            <div class="col-md-4 form-group">
+              <label>Country</label><span style="color: #FF0000">*</span>
+              <select class="form-control" formControlName="country" [disabled]="true">
+                <option value="USA">USA</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Street1</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control"  placeholder="" formControlName="street1"  ngPattern="/^[a-zA-Z0-9,.-/\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9,.-/\s]*$/g,'');" maxlength="30" autocomplete="none">
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Street2</label>
+              <input type="text" class="form-control"  placeholder="" formControlName="street2"  ngPattern="/^[a-zA-Z0-9./-,\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');" autocomplete="none" >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 form-group">
+              <label>Zip/Post</label><span *ngIf="invalidZipMsg">Invalid Zip</span><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control col-md-2" placeholder="" formControlName="zip"  ngPattern="/^[0-9\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="5" minlength="5" (change)="checkForZipCode(addressTemplateForm.controls['zip'].value)" autocomplete="none">
+            </div>
+            <div class="col-md-4 form-group">
+              <label>City</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control col-md-2" placeholder="" formControlName="city"  
+              ngPattern="/^[a-zA-Z\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" autocomplete="none">
+            </div>
+            <div class="col-md-4 form-group">
+              <label>State</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control col-md-2" placeholder="" formControlName="state"  ngPattern="/^[a-zA-Z\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="2" autocomplete="none">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row" *ngIf="!showUpdateDetail">
+          <div class="col-md-4 green-button text-center">
+            <button (click)="saveTemplate(addressTemplateForm.value, 'address')"
+                    [disabled]="!addressTemplateForm.controls['templateName'].valid || !addressTemplateForm.controls['companyName'].valid ||
+!addressTemplateForm.controls['street1'].valid || !addressTemplateForm.controls['zip'].valid ||
+!addressTemplateForm.controls['city'].valid || !addressTemplateForm.controls['state'].valid || !addressTemplateForm.controls['type'].valid || !addressTemplateForm.controls['contactName'].valid"
+                     data-dismiss="modal"
+            ><em class="fa fa-save icon"></em>Save Template</button>
+          </div>
+          <div class="col-md-4  green-button text-center">
+		  <button type="button"  data-dismiss="modal"><em class="fa fa-times icon"></em>Cancel</button>
+          </div>
+          <div class="col-md-4 green-button text-center">
+            <button (click)="reset('address')"><em class="fa fa-refresh icon"></em>Reset Template</button>
+          </div>
+        </div>
+          <div class="row" *ngIf="showUpdateDetail">
+            <div class="col-md-4 col-md-offset-2 col-sm-6 green-button text-center">
+              <button (click)="updateTemplate(addressTemplateForm.value, 'address')"
+                      [disabled]="!addressTemplateForm.controls['templateName'].valid || !addressTemplateForm.controls['companyName'].valid || !addressTemplateForm.controls['street1'].valid || !addressTemplateForm.controls['zip'].valid ||
+!addressTemplateForm.controls['city'].valid || !addressTemplateForm.controls['state'].valid || !addressTemplateForm.controls['contactName'].valid"
+                      data-dismiss="modal"><em class="fa fa-save icon"></em>Update Template</button>
+            </div>
+            <div class="col-md-4 col-sm-6 green-button text-center">
+			<button type="button"  data-dismiss="modal" ><em class="fa fa-times icon"></em>Cancel</button>
+            </div>
+          </div>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+<!-- Legend Modal -->
+
+<!--Item Modal-->
+
+<div id="item-modal" class="modal" role="dialog" *ngIf="showForItemCreateTemplate">
+  <div class="modal-dialog modal-lg">
+<form [formGroup]="itemTemplateForm">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><em class="fa fa-file"></em>&nbsp;Create Template</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="legend-body">
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label>Template Name</label><span style="color: #FF0000">*</span>
+              <input type="text" class="form-control"  placeholder="Template Name" formControlName="templateName"
+                     ngPattern="/^[a-zA-Z0-9\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');" maxlength="30" autocomplete="nope" required >
+            </div>
+            <div class="col-md-6 form-group">
+              <label>Description</label><span style="color: #FF0000">*</span>
+              <textarea class="form-control" rows="1" placeholder="Description" formControlName="description"
+                        autocomplete="nope" required></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 form-group">
+              <label>Weight</label>
+              <div class="input-group">
+              <input type="text" class="form-control" placeholder="(lbs)" formControlName="weight" name="search"
+                     ngPattern="/^[\s]*$/"
+                     onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" minlength="1" maxlength="5" 
+                     (change)="checkForWeight(itemTemplateForm.controls['weight'].value)" autocomplete="nope">
+              <div class="input-group-btn">
+                <button class="btn btn-default" (click)="changedUnit(weightUnit)">{{weightUnit}}</button>
+              </div>
+              </div>
+            </div>
+            <div class="col-md-3 form-group">
+              <label>Class</label><span style="color: #FF0000">*</span>
+              <select class="form-control" formControlName="class">
+                <option value="" hidden>Select</option>
+                <option *ngFor="let classification of classificationArray" value="{{classification}}">{{classification}}</option>
+              </select>
+            </div>
+            <div class="col-md-3 form-group">
+              <label>NMFC Number</label><span style="color: #FF0000">*</span>
+              <span style="color: #FF0000" *ngIf="showCreateErrorMsg">Format is (111111s11)</span>
+              <input type="text"class="form-control"  placeholder="NMFC Number"  name="cpf3" mask="999999S99" pattern="000000S00" ngPattern="/[0-9Ss]/" 
+                     onkeyup="this.value=this.value.replace(/[^0-9Ss]+/g,'')" formControlName="nmfcNumber" (change)="changedDecimal($any($event).target.value,'')" minlength="4" maxlength="9" id="cpf3" (keydown)="checkEnterKey($event, 'nmfc')" autocomplete="nope" >
+            </div>
+            <div class="col-md-3 form-group">
+              <label>Harmonized B Code</label>
+              <textarea class="form-control" rows="1" placeholder="Harmonized B Code" formControlName="harmonizedBCode" maxlength="5" autocomplete="nope"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label>Dimensions (in.) (L x W x H)</label>
+              <div class="row">
+                <div class="col-md-4 form-group">
+                  <input type="text" class="form-control col-md-2" placeholder="L" formControlName="length" ngPattern="/^[0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="3" autocomplete="nope" required>
+                </div>
+                <div class="col-md-4 form-group">
+                  <input type="text" class="form-control col-md-2" placeholder="W" formControlName="width" ngPattern="/^[0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="3" autocomplete="nope" required>
+                </div>
+                <div class="col-md-4 form-group">
+                  <input type="text" class="form-control col-md-2" placeholder="H" formControlName="height"
+                          ngPattern="/^[0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="3"  autocomplete="nope" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label>Is Hazmat?</label>
+              <div>
+                <label class="label-radio" style="margin-left:0px">
+                  <input type="radio" class="option-input radio" name="" checked value="true" formControlName="hazmat" />
+                  Yes
+                </label>
+                <label class="label-radio" style="margin-left:10px">
+                  <input type="radio" class="option-input radio" name="" value="false" formControlName="hazmat"/>
+                  No
+                </label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label>Is Stackable?</label>
+              <div>
+                <label class="label-radio" style="margin-left:0px">
+                  <input type="radio" class="option-input radio" name="" value="true" checked formControlName="stackable"/>
+                  Yes
+                </label>
+                <label class="label-radio" style="margin-left:10px">
+                  <input type="radio" class="option-input radio" name="" value="false" formControlName="stackable"/>
+                  No
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row" *ngIf="!showUpdateDetail">
+          <div class="col-md-4  green-button text-center">
+            <button (click)="saveTemplate(itemTemplateForm.value, 'item')"
+                    [disabled]="!itemTemplateForm.controls['templateName'].valid || !itemTemplateForm.controls['description'].valid
+|| !itemTemplateForm.controls['class'].valid || NmfcNull === true" data-dismiss="modal"><em class="fa fa-save icon"></em>Save Template</button>
+          </div>
+          <div class="col-md-4  green-button text-center">
+            <button data-dismiss="modal"><em class="fa fa-times icon"></em>Cancel</button>
+          </div>
+          <div class="col-md-4  green-button text-center">
+            <button (click)="reset('item')"><em class="fa fa-refresh icon"></em>Reset Template</button>
+          </div>
+        </div>
+        <div class="row" *ngIf="showUpdateDetail">
+          <div class="col-md-4 col-md-offset-2 col-sm-6 green-button text-center">
+            <button (click)="updateTemplate(itemTemplateForm.value, 'item')" [disabled]="!itemTemplateForm.controls['templateName'].valid || !itemTemplateForm.controls['description'].valid
+            || !itemTemplateForm.controls['class'].valid || NmfcNull === true" data-dismiss="modal"><em class="fa fa-save icon"></em>Update Template</button>
+          </div>
+          <div class="col-md-4 col-sm-6 green-button text-center">
+            <button data-dismiss="modal"><em class="fa fa-times icon"></em>Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!--End Item Modal-->
+
+
+
+<!--<div id="address-modal" class="modal" role="dialog" *ngIf="showForAddressCreateTemplate">
+  <div class="modal-dialog modal-lg">
+
+    &lt;!&ndash; Modal content&ndash;&gt;
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><em class="fa fa-file"></em>&nbsp;Create Template</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="legend-body">
+          <form [formGroup]="addressTemplateForm">
+            <div class="col-md-10 col-md-push-1 div-border">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Template Name</label>
+                  <input type="text" class="form-control"  placeholder="Template Name"  formControlName="templateName"
+                         ngPattern="/^[a-zA-Z0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');" maxlength="15">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 form-group">
+                  <label>Company (Shipper or Consignee)</label>
+                  <input type="text" class="form-control"  placeholder="Template Name"  formControlName="companyName"
+                         ngPattern="/^[a-zA-Z0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');">
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>Contact Name</label>
+                  <input type="text" class="form-control" placeholder="Contact Name" formControlName="contactName"
+                         ngPattern="/^[a-zA-Z\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlenght="15">
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>Phone</label>
+                  <input type="text" class="form-control" placeholder="### ### ####" formControlName="contactNumber"
+                         ngPattern="/^[0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="" mask="(999)999-9999">
+                </div>
+              </div>
+              <div class="row">
+                &lt;!&ndash;<label>Address</label>&ndash;&gt;
+                <div class="col-md-4 form-group">
+                  <label>Country</label>
+                  <select class="form-control" formControlName="country">
+                    <option value="USA">USA</option>
+                  </select>
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>Street1</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="street1"  ngPattern="/^[a-zA-Z0-9-.,/\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9-.,/\s]*$/g,'');" >
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>Street2</label>
+                  <input type="text" class="form-control"  placeholder="" formControlName="street2"  ngPattern="/^[a-zA-Z0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z0-9\s]*$/g,'');" >
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4 form-group">
+                  <label>Zip/Post</label>
+                  <input type="text" class="form-control col-md-2" placeholder="" formControlName="zip"  ngPattern="/^[0-9\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^0-9\s]*$/g,'');" maxlength="5" minlength="5">
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>City</label>
+                  <input type="text" class="form-control col-md-2" placeholder="" formControlName="city"  ngPattern="/^[a-zA-Z\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" >
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>State</label>
+                  <input type="text" class="form-control col-md-2" placeholder="" formControlName="state"  ngPattern="/^[a-zA-Z\s]*$/"
+                         onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="2">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div class="row">
+                  &lt;!&ndash;<div class="col-md-4 square-button text-center">&ndash;&gt;
+                  &lt;!&ndash;<a href="#"><em class="fa fa-save icon"></em>Save Template</a>&ndash;&gt;
+                  &lt;!&ndash;</div>&ndash;&gt;
+                  &lt;!&ndash;<div class="col-md-4 square-button text-center">&ndash;&gt;
+                  &lt;!&ndash;<a href="#"><em class="fa fa-trash icon"></em>Delete Template</a>&ndash;&gt;
+                  &lt;!&ndash;</div>&ndash;&gt;
+                  &lt;!&ndash;<div class="col-md-4 square-button text-center">&ndash;&gt;
+                  &lt;!&ndash;<a href="#"><em class="fa fa-refresh icon"></em>Reset Template</a>&ndash;&gt;
+                  &lt;!&ndash;</div>&ndash;&gt;
+                  <div class="col-md-4  green-button text-center">
+                    <button  (click)="saveTemplate(addressTemplateForm.value,'address')" [disabled]="
+                              !addressTemplateForm.controls.templateName.valid ||
+                              !addressTemplateForm.controls.companyName.valid ||
+                              !addressTemplateForm.controls.contactName.valid ||
+                              !addressTemplateForm.controls.contactNumber.valid ||
+                              !addressTemplateForm.controls.country.valid ||
+                              !addressTemplateForm.controls.street1.valid ||
+                              !addressTemplateForm.controls.zip.valid ||
+                              !addressTemplateForm.controls.city.valid ||
+                              !addressTemplateForm.controls.state.valid">
+                      <em class="fa fa-save icon"></em>Save Template</button>
+                  </div>
+                  <div class="col-md-4  green-button text-center">
+                    <button ><em class="fa fa-trash icon"></em>Delete Template</button>
+                  </div>
+                  <div class="col-md-4  green-button text-center">
+                    <button ><em class="fa fa-refresh icon"></em>Reset Template</button>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      &lt;!&ndash; Legend Modal &ndash;&gt;
+
+    </div>
+  </div>
+</div>-->
+
+ <!--Address Modal end-->

@@ -1,0 +1,962 @@
+
+<style>
+  .table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid #a9a0a0;
+    text-align: -webkit-center;
+    }
+</style>
+<div class="banner-w3layoutsSales" id="home">
+  <!--Top-Bar-->
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+
+  </div>
+  <!--//Top-Bar-->
+  <!-- modal --> 
+  <div class="modal about-modal w3-agileits fade" id="myModal2" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body login-page "><!-- login-page -->
+          <div class="login-top sign-top">
+            <div class="agileits-login">
+              <h5>Login</h5>
+              <form action="#" method="post">
+                <input type="email" class="email" name="Email" placeholder="Email" required=""/>
+                <input type="password" class="password" name="Password" placeholder="Password" required=""/>
+                <div class="wthree-text">
+                  <ul>
+                    <li>
+                      <label class="anim">
+                        <input type="checkbox" class="checkbox">
+                        <span> Remember me ?</span>
+                      </label>
+                    </li>
+                    <li> <a href="#">Forgot password?</a> </li>
+                  </ul>
+                  <div class="clearfix"> </div>
+                </div>
+                <div class="w3ls-submit">
+                  <input type="submit" value="LOGIN">
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div> <!-- //login-page -->
+    </div>
+  </div>
+  <!-- //modal -->
+  <!-- modal -->
+  <div class="modal about-modal w3-agileits fade" id="myModal3" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body login-page "><!-- login-page -->
+          <div class="login-top sign-top">
+            <div class="agileits-login">
+              <h5>Register</h5>
+              <form action="#" method="post">
+                <input type="text" name="Username" placeholder="Username" required=""/>
+                <input type="email"  name="Email" placeholder="Email" required=""/>
+                <input type="password" name="Password" placeholder="Password" required=""/>
+                <input type="password" name="Retype Password" placeholder="Retype Password" required=""/>
+                <div class="wthree-text">
+                  <ul>
+                    <li>
+                      <label class="anim">
+                        <input type="checkbox" class="checkbox">
+                        <span> I accept the terms of use</span>
+                      </label>
+                    </li>
+                  </ul>
+                  <div class="clearfix"> </div>
+                </div>
+                <div class="w3ls-submit">
+                  <input type="submit" value="Register">
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div> <!-- //login-page -->
+    </div>
+  </div>
+  <!-- //modal -->
+  <!--banner-->
+  <!--Slider-->
+<!--main screen-->
+  <div class="w3l_banner_info" id="name">
+    <h1 class="text-center" style="font-size:20px;">LTL Rates</h1>
+    <div *ngIf="!emergencyStop" class="col-md-12 col-sm-12 banner-form-agileinfo">
+      <h1 class="text-center" style="font-size:20px; color:red"><span>
+        <b *ngIf="!emergencyStopYRC">YRC, </b><b *ngIf="!emergencyStopEconomy"> FEDEX ECONOMY, </b> <b *ngIf="!emergencyStopPriority">FEDEX PRIORITY, </b> <b *ngIf="!emergencyStopReddaway">REDDAWAY</b>
+      </span>Rates are currently unavailable due to system maintenance. Please contact Forte customer service @ 253.926.5456.</h1>
+
+    </div>
+    <div class="col-md-12 col-sm-12 banner-form-agileinfo">
+      <form action="#" method="post" id="formTransportOrigin" [formGroup]="transportOrigin" autocomplete="nope">
+        <div class="row">
+       <div class="col-sm-3 col-md-2 col-xs-12 ">
+          <div class="table-class" *ngIf = "hideViewTemplate">
+              <table class="table table-dropdown" style="margin-bottom: 0px">
+                  <thead>
+                <tr>
+                  <td>Description</td>
+                  <td>Class</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let itemTemplates of itemTemplate" class="noIbar">
+                  <td style="word-break: break-word;" id="companyDescription">{{itemTemplates?.description}}</td>
+                  <td id="companyClass">{{itemTemplates?.class}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+         </div>
+         <div class="col-sm-9 col-md-8 col-xs-12">
+            <div class="col-sm-10 col-md-10 col-sm-push-1 list-div" *ngIf="showForInternalCustomer">
+                <label>Company&nbsp;<span *ngIf="showErrorCustomer" style="color: Red" id="diffrentUserErrorInternal">Please choose different customer</span></label>
+                <select class="selectField" id="customer" formControlName="customer" #customer (change)="getRatingNotes(transportOrigin.controls['customer'].value)" (options)="getRatingNotes($event)" (keydown.enter)="getRatingNotes($event)">
+                  <option value="" hidden>Select</option>
+                  <option *ngFor="let customer of customerFeaturesAll" value="{{customer.id}}" id="companyName">{{customer.companyName
+                    }}</option>
+                </select>
+                </div>
+                <div class="col-sm-10 col-md-10 col-sm-push-1 list-div" *ngIf="!showForInternalCustomer">
+                  <label>Company&nbsp;<span *ngIf="showErrorCustomer" style="color: Red" id="diffrentUserErrorExternal">Please choose different customer</span></label>
+                  <input id="customerName"  class="form-control" formControlName="customer" readonly>
+                </div>
+                <div class="col-sm-12 col-md-12" style="margin-top: 6px;">
+                  <div class="col-sm-6">
+                    <div class="col-sm-7 text-right oplace">
+                      <div *ngIf="showZipcodes" >
+                        <span readOnly><b id="filterCityState">{{filterValues}}, {{filterValuesState}}</b></span>
+                      </div>
+                      <div *ngIf="errorMessage">
+                        <span><b id="filterInvalidZip">Invalid Zipcode</b></span>
+                      </div>
+                      <!-- <div *ngIf="noshipmentData">
+                        <span><b> No shipments to  {{filterValues.state}} </b></span>
+                      </div> -->
+                    </div>
+                 <div class="col-sm-5 zipcode">
+                      <label>Origin Zipcode &nbsp;</label>
+                      <input type="text" class="email-sm-3" id="originZipCode" name="originZipcode"
+                             formControlName="origin" ngPattern="/[0-9]/" maxlength="5"
+                             onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"
+                             (keyup)="checkOrigin($event)" required="" [readonly]="false" autocomplete="nope" autofocus>
+                      <em class="fa fa-times-circle-o form-control-feedback" *ngIf="showRemoveIcon" style="font-size: 16px; color: #ff0000;" aria-hidden="true" (click)="remove('origin')"></em>
+                      <span style="font-size: 13px;"><app-error-message
+                              [control]="$any(transportOrigin).controls['origin']" style="font-size: 12px;"></app-error-message></span>
+                              <span *ngIf="showTableZip"> * Please select a city below</span>
+                              <table *ngIf="showTableZip" id ="consigneeTableId" class="table table-bordered" >
+                                <div class="scrollit">
+                                  <!-- <thead>
+                                <tr>
+                                  <td>City Name</td>
+                                  
+                                </tr>
+                                </thead> -->
+                                <tbody>
+                                <tr  *ngFor="let addressTemplates of originZipArray; let i = index" class="noIbar" tabindex='{{i}}' id={{i}} (keydown)="scroll($event, i, 'origin')" (keyup)="scroll($event, i, 'origin')" (click)="getCityNameValue(addressTemplates,'origin')">
+                                  <td ><input  value={{addressTemplates?.cityName}}  readonly/></td>
+                                  
+                                </tr>
+                                </tbody>
+                                  <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                                </div>
+                              </table> 
+                    </div>
+                   </div>
+                 <div class="col-sm-6">
+                     <div class="col-sm-4 text-right dplace">
+                      <div *ngIf="showZipcodeDest">
+                        <span readOnly><b id="filterOriginCityState">{{filterValuesDest.city}}, {{filterValuesDest.state}}</b></span>
+                      </div>
+                      <div *ngIf="errorMessageDest">
+                        <span><b id="invalidZipOrigin">Invalid Zipcode</b></span>
+                      </div>
+                      <!-- <div *ngIf="noshipmentDestData">
+                        <span><b> No shipments to  {{filterValuesDest.state}} </b></span>
+                      </div> -->
+                    </div>
+                    <div class="col-sm-5 zipcode"  style="margin-left: 5px;">
+                      <label>Destination Zipcode&nbsp;</label>
+                      <input type="text" class="email row-sm-3" id="destinationZipCode" name="destinationZipcode" 
+                             formControlName="destination" ngPattern="/[0-9]/" maxlength="5"
+                             onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"
+                             (keyup)="checkDestination($event)" autocomplete="nope" required=""/>
+                      <em class="fa fa-times-circle-o form-control-feedback" *ngIf="showRemoveIconDest" style="font-size: 16px; color: #ff0000;" aria-hidden="true" (click)="remove('destination')"></em>
+                      <span style="font-size: 13px;"><app-error-message
+                              [control]="$any(transportOrigin).controls['destination']" style="font-size: 12px;"></app-error-message></span>
+                              <span *ngIf="showTableZip1"> * Please select a city below</span>
+                              <table  *ngIf="showTableZip1" id ="consigneeTableId1" class="table table-hover table-bordered">
+                                <div class="scrollit">
+                                  <!-- <thead>
+                                <tr>
+                                  <td>City Name</td>
+                                  
+                                </tr>
+                                </thead> -->
+                                <tbody>
+                                <tr *ngFor="let addressTemplates of destinationZipArray; let i = index" class="noIbar" tabindex='{{i}}' id={{i}} (keydown)="scroll($event, i, 'destination')" (keyup)="scroll($event, i, 'destination')" (click)="getCityNameValue(addressTemplates,'destination')">
+                                  <td ><input  value={{addressTemplates?.cityName}}  readonly/></td>
+                                  
+                                </tr>
+                                </tbody>
+                                  <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                                </div>
+                              </table> 
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-10 col-md-10 col-sm-push-1" style="margin-top: 6px;">
+                  <div class="col-sm-5">
+                    <label>Class &nbsp;<span *ngIf = "pricingDetail.length === 0" style="font-size: 13px"><app-error-message
+                      [control]="$any(transportOrigin).controls['classification']"></app-error-message> </span>
+                      <span style="font-size: 13px;color: #ff0000" *ngIf="showErrorMessageForClass">Invalid Class</span><span style="font-size: 13px;color: #ff0000" *ngIf="showChooseClass">Choose a class</span></label>
+                      <input class="selectField" id="classification" name="classification" ngPattern="/[0-9.]/" maxlength="5"
+                      onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" formControlName="classification"
+                             [typeahead]="classArray" (change)="checkForClass(transportOrigin.controls['classification'].value)" (keyup.enter)="checkForClass($event)" autocomplete="nope">
+                    </div>
+                  <div class="col-sm-5">
+                    <label>Weight &nbsp;
+                      <span style="font-size: 14px;color: red;" *ngIf="invalidErrorWeightMessage">Enter the valid weight</span>
+                      <span style="font-size: 14px;color: red;" *ngIf="showCheckForWeight">The weight is more,Please Contact the Call centre</span></label>
+                      <span style="font-size: 14px;color: red;" *ngIf="operationMessage">To achieve the most favorable rates, please contact Forte Customer Service</span>
+                    <input type="text" class="email col-sm-3" id="weight" name="weight"
+                           formControlName="weight" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"
+                           (change)="checkForWeight(transportOrigin.controls['classification'].value, transportOrigin.controls['weight'].value)"
+                           (keyup.enter)="checkForWeight(transportOrigin.controls['classification'].value, $event)" required=""/><br>
+
+                           <span *ngIf="pricingDetail.length === 0" style="font-size: 13px;">
+                          <app-error-message [control]="$any(transportOrigin).controls['weight']" style="font-size: 12px;"></app-error-message></span>
+                  </div>
+                  <div class="col-sm-2">
+                    <button type="submit" class="logisticsBtn" [disabled]="!transportOrigin.controls['classification'].valid ||!transportOrigin.controls['weight'].valid"  (click)="addItem(transportOrigin.value)">Add</button>
+                  </div>
+                  </div>
+                <div class="col-sm-10 col-md-10 col-sm-push-1" *ngIf="showTable" style="padding-left: 30px !important; padding-right: 30px !important; padding-top: 10px !important;">
+                  <table class="table table-responsive table-bordered">
+                    <thead>
+                    <tr style="color: #9c7357 !important;">
+                      <th class="text-center">Class</th>
+                      <th class="text-center">Weight</th>
+                      <th class="text-center">Delete</th>
+                    </tr>
+                    </thead>
+                  </table>
+                 <div class="secTable" id="style-3" style="width:100%;overflow:auto; max-height:132px; margin-top: -21px;">
+                    <table class="table table-responsive table-bordered">
+                      <tbody>
+                      <tr *ngFor="let pricing of pricingDetail;let i = index;" style="color: #9c7357 !important;">
+                        <td class="text-center" style="width: 31%;">{{pricing.classification}}</td>
+                        <td class="text-center" style="width: 36%;">{{pricing.weight}}</td>
+                        <td class="text-center" (click)="delete(pricing,i)"><em class="fa fa-minus-circle" aria-hidden="true"></em></td>
+                      </tr>
+                    </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-sm-10 col-md-10 col-sm-push-1" style="margin-top: 6px;">
+                  <div class="col-sm-6">
+                    <label>Accessorials &nbsp;</label>
+                    <ng-multiselect-dropdown
+                    [placeholder]="'Choose Accessorials'"
+                    [settings]="dropdownSettings"
+                    [data]="dropdownList"
+                    [(ngModel)]="selectedItems"
+                    [ngModelOptions]="{standalone: true}"
+                  ></ng-multiselect-dropdown>
+                    <!-- <angular2-multiselect  class="selectBox" id="selectedItems" name="selectedItems" style="background: #25393f !important; border: #25393f;color: #fff;" [data]="dropdownList" [(ngModel)]="selectedItems"
+                                            [settings]="dropdownSettings"
+                                           [ngModelOptions]="{standalone: true}" required></angular2-multiselect> -->
+                   </div>
+                  <div class="col-sm-6" *ngIf="!errorGetRateMsg">
+                    <label>Choose Carrier</label>
+                    <select class="form-control" id="carrier"  formControlName="carrier" (change)="checkForCarrier(transportOrigin.controls['carrier'].value,transportOrigin)"
+                            (keyup)="checkForCarrier($event,transportOrigin)">
+                      <option value="" hidden>Select</option>
+                      <option *ngFor="let carrier of carrierArray" value="{{carrier}}">{{carrier}}</option>
+                    </select>
+                    <span style="font-size: 14px;color: red" *ngIf="showErrorMessageForCarrier">Invalid Carrier</span>
+                   </div>
+                  <div class="col-sm-6" *ngIf="errorGetRateMsg">
+                    <label>Choose Carrier</label>
+                    <input type="text" class="email col-sm-3" id="carrier" name="carrier"
+                           formControlName="carrier" readonly>
+                    <span style="font-size: 14px;color: red" *ngIf="showErrorMessageForCarrier">Invalid Carrier</span>
+                  </div>
+                </div>
+                <div class="col-sm-10 col-md-10 col-sm-push-1" style="margin-top: 6px;" *ngIf="!errorMsgForNorule">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-4 col-md-push-2">
+                        <div class="clearfix">&nbsp;</div>
+                        <button type="submit" style="width: 100%"  *ngIf="showViewTemplate"
+                                class="logisticsBtn" (click)="viewTemplate()" >My Products List  </button>
+                                <button type="submit" style="width: 100%;padding: 12px 17px" *ngIf="hideViewTemplate"
+                                class="logisticsBtn" (click)="hideTemplate()" >Hide Products List</button>
+                                <button type="submit" style="width: 100%" *ngIf="noViewTemplate"
+                                class="logisticsBtn" (click)="noTemplate()" >No Products List</button>
+                      </div>
+                      <div class="col-sm-12 col-md-4 col-md-push-2">
+                          <div class="clearfix" >&nbsp;</div>
+                          <button type="submit" style="width: 100%" id="getQuote"  [disabled]="!transportOrigin.controls['customer'].valid ||
+                          !transportOrigin.controls['origin'].valid || !transportOrigin.controls['destination'].valid
+                          || !transportOrigin.controls['carrier'].valid ||  pricingDetail.length === 0 || errorMessage === true || errorMessageDest === true || errorGetRateMsg === true ||getQuoteFlag === false  " 
+                                  (click)="getQuote(transportOrigin.value,selectedItems,pricingDetail)"
+                                  class="logisticsBtn" >Get Quote</button>
+                        </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-12 col-md-4 col-md-push-4" *ngIf="showClearAll">
+                              <div class="clearfix">&nbsp;</div>
+      
+                              <button class="blulogisticsBtn" style="width: 100%" id="clear" (click)="clear()">Clear All</button>
+                            </div>
+                      </div>
+                </div>
+         </div>
+        </div>
+      </form>
+      
+      <div class="col-md-12 team-grid-text-agile" style="min-height: auto !important;padding: 1em 2em 1em 2em;margin-top:20px;background: yellow" *ngIf="errorMsgForNorule">
+          <div class="row">
+              <div class="col-sm-2">
+                  &nbsp;
+                </div>
+                <div class="col-sm-8 text-center">
+            <span style="font-size: 20px"><b id="NoRuleId">"We're sorry, but it appears that you do not currently have LTL pricing and will be unable to access the rating program at this time. <br> Please contact
+              [{{salesRepDetails?.salesRepName}}({{salesRepDetails?.email}})], The sales Representative to help you resolve this."</b></span>
+          </div>
+          
+          </div>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+      <div class="clearfix">&nbsp;</div>
+    </div>
+  </div>
+  <!--//Slider-->
+  <div class="clearfix"></div>
+ </div>
+<!--//banner-->
+<div class="col-sm-12 text-center" *ngIf="showErrorInternetConnection" style="margin-top: 20px !important; margin-bottom: 20px !important;">
+  <span style="font-size: 28px; margin: 30px !important;" *ngIf="onlineOffline">Check your internet connection</span>
+</div>
+<div class="col-sm-12 text-center" *ngIf="showAdminErrorMessage">
+  <div class="clearfix">&nbsp;</div>
+  <!--<p style="font-size: 24px;">Sorry, We could not give you a quote. Thank you for reaching out to us. Our customer representative will reach out to us to process the quote.</p>-->
+  <p style="font-size: 24px;">There is a problem with your request, Please contact admin@Fortetlc.com or call 800.501.9922.</p>
+  <div class="clearfix">&nbsp;</div>
+</div>
+<div class="col-sm-12 text-center" *ngIf="showNegativeMargin">
+  <div class="clearfix">&nbsp;</div>
+  <p style="font-size: 24px;">Sorry we cannot process your quote request at this time. Please Contact Forte for assistance with this quote.</p>
+  <!-- <p style="font-size: 24px;">There is a problem with your request, Please contact admin@Fortetlc.com or call 800.501.9922.</p> -->
+  <div class="clearfix">&nbsp;</div>
+</div>
+<div class="col-sm-12 text-center" *ngIf="showIfNoRule">
+  <p style="font-size: 24px;">There appears to be an issue with this lane, please contact Customer Care @ 253.926.5456 or {{salesRepDetails?.salesRepName}}, The Sales Representative.</p>
+  <div class="clearfix">&nbsp;</div>
+</div>
+<div class="col-sm-12 text-center" *ngIf="noshipmentDataMessage">
+  <p style="font-size: 24px;">For All shipments to AK and HA, please contact Customer Care @ 253.926.5456.</p>
+  <div class="clearfix">&nbsp;</div>
+</div>
+<div id = "myDiv" class="col-sm-12 imgBlock" >
+    <img src = "../../assets/images/cycling-dude.gif" id = "myImage" class="img-responsive center-block" style="margin-top:10px;width: 300px" >
+  </div>
+ <!--Result data-->
+ <div class="team" id="team">
+  <div class="col-md-12 team-grid-text-agile" style="min-height: auto !important;" *ngIf="showData">
+    <div class="row">
+      <div class="col-sm-2" *ngIf="resultObject?.carrierType==='YRC'">
+        <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+      </div>
+  <div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX PRIORITY'">
+        <img src="../../assets/images/fedexPriority.png" alt="" class="img-responsive center-block">
+      </div>
+<div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX ECONOMY'">
+        <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+      </div>
+    <div class="col-sm-2" *ngIf="resultObject?.carrierType==='REDDAWAY'">
+        <img src="../../assets/images/reddaway.png" alt="" class="img-responsive center-block">
+      </div>
+      <div class="col-sm-7 table-responsive">
+      <table class="table table-bordered table-responsive">
+        <tbody>
+          <tr>
+            <th class="text-center">Est Transit Time <br>(In Business Days)</th>
+            <th class="text-center">Total Charge</th>
+            <th class="text-center" *ngIf="resultObject?.showMinimumCharge==false">Total Gross Charge</th>
+            <th class="text-center" *ngIf="resultObject?.showMinimumCharge==true">Minimum Charge</th>
+            <th class="text-center">Accessorial Charge</th>
+            <th class="text-center" *ngIf="showQuoteId">Quote Number</th>
+            </tr>
+          <tr>
+              <td style="text-align:center">
+                  <img src="../../assets/images/transit.png" alt="" class="img-responsive center-block" style="height:40px;margin-bottom: 10px">
+                  <span style="font-weight:600;color: #9c7457; " id="transitTime">{{transitTime?.result}}</span>
+                  </td>
+            <td style="text-align:center">
+      <table style="width:100%;margin:0px;">
+          <tr class="text-center text-danger" >
+          <td *ngFor="let total of resultObject?.totalCharge" style="text-align:center"><b id="totalValue">${{total}}</b> <br>
+      <span style="color: #124c3f" id="resultShipTypes">{{resultObject?.shipTypes}}</span>
+            <em class="fa fa-arrow-up" aria-hidden="true" *ngIf="resultObject?.highCostDeliveryCharge!==0"></em>
+            <em class="fa fa-plus" aria-hidden="true" *ngIf="resultObject?.factor === 'COSTPLUS'"></em>
+          </td>
+        </tr>
+    </table>
+          </td>
+          <td class="text-center text-danger" *ngIf="resultObject?.showMinimumCharge==false" >
+              <b id="totalGrossAR">${{resultObject?.totalGrossCharge}}</b>
+          </td>
+          <td class="text-center text-danger" *ngIf="resultObject?.showMinimumCharge==true">
+             <b id="totalGrosssWithMinimum">${{resultObject?.totalGrossCharge}}</b>
+            </td>
+          <td class="text-center text-danger" style="text-align:center" >
+            <table style="width:100%;text-align:center">
+            <tr class="text-center text-danger"><td id="ArAccessorialValue">Total - ${{resultObject?.assessorialChargeValue}}</td></tr>
+            <tr class="text-center text-danger" *ngFor="let assessorialDataList of resultObject?.assessorialDataList"><td id="arAccessorialName" >{{assessorialDataList}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="resultObject?.singleShipmentCharge!==0 && resultObject?.singleShipmentCharge!=='0'"><td id="singleShipment"> Single Shipment - ${{resultObject.singleShipmentCharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="resultObject?.highCostDeliveryCharge!==0"><td id="highCost"> High Cost - ${{resultObject.highCostDeliveryCharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="resultObject?.deliveryCharge!==0 && resultObject?.deliveryCharge!=='0' && resultObject?.carrierType =='FEDEX ECONOMY' ||  resultObject?.carrierType =='FEDEX PRIORITY'"><td id="cAChargeFEDEX"> Delivery Charge - ${{resultObject.deliveryCharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="resultObject?.additionalCharge!==0 && resultObject?.additionalCharge!=='0' && resultObject?.carrierType =='YRC' ||  resultObject?.carrierType =='REDDAWAY'"><td id="cAChargeYRCREDAWAY">  CA Charge - ${{resultObject.additionalCharge}}</td></tr>
+            <tr class="text-center text-danger" *ngIf="resultObject?.additionalCharge!==0 && resultObject?.additionalCharge!=='0' && resultObject?.carrierType =='FEDEX ECONOMY' ||  resultObject?.carrierType =='FEDEX PRIORITY'"><td id="cAChargeFEDEX"> Additional Charge - ${{resultObject.additionalCharge}}</td>
+              <tr class="text-center text-danger" *ngIf="resultObject?.peakSurcharge!==0 && resultObject?.peakSurcharge!=='0' && resultObject?.carrierType =='FEDEX ECONOMY' ||  resultObject?.carrierType =='FEDEX PRIORITY'"><td id="cAChargeFEDEX"> Peak Charge - ${{resultObject.peakSurcharge}}</td>
+              </tr>
+            </table>
+            </td>
+          <td class="text-center text-danger" *ngIf="showQuoteId" style="text-align:center" >
+              <a class=""  *ngIf="resultObject?.factor !== 'COSTPLUS' && resultObject?.showcolor && customerType === 'externalCustomer'" style="color: #4c7a71;text-decoration: underline;" (click)="checkArData(resultObject)" >
+                <b id="quoteNumberNoCostplus">{{quoteId}}</b></a>
+
+                <a class="" href="#quote_details" *ngIf="resultObject?.factor !== 'COSTPLUS' && resultObject?.showcolor && this.customerType !== 'externalCustomer'" style="color: #4c7a71;text-decoration: underline;" (click)="checkArData(resultObject)" data-toggle="modal" data-target="#quote_details">
+                  <b id="quoteNumberNoCostplus">{{quoteId}}</b></a>
+
+                  <a class="" href="#quote_details" *ngIf="resultObject?.factor !== 'COSTPLUS' && resultObject?.showcolor !== true " style="color: #4c7a71;text-decoration: underline;" (click)="checkArData(resultObject)" data-toggle="modal" data-target="#quote_details">
+                    <!-- <b id="quoteNumberNoCostplus">{{quoteId}}</b></a> -->
+
+
+            <b id="quoteNumberNoCostplus">{{quoteId}}</b></a> 
+            <a class="" href="#costPlus_quote_details" *ngIf="resultObject?.factor === 'COSTPLUS'" style="color: #4c7a71;text-decoration: underline;" (click)="checkArData(resultObject)" data-toggle="modal" data-target="#costPlus_quote_details">
+                <b id="quoteNumberCostplus">{{quoteId}}</b></a>
+          </td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <!-- <div class="col-sm-1">
+        <button class="btn btn-primary" 
+        style="background-color: #144239;border: none;color: white; padding: 15px 17px 15px 17px; text-align: center; 
+        text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 50%;    
+        margin-top: 1.5em;" id="sendMail" (click)="sendMail(quoteDetailsId, setSalesRepId, 'externalCustomer', resultObject?.factor)" data-toggle="tooltip" data-placement="left" title="Send Email"><em class="fa fa-envelope" aria-hidden="true"></em></button>        
+      </div>
+      <div class="col-sm-2" style="margin-top:10px">
+          <button class="logisticsBtn" (click)="createBol(quoteId)"><em class="fa fa-file" style="margin-right:5px"></em>Create Bol</button>
+          </div> -->
+          <div class="col-sm-2" style="margin-top:10px">
+            <div class="row" style="margin-bottom: 10px">
+            <div class="type-1 text-center">
+            <button href="" class="btn btn-1 newbtn" (click)="sendMail(quoteDetailsId, setSalesRepId, 'externalCustomer', resultObject?.factor)">
+            <span class="txt">Send Email</span>
+            <span class="round"><em class="fa fa-paper-plane" style="margin-left:-6px"></em></span>
+            </button> 
+            </div>
+            </div>
+            <div class="row">
+            <div class="type-1 text-center">
+            <button href="" class="btn btn-1 newbtn" (click)="createBol(quoteId, resultObject)" >
+            <span class="txt">Go To BOL</span>
+            <span class="round"><em class="fa fa-file"></em></span>
+            </button> 
+            </div>
+            </div>
+            </div>
+    </div>
+</div>
+<div class="col-md-12 team-grid-text-agile" style="min-height: auto !important;" *ngIf="hideData">
+    <div class="row" >
+        <div class="col-sm-2" *ngIf="resultObject?.carrierType==='YRC'">
+          <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+        </div>
+    <div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX PRIORITY'">
+          <img src="../../assets/images/fedexPriority.png" alt="" class="img-responsive center-block">
+        </div>
+  <div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX ECONOMY'">
+          <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+        </div>
+      <div class="col-sm-2" *ngIf="resultObject?.carrierType==='REDDAWAY'">
+          <img src="../../assets/images/reddaway.png" alt="" class="img-responsive center-block">
+        </div>
+        <div class="col-sm-8 table-responsive">
+          <span style="font-size: 30px;">No Rates are available</span>
+          </div>
+</div>
+<div class="clearfix"></div>
+</div>
+<div class="col-md-12 team-grid-text-agile" style="min-height: auto !important;" *ngIf="showZiperror">
+  <div class="row" >
+      <!-- <div class="col-sm-2" *ngIf="resultObject?.carrierType==='YRC'">
+        <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+      </div> -->
+  <div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX PRIORITY'">
+        <img src="../../assets/images/fedexPriority.png" alt="" class="img-responsive center-block">
+      </div>
+<div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX ECONOMY'">
+        <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+      </div>
+    <!-- <div class="col-sm-2" *ngIf="resultObject?.carrierType==='REDDAWAY'">
+        <img src="../../assets/images/reddaway.png" alt="" class="img-responsive center-block">
+      </div> -->
+      <div class="col-sm-8 table-responsive">
+        <span>Zipcode not found. Please contact Forte customer care @ 253.926.5456. </span>
+        </div>
+</div>
+<div class="clearfix"></div>
+</div>
+<div class="col-md-12 team-grid-text-agile" style="min-height: auto !important;" *ngIf="hideshipmentData">
+  <div class="row" >
+      <div class="col-sm-2" *ngIf="resultObject?.carrierType==='YRC'">
+        <img src="../../assets/images/yrc.png" alt="" class="img-responsive center-block">
+      </div>
+  <div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX PRIORITY'">
+        <img src="../../assets/images/fedexPriority.png" alt="" class="img-responsive center-block">
+      </div>
+<div class="col-sm-2" *ngIf="resultObject?.carrierType==='FEDEX ECONOMY'">
+        <img src="../../assets/images/fedexeconomy.png" alt="" class="img-responsive center-block">
+      </div>
+    <div class="col-sm-2" *ngIf="resultObject?.carrierType==='REDDAWAY'">
+        <img src="../../assets/images/reddaway.png" alt="" class="img-responsive center-block">
+      </div>
+      <!-- <div class="col-sm-8 table-responsive">
+        <span>Shipments cannot be done to Alaska and Hawaii state. Please contact Forte customer care @ 253.926.5456.</span>
+        </div> -->
+</div>
+<div class="clearfix"></div>
+</div>
+<div class="col-md-12 team-grid-text-agile" style="min-height: auto !important;" *ngIf="showServiceNotAvailableMsg">
+  <div class="row">
+      <div class="col-sm-2">
+          <img src="../../assets/images/reddaway.png" alt="" class="img-responsive center-block">
+        </div>
+        <div class="col-sm-8 table-responsive text-center">
+    <span style="font-size: 25px" id="servicenotavailable">Service is not available for these zipcodes</span>
+  </div>
+  </div>
+</div>
+
+<!--//Result data-->
+<!--//team-->
+<!--map-->
+<div class="clearfix">&nbsp;</div>
+<div class="copy">
+  <p>© 2018 Logistics . All Rights Reserved </p>
+</div>
+<!-- js -->
+<a href="#" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+<!-- //smooth scrolling -->
+<style>
+  h2, .h2{
+    font-size: 12px!important;
+  }
+  h3, .h3{
+    font-size: 14px!important;
+  }
+</style>
+
+
+<div class="modal about-modal w3-agileits" id="quote_details" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body quote_modal"><!-- login-page -->
+        <div class="login-top sign-top">
+          <div class="quote_body">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:rgb(245, 220, 145);">&times;</span></button>
+            </div>
+            <div class="quote_det">
+              <div class="row">
+                <div class="col-sm-6 text-right">
+                  <p class="qt_hd">Company :<span class="qt_bd" id="salesRepValuescompanyName">{{salesRepValues?.companyName}}</span></p>
+                </div>
+                <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                 <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                    <span style="text-align: right; font-weight: 600;">Origin :</span>
+                  </div>
+                 <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                    <span class="qt_bd" id="modalOrigin">{{userData?.origin}}({{userData?.originCity}},{{userData?.originState}})</span>
+                  </div>
+                </div>
+             </div>
+              <div class="row">
+                <div class="col-sm-6 text-center">
+                  <p class="qt_hd">Quote ID &nbsp;:<span class="qt_bd" id="quoteNumberModal">{{quoteId}}</span></p>
+                </div>
+                <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                  <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                    <span style="text-align: right; font-weight: 600;">Destination :</span>
+                  </div>
+                  <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                    <span class="qt_bd" id="modalDestianation">{{userData?.destination}}({{userData?.destinationCity}},{{userData?.destinationState}})</span>
+                  </div>
+                </div>
+            </div>
+              <div class="row">
+                <div class="col-sm-6 text-center">
+                  <p class="qt_hd">Carrier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:<span class="qt_bd" id="ModalCarrier">{{userData?.carrier}}</span><span *ngIf="modalData?.showColor" class="qt_bd">Costplus(5)</span></p>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered" >
+                <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Class</th>
+                  <th>Weight&nbsp;(Pounds)</th>
+                  <th>Rate</th>
+                  <th>Charge</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td></td>
+                  <td class="td_right">
+                    <div *ngFor="let classData of modalData?.classification" id="modalClassData" >{{classData}}</div></td>
+                  <td class="td_right">
+                    <div *ngFor="let weight of modalData?.weight" id="modalWeight">{{weight}}</div>
+                    <div *ngFor="let diffWeight of modalData?.diffWeight" id="modalDiffWeight">{{diffWeight}}</div>
+                  </td>
+                  <td class="td_right">
+                    <div *ngFor="let rate of modalData?.rate" id="modalRate">${{rate}}</div>
+                    <div *ngFor="let crtRate of modalData?.crtRate" id="modalCrtRate">${{crtRate}}</div>
+                  </td>
+                  <td class="td_right">
+                    <div *ngFor="let finalRate of modalData?.finalRate" id="modalFinalRate" >${{finalRate}}</div>
+                    <div *ngFor="let diffRate of modalData?.diffRate" id="modalFinalDiffRate">${{diffRate}}</div>
+                  </td>
+                </tr>
+                 <tr>
+                  <td class="td_left" id="modalDiscount">Total Weight and Discount({{modalData?.discount}}%)<br> <tr ><td colspan="2" class="td_left" style="padding:0px">High Cost</td></tr>
+                  <tr *ngFor="let high of highcostArray"><td *ngIf="high.origin !== 0" class="td_left" style="padding:0px" id="modalAccessorialName">Origin - {{high.origin}}</td><td *ngIf="high.destination !== 0" class="td_right" style="padding:0px" id="modalAccessorialCostTotal"> Destination - {{high.destination}}</td></tr></td>
+                  <td></td>
+                <td class="td_right" id="modalTotalWeight">{{modalData?.totalWeight}}</td>
+                  <td></td>
+                  <td class="td_right" id="modalTotalDiscountCharge">${{modalData?.discountCharge}}<br><br>${{modalData?.highCostDeliveryCharge}}</td>
+                 </tr>
+  <!-- <tr>
+                
+                  <table>
+                    <tr ><td colspan="2" class="td_left" style="padding:0px">High Cost</td></tr>
+                    <tr *ngFor="let high of highcostArray"><td *ngIf="high.origin !== 0" class="td_left" style="padding:0px" id="modalAccessorialName">Origin - {{high.origin}}</td><td *ngIf="high.destination !== 0" class="td_right" style="padding:0px" id="modalAccessorialCostTotal"> Destination - {{high.destination}}</td></tr>
+                    </table>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="td_right" id="modalHighCost">${{modalData?.highCostDeliveryCharge}}</td>
+                </tr> -->
+                <tr *ngIf="modalData?.deliveryCharge !== 0">
+                  <td class="td_left">Delivery Charge</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="td_right" id="modalSSCharge">${{modalData?.deliveryCharge}}</td>
+                </tr>
+
+
+                 <tr>
+                  <td class="td_left" id="modalFuelChargePercent">Fuel Surcharge({{modalData?.fuelCharge}}%)</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="td_right" id="modalFuelCharges">${{modalData?.fuelCharges}}</td><!-- fuelcharge will not come for certain result-->
+                </tr>
+              
+                <tr>
+                    <td class="td_left">Single Shipment Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right" id="modalSSCharge">${{modalData?.singleShipmentCharge}}</td>
+                  </tr>
+                  <tr>
+                    <td class="td_left">Peak Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right" id="modalSSCharge">${{modalData?.peakSurcharge}}</td>
+                  </tr>
+                <tr *ngIf="modalData?.additionalCharge !== 0">
+                  <td class="td_left">Additional Charge</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="td_right" id="modalAdditonalCharge">${{modalData?.additionalCharge}}</td>
+                </tr>
+                <tr>
+                    <td class="td_left">
+                    <table>
+                    <tr ><td colspan="2" class="td_left" style="padding:0px">Accessorial Charge</td></tr>
+                    <tr *ngFor="let assessorial of assessorialList"><td class="td_left" style="padding:0px" id="modalAccessorialName">{{assessorial.name}}</td><td class="td_right" style="padding:0px" id="modalAccessorialCostTotal">- {{assessorial.cost}}</td></tr>
+                    </table></td>
+                    <td ></td>
+                    <td ></td>
+                    <td ></td>
+                    <td class="td_right" style="vertical-align: bottom" id="modalAccessorialCost">${{modalData?.assessorialCharge}}</td>
+                    </tr>
+                    <tr *ngIf="modalData?.showColor">
+                      <td class="td_left">AP Charge </td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="td_right">${{modalData?.ApData}}</td>
+                    </tr>
+                <tr>
+                  <td class="td_left">Total Charge</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="td_right">${{modalData?.totalCharge}}</td>
+                </tr>
+              </tbody>
+              </table>
+              <!-- <div class="alert alert-success" id="success-alert">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <strong>Success! </strong>
+                Email Sent Successfully
+            </div> -->
+              <div>
+              <button  class="btn btn-primary" style="background-color: transparent;
+             border: 2px solid #fff;
+            float: right;
+             margin: 1em;" id="sendMail" (click)="sendMail(quoteDetailsId, setSalesRepId, 'externalCustomer', modalData?.factor)" data-toggle="tooltip" data-placement="left" title="Send Email"><em class="fa fa-envelope" aria-hidden="true"></em>&nbsp;Send Email</button>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- //login-page -->
+  </div>
+</div>
+
+
+<div class="modal about-modal w3-agileits" id="costPlus_quote_details" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body quote_modal"><!-- login-page -->
+          <div class="login-top sign-top">
+            <div class="quote_body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:rgb(245, 220, 145);">&times;</span></button>
+              </div>
+              <div class="quote_det">
+                <div class="row">
+                  <div class="col-sm-6 text-right">
+                    <p class="qt_hd">Company :<span class="qt_bd">{{salesRepValues?.companyName}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                   <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Origin :</span>
+                    </div>
+                   <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{userData?.origin}}({{userData?.originCity}},{{userData?.originState}})</span>
+                    </div>
+                  </div>
+               </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Quote ID &nbsp;:<span class="qt_bd">{{quoteId}}</span></p>
+                  </div>
+                  <div class="col-sm-6" style="padding-left: 0px !important; padding-right: 0px !important;">
+                    <div class="col-sm-4" style="padding-left: 0px !important; padding-right: 0px !important; color: rgb(245, 220, 145); text-align: right;">
+                      <span style="text-align: right; font-weight: 600;">Destination :</span>
+                    </div>
+                    <div class="col-sm-8" style="padding-left: 0px !important; padding-right: 0px !important;">
+                      <span class="qt_bd">{{userData?.destination}}({{userData?.destinationCity}},{{userData?.destinationState}})</span>
+                    </div>
+                  </div>
+              </div>
+                <div class="row">
+                  <div class="col-sm-6 text-center">
+                    <p class="qt_hd">Carrier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:<span class="qt_bd">{{userData?.carrier}}</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered" >
+                  <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Class</th>
+                    <th>Weight&nbsp;(Pounds)</th>
+                    <th>Rate</th>
+                    <th>Charge</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td></td>
+                    <td class="td_right">
+                      <div *ngFor="let classData of modalData?.classification" >{{classData}}</div></td>
+                    <td class="td_right">
+                      <div *ngFor="let weight of modalData?.weight">{{weight}}</div></td>
+                    <td class="td_right">
+                      <div>&nbsp;</div>
+                    </td>
+                    <td class="td_right">
+                      <div>&nbsp;</div>
+                    </td>
+                  </tr>
+                   <tr>
+                    <td class="td_left">Total Weight and Charge</td>
+                    <td></td>
+                    <!-- <td></td> -->
+                    <td class="td_right">{{modalData?.totalWeight}}</td>
+                    <td></td>
+                    <td class="td_right">${{modalData?.discountCharge}}</td>
+                   </tr>
+                   <tr>
+                    <td class="td_left">Fuel Surcharge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{modalData?.fuelCharges}}</td><!-- fuelcharge will not come for certain result-->
+                  </tr>
+                  <tr>
+                    <td class="td_left">High Cost</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{modalData?.highCostDeliveryCharge}}</td>
+                  </tr>
+                  <tr *ngIf="modalData?.deliveryCharge !== 0">
+                    <td class="td_left">Delivery Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right" id="modalSSCharge">${{modalData?.deliveryCharge}}</td>
+                  </tr>
+                  <tr>
+                      <td class="td_left">Single Shipment Charge</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="td_right">${{modalData?.singleShipmentCharge}}</td>
+                    </tr>
+                  <tr *ngIf="modalData?.additionalCharge !== 0">
+                    <td class="td_left">Additional Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{modalData?.additionalCharge}}</td>
+                  </tr>
+                  <tr *ngIf="modalData?.additionalCACharge !== 0">
+                    <td class="td_left">CA Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{modalData?.additionalCharge}}</td>
+                  </tr>
+                  <tr>
+                      <td class="td_left">
+                      <table>
+                      <tr ><td colspan="2" class="td_left" style="padding:0px">Accessorial Charge</td></tr>
+                      <tr *ngFor="let assessorial of assessorialList"><td class="td_left" style="padding:0px">{{assessorial.name}}</td><td class="td_right" style="padding:0px">- {{assessorial.cost}}</td></tr>
+                      </table></td>
+                      <td ></td>
+                      <td ></td>
+                      <td ></td>
+                      <td class="td_right" style="vertical-align: bottom">${{modalData?.assessorialCharge}}</td>
+                      </tr>
+                  <tr>
+                    <td class="td_left">Total Charge</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td_right">${{modalData?.totalCharge}}</td>
+                  </tr>
+                </tbody>
+                </table>
+                <div>
+                <button  class="btn btn-primary" style="background-color: transparent;
+               border: 2px solid #fff;
+              float: right;
+               margin: 1em;" id="sendMail" (click)="sendMail(quoteDetailsId, setSalesRepId, 'externalCustomer', modalData?.factor)" data-toggle="tooltip" data-placement="left" title="Send Email"><em class="fa fa-envelope" aria-hidden="true"></em>&nbsp;Send Email</button>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- //login-page -->
+
+    </div>
+
+
+  </div>
+
+<div id="description-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+       
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF">DESCRIPTION</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <textarea  class="form-control" rows="5"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-4 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="popup-modal" class="modal" role="dialog">
+      <div class="modal-dialog modal-sm">
+      <!-- Modal content-->
+      <div class="modal-content">
+      <div class="modal-body" style="background-color: #134c3e;margin: 10px 10px 10px 10px;padding: 20px 10px 0px 10px;">
+      <div class="row">
+      <button type="button" class="close" data-dismiss="modal"(click)="close()">&times;</button>
+      </div>
+      <div class="row" style="margin-right: 0px;margin-left: 0px;padding: 30px 10px;background-color: #134c3e;border-bottom:1px solid #fff">
+      <div class="col-md-12 text-left">
+      <p class="para" style="color: #fff;">There is a single shipment cost of $<span style="color:#e4bfac;font-weight: 600">{{singleShipmentValue}}</span>. Do you want to add this cost?</p>
+      </div>
+      </div>
+      <div class="row" style="margin-top: 20px">
+        <div class="col-md-5 col-md-push-1 col-xs-6 text-left">
+          <button class="confirm-button" data-dismiss="modal" (click)="getShipmentValue(singleShipmentValue,'yes')"><em class="fa fa-check"></em>Yes</button>
+      </div>
+      <div class="col-md-5 col-md-push-1 col-xs-6 text-left">
+      <button class="confirm-button" data-dismiss="modal" (click)="getShipmentValue(singleShipmentValue,'no')"><em class="fa fa-close"></em>No</button>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>

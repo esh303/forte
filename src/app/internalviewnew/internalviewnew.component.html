@@ -1,0 +1,30 @@
+<div class="banner-w3layoutsSales">
+    <!--Top-Bar-->
+    <div class="header">
+        <nav class="navbar navbar-default">
+            <app-header></app-header>
+            <div class="clearfix"></div>
+        </nav>
+    </div>
+
+    <div class="w3l_banner_info" id="name">
+        <h1 class="text-center" style="font-size:20px;">LTL Rates</h1>
+        <div *ngIf="!emergencyStop" class="col-md-12 col-sm-12 banner-form-agileinfo">
+            <h1 class="text-center" style="font-size:20px; color:red"><span>
+                    <b *ngIf="!emergencyStopYRC">YRC, </b><b *ngIf="!emergencyStopEconomy"> FEDEX ECONOMY, </b> <b
+                        *ngIf="!emergencyStopPriority">FEDEX PRIORITY, </b> <b
+                        *ngIf="!emergencyStopReddaway">REDDAWAY</b>
+                </span>Rates are currently unavailable due to system maintenance. Please contact Forte customer service
+                @ 253.926.5456.</h1>
+        </div>
+
+        <div class="col-md-12 col-sm-12 banner-form-agileinfo">
+            <form class="form-container" [formGroup]="transportOrigin">
+                <div class="col-sm-10 col-md-8 col-sm-push-1 col-md-push-2 list-div">
+
+               
+                  </div>
+                  </form>  
+         </div>       
+    </div>
+</div>

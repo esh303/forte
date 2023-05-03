@@ -1,0 +1,73 @@
+<div class="banner-w3layoutsSales" id="home">
+  <div class="header">
+    <nav class="navbar navbar-default">
+
+      <app-header></app-header>
+      <div class="clearfix"> </div>
+    </nav>
+  </div>
+  <div class="clearfix">&nbsp;</div>
+  <style>
+    input[type="file"] {
+      display: none;
+    }
+    .custom-file-upload {
+      border: 1px solid #ccc;
+      display: inline-block;
+      /* padding: 12px 12px; */
+      padding: 11px 25px;
+      font-size: 12.5px;
+      cursor: pointer;
+      margin-top: 0px;
+      margin-right: 10px;
+    }
+  </style>
+   <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-12">
+        <div class="row">
+          <form [formGroup]="companySummaryForm" autocomplete="off">
+            <div class="col-md-3">
+              <h3 class="" style="color: #a2705c; margin-top: 10px !important; margin-bottom: 20px !important;">Companies List</h3>
+            </div>
+            <div class="col-md-5">
+              <div class="input-group ">
+                <select class="selectField" id="customer" placeholder="Search By Company Name" formControlName="company" (change)="getCustomerInformation($event, 'chooseCompany')">
+                  <option value="" hidden>Search By Company Name</option>
+                  <option *ngFor="let company of companyFeatures" value="{{company.id}}">{{company.companyName}}</option>
+                </select>
+                <div class="input-group-btn" >
+                  <button class="btn btn-default"  type="submit">
+                    <em class="fa fa-times-circle"></em>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="col-md-2">
+              <a _ngcontent-c3="" class="blulogisticsBtn pull-right" id="addCustomer" href="javascript:void(0)">Add Company</a>
+            </div> -->
+
+            <!-- <div class="col-md-2">
+              <button _ngcontent-c3="" class="blulogisticsBtn pull-right" id="downloadCustomer" (click)="downloadData()">Download</button>
+            </div> -->
+
+
+            <!-- <div>
+               <button class="button" (click)="upload()">Upload</button>
+             </div>-->
+          </form>
+          </div>
+        </div>
+        </div>
+        <!-- <div class="row"> -->
+            <div class="row" style="padding: 20px 10px;background-color: #efefef;" *ngIf="showContact">
+                <div class="col-md-12 text-left">
+                  <p class="para" style="font-size:25px;">There is a problem with your request, Please contact
+                    <span style="color:#a4745b">admin@Fortetlc.com</span> or call
+                    <span style="color:#a4745b">800.501.9922</span>.</p>
+                </div>
+              </div>
+        <!-- </div> -->
+        </div>
+  </div>
+  

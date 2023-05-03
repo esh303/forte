@@ -1,0 +1,1601 @@
+
+<div class="header" >
+  <nav class="navbar navbar-default">
+    <app-header></app-header>
+
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="container-fluid" *ngIf="showActiveRequest">
+  <div class="row">
+    <app-sidemenu *ngIf="showSideMenu"></app-sidemenu>
+
+      <div class="col-md-10 main_cont">
+        <form [formGroup]="searchForm" >
+        <h2 class="main-head">{{headerName}}<span class="legend" data-toggle="modal" data-target="#legend-modal"><em class="fa fa-key"></em></span></h2>
+        <div class="col-md-12  div-border">
+
+          <div class="row">
+            <div class="col-md-4 form-group">
+              <label>Forte Reference No.</label>
+              <input type="text" class="form-control" maxlength="15" placeholder="Forte Reference No" formControlName="quoteReferenceNumber"ngPattern="/[0-9]/"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope">
+             
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Origin zip</label>
+              <input type="text" class="form-control"  placeholder="Origin zip" maxlength="5" formControlName="shipperZip"ngPattern="/[0-9]/"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"  autocomplete="nope">
+             
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Destination zip</label>
+              <input type="text" class="form-control"  placeholder="Destination zip" maxlength="5" formControlName="consigneeZip"ngPattern="/[0-9]/"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"  autocomplete="nope">
+           
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4" form-group *ngIf="adminShipperInput">
+              <label>Shipper &nbsp;<span *ngIf="showErrorCustomer" style="color: Red">Please choose different customer</span></label><span
+              style="color: #FF0000"></span>
+              <input type="text" class="form-control typeahead" aria-label="Text input with dropdown button"
+                     placeholder="e.g. ABC Company" formControlName="shipperCompanyName"
+                     [typeahead]="customerFeatures"
+                     typeaheadOptionField="companyName"
+                     [typeaheadItemTemplate]="customItemTemplate"
+                     (typeaheadOnSelect)="getRatingNotes($event.item.id)"  autocomplete="nope"
+                     (typeaheadNoResults)="getData($event)" autocomplete="off">
+            </div>
+
+            <div class="col-md-4" form-group *ngIf="shipperInput">
+              <label>Shipper &nbsp;<span *ngIf="showErrorCustomer" style="color: Red">Please choose different customer</span></label><span
+              style="color: #FF0000"></span>
+              <input type="text" class="form-control" placeholder="consigneeCompany" formControlName="shipperCompanyName"  autocomplete="nope">
+
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Consignee Company</label>
+              <input type="text" class="form-control" placeholder="consigneeCompany" formControlName="consigneeCompany"  autocomplete="nope">
+            </div>
+            <div class="col-md-4 form-group" *ngIf="type !== 'ftltrack'">
+              <label>Status</label>
+              <select class="form-control sel-opt" formControlName="status">
+                <option value=""hidden>Select</option>
+                <option class="sel-opt" value="Rate Request">Rate Request</option>
+                <option class="sel-opt" value="Rate Quote">Rate Quote</option>
+                <option class="sel-opt" value="Accepted">Accepted</option>
+                <option class="sel-opt" value="Booked">Booked</option>
+                <option class="sel-opt" value="Shipped">Shipped</option>
+                <option class="sel-opt" value="Declined">Declined</option>
+                <option class="sel-opt" value="Declined">Cancelled</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group" *ngIf="type === 'ftltrack'">
+                <label>Status</label>
+                <select class="form-control sel-opt" formControlName="status" [disabled]="true">
+                  <option value=""hidden>Select</option>
+                  <option class="sel-opt" value="Rate Request">Rate Request</option>
+                  <option class="sel-opt" value="Rate Quote">Rate Quote</option>
+                  <option class="sel-opt" value="Accepted">Accepted</option>
+                  <option class="sel-opt" value="Booked">Booked</option>
+                  <option class="sel-opt" value="Shipped">Shipped</option>
+                  <option class="sel-opt" value="Declined">Declined</option>
+                  <option class="sel-opt" value="Declined">Cancelled</option>
+                </select>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 form-group">
+              <label>Transportation Type</label>
+              <select class="form-control" formControlName="transportationType">
+                  <option value=""hidden>Select</option>
+                 <option value="truckload">Truckload</option>
+                <option value="volume">Volume</option>
+                <option value="air">Air</option>
+                <option value="ocean">Ocean</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Quote Type</label>
+              <select class="form-control" formControlName="quoteType">
+                <option value=""hidden>Select</option>
+                <option value="fullRateQuote">Full</option>
+                <option value="Quickie quote">Quickie</option>
+              </select>
+            </div>
+
+            <div class="col-md-4 form-group">
+              <label>Control No.</label>
+              <input type="text" class="form-control"  placeholder="Control No." formControlName="controlNumber" ngPattern="/[0-9]/"
+                     onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')"  autocomplete="nope">
+            </div>
+          </div>
+          
+          <div class="row" >
+              <div class="col-md-4 square-button text-center">
+                <a class="noIbar" (click)="submitSearch(searchForm.value)"><em class="fa fa-search icon"></em>Search</a>
+              </div>
+              <div class="col-md-4 square-button text-center">
+                <a class="noIbar" (click)="clear()"><em class="fa fa-close icon"></em>Clear</a>
+              </div>
+              <div class="col-md-4 square-button text-center">
+                <a class="noIbar" (click)="refresh()"><em class="fa fa-refresh icon"></em>Refresh</a>
+              </div>
+             
+            </div>
+            <div class="row" *ngIf="type === 'ftltrack' && specification === 'previousWeekData'">
+              <div class="col-md-6 col-md-push-3 square-button text-center">
+                <a class="noIbar" (click)="retrieveAllData('showAll')"><em class="fa fa-refresh icon"></em>Retrieve All Data</a>
+              </div>
+            </div>
+            <div class="row" *ngIf="type === 'ftltrack' && specification === 'allData'">
+                <div class="col-md-6 col-md-push-3 square-button text-center">
+                  <a class="noIbar" (click)="retrieveAllData('showLatest')"><em class="fa fa-refresh icon"></em>Retrieve Recent Data</a>
+                </div>
+              </div>
+          <div class="text-center" *ngIf="showLoader">
+    <span style="padding: 35px; color: #a2705c; font-size: 20px; ">
+        <em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #a2705c; font-size: 20px;"></em>&nbsp;Loading</span>
+          </div>
+        </div>
+      </form>
+      </div>
+
+
+
+    <div  class="col-md-8 col-md-push-1 table-div" style="margin-top: 30px">
+
+      <div class="col-md-10 col-md-push-1 div-border text-center" *ngIf="tableLoader">
+<span style="padding:40px; color: #4c7971; font-size: 22px; ">
+<em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #4c7971;font-size: 22px;"></em>&nbsp;Loading</span>
+      </div>
+    </div>
+
+    <div class="col-md-10 table-div" style="padding: 2em" *ngIf="tableValues">
+      <div class="row">
+
+        <div class="table-responsive">
+          <div class="text-right" *ngIf="adminTable">
+            <button class="leg" style="margin-bottom: 10px" (click)="refreshButtonCheck(searchForm.value, 'admin')">
+              <em class="fa fa-refresh" style="margin-right:5px"></em>Refresh Table</button>
+          </div>
+          <div class="text-right" *ngIf="userTable">
+            <button class="leg" style="margin-bottom: 10px" (click)="refreshButtonCheck(searchForm.value, 'user')">
+              <em class="fa fa-refresh" style="margin-right:5px"></em>Refresh Table</button>
+          </div>
+          <table class="table-responsive table-bordered">
+            <thead>
+            <tr>
+              <th class="padding-table-active">Forte RN</th>
+              <th class="padding-table-active">Shipper Company Name</th>
+              <!-- <th class="padding-table-active">Shipper Contact Name</th> -->
+              <th class="padding-table-active">Consignee Company Name</th>
+              <!-- <th class="padding-table-active">Consignee Contact Name</th> -->
+              <th class="padding-table-active">Date Created</th>
+              <th class="padding-table-active">Origin zip</th>
+              <th class="padding-table-active">Destination zip</th>
+              <th class="padding-table-active">Type</th>
+              <th class="padding-table-active">Status</th>
+              <!--<th align="center" style="font-weight: 500; color: #FFFFFF!important;">Discussions</th>-->
+              <th>Control No.</th>
+              <th *ngIf="type === 'ftltrack'">Track</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of bolData | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+              <!--<div *ngIf="customerType === 'admin'">-->
+              <td *ngIf="data.adminViewed === false && customerType === 'admin'" align="center"><a class="" href="#rate-modal" class="blink" (click)="searchId(data, data.quoteReferenceNumber); getChatById(data.quoteReferenceNumber, data.id, 'quotechat')" data-toggle="modal" data-hover="Quote">{{data.quoteReferenceNumber}}</a></td>
+              <td *ngIf="data.adminViewed === true && customerType === 'admin'" align="center"><a class="" href="#rate-modal" style="color: #4c7a71;text-decoration: underline;" (click)="searchId(data, data.quoteReferenceNumber); getChatById(data.quoteReferenceNumber, data.id, 'quotechat')" data-toggle="modal" data-hover="Quote">{{data.quoteReferenceNumber}}</a></td>
+              <td *ngIf="data.customerViewed === false && customerType === 'externalCustomer'" align="center"><a class="" href="#rate-modal" class="blink"  (click)="searchId(data, data.quoteReferenceNumber); getChatById(data.quoteReferenceNumber, data.id, 'quotechat')" data-toggle="modal" data-hover="Quote">{{data.quoteReferenceNumber}}</a></td>
+              <td *ngIf="data.customerViewed === true && customerType === 'externalCustomer'" align="center"><a class="" href="#rate-modal" style="color: #4c7a71;text-decoration: underline;" (click)="searchId(data, data.quoteReferenceNumber); getChatById(data.quoteReferenceNumber, data.id, 'quotechat')" data-toggle="modal" data-hover="Quote">{{data.quoteReferenceNumber}}</a></td>
+              <!--</div>-->
+              <td align="center" *ngIf="data.shipperCompanyName !== undefined && data.shipperCompanyName !==null && data.shipperCompanyName !==''">{{data.shipperCompanyName}}</td>
+              <td align="center" *ngIf="data.shipperCompanyName === undefined || data.shipperCompanyName ==null || data.shipperCompanyName ==''">-</td>
+
+              <!-- <td align="center" *ngIf = "data.shipperContactName !== undefined && data.shipperContactName !==null && data.shipperContactName !==''">{{data.shipperContactName}}</td>
+              <td align="center" *ngIf = "data.shipperContactName === undefined || data.shipperContactName ==null || data.shipperContactName ==''">-</td> -->
+              <td align="center" *ngIf="data.consigneeCompany !== undefined && data.consigneeCompany !==null && data.consigneeCompany !==''">{{data.consigneeCompany}}</td>
+              <td align="center" *ngIf="data.consigneeCompany === undefined || data.consigneeCompany ==null || data.consigneeCompany ==''">-</td>
+              <!-- <td align="center" *ngIf="data.consigneeContactName !== undefined && data.consigneeContactName !==null && data.consigneeContactName !==''">{{data.consigneeContactName}}</td> -->
+              <!-- <td align="center">{{data.customerName}}</td> -->
+              <!-- <td align="center" *ngIf="data.consigneeContactName === undefined || data.consigneeContactName ==null || data.consigneeContactName ==''">-</td>  -->
+              <td align="center">{{data.createdOn | date: 'MM/dd/yyyy'}}</td>
+              <td align="center">{{data.shipperZip}}</td>
+              <td align="center">{{data.consigneeZip}}</td>
+              <td align="center">{{data.transportationType}}</td>
+              <td align="center">{{data.status}}</td>
+              <!--<td align="center"><a class="" data-toggle="modal" href="#thread-modal" style="color: #4c7a71;text-decoration: underline;" (click)="getChatById(data.id, 'allchat')">link</a></td>-->
+              <td align="center">{{data.salomonReferenceNumber}}</td>
+              <!-- <td align="center" *ngIf="data?.status === 'Shipped'"  (click)="sendMailOnTrack(data.id)"><i class="fa fa-truck" tooltip="Shipment can be tracked" style="color: blue"></i></td> -->
+              <td align="center" *ngIf="data?.status !== 'Shipped' && type === 'ftltrack'" ><em class="fa fa-truck" tooltip="Shipment cannot be tracked"></em></td>
+              <td align="center" *ngIf="data?.status === 'Shipped' && type === 'ftltrack'" ><a style="color:#7e6e72" href={{data?.trackLink}} target="_blank"><em class="fa fa-truck" tooltip="Shipment can be tracked"></em></a></td>
+            </tr>
+            </tbody>
+
+          </table>
+
+
+
+        </div>
+
+        <div class="row">
+          <div class="col-sm-4 pull-right">
+            <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+          </div>
+          <div class="col-sm-4">
+            <label>Items per page</label>
+            <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+              <option *ngFor="let number of numberOfPages"> {{number}}</option>
+            </select>
+          </div>
+        </div>
+
+
+      </div>
+
+
+</div>
+    <div class="col-md-10 main_cont" *ngIf="searchErrorMessage">
+      <div class="col-md-10 col-md-push-1 div-border">
+        <h4 class="sub-head">No Results to Show</h4>
+        <label>Not Found</label>
+        <div class="row">
+          <div class="col-md-4">
+            <label></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div class="container-fluid" *ngIf="showViewAllForm">
+  <div class="row">
+    <app-sidemenu></app-sidemenu>
+    <div class="col-md-10 main_cont">
+<form [formGroup]="chatHistoryForm">
+      <h4 class="sub-head">Discussion Threads<span class="legend" style="margin-top: -13px;" (click)="backToActive()">Back to Active Request</span></h4>
+      <div class="table-thread">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+            <tr>
+              <td width="10%">&nbsp;&nbsp;&nbsp;</td>
+              <td width="70%">Topics</td>
+              <td width="20%">Freshness</td>
+            </tr>
+            </thead>
+            <tbody >
+            <tr *ngFor="let response of customerMessage">
+              <td *ngIf="response.image === false"><img src="../../assets/images/ext-user.png" style="height: 45px;width: 45px" ></td>
+              <td *ngIf="response.image === true"><img src="../../assets/images/forte-user.png" style="height: 45px;width: 45px" ></td>
+
+              <td>{{response.customerMessage}}
+                <p><span class="brown bold">Posted By : </span><span class="green bold">{{response.postedBy}}</span><p>
+                <p *ngIf="response?.companyName!==undefined"><span class="brown bold">Company Name : </span><span class="green bold">{{response.companyName}}</span><p>
+              </td>
+              <td>{{response.createdOn | date: 'MM/dd/yyyy'}}
+              </td>
+            </tr>
+
+
+            <tr >
+              <td *ngIf="!showAdminChatData"><img src="../../assets/images/ext-user.png" style="height: 45px;width: 45px" ></td>
+              <td *ngIf="showAdminChatData"><img src="../../assets/images/forte-user.png" style="height: 45px;width: 45px" ></td>
+              <td> <textarea class="form-control" rows="3" placeholder="Add Comments" formControlName="message"></textarea>
+              </td>
+              <td>
+
+                <button (click)="sendChatMessage(chatHistoryForm.value, 'allchat')" data-dismiss="modal" class="detail"><em class="fa fa-send" aria-hidden="true" style="margin-right:5px;"></em>SEND</button>
+              </td>
+
+
+            </tr>
+
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+</form>
+    </div>
+
+  </div>
+</div>
+<app-footer></app-footer>
+
+<!-- Legend Modal -->
+
+<div id="legend-modal" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><em class="fa fa-key"></em>&nbsp;Legend</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="legend-body">
+          <div class="row">
+            <div class="col-md-6 col-md-push-3 text-center">
+              <table class="table legend-table table-responsive">
+                <caption>Rate Types</caption>
+                <tbody>
+                <tr>
+                  <td class="th-head"><em class="fa fa-list-alt"></em></td><td class="th-body">Full Rate Quote</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-cube"></em></td><td class="th-body">LTL Rate Quote</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-bolt"></em></td><td class="th-body">Quickie Quote</td>
+                </tr>
+                </tbody>
+              </table>
+              <table class="table legend-table table-responsive">
+                <caption>Status Types</caption>
+                <tbody>
+                <tr>
+                  <td class="th-head"><em class="fa fa-clock-o"></em></td><td class="th-body">Pending Request</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-usd"></em></td><td class="th-body">Quoted Request</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-cog"></em></td><td class="th-body">Processing as a shipment</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-warning"></em></td><td class="th-body">Suspended Rate Quote</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-question-circle"></em></td><td class="th-body">Returned For Clarification</td>
+                </tr>
+                </tbody>
+              </table>
+              <table class="table legend-table table-responsive">
+                <caption>Action Icons</caption>
+                <tbody>
+                <tr>
+                  <td class="th-head"><em class="fa fa-file-text"></em></td><td class="th-body">Opens the BOL associated with that rate quote.</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-file-text-o"></em></td><td class="th-body">Opens a form to create a BOL out of that rate quote's info.</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-archive"></em></td><td class="th-body">Send that rate quote to the archive.</td>
+                </tr>
+                <tr>
+                  <td class="th-head"><em class="fa fa-edit"></em></td><td class="th-body">Opens a form to edit the information of a rate quote request.</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+<div id="thread-modal" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-lg">
+<form [formGroup]="chatForm">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" style="color: #ffffff">Discussion Threads</h4>
+      </div>
+      <div class="modal-body">
+        <div class="table-thread">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+              <tr>
+                <td width="10%">&nbsp;&nbsp;&nbsp;</td>
+                <td width="70%">Topics</td>
+                <td width="20%">Last Updated</td>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let response of customerMessage">
+                <td *ngIf="response.image === false"><img src="../../assets/images/ext-user.png" style="height: 45px;width: 45px" ></td>
+                <td *ngIf="response.image === true"><img src="../../assets/images/forte-user.png" style="height: 45px;width: 45px" ></td>
+                <td>{{response.customerMessage}}
+                  <p><span class="brown bold">Posted By : </span><span class="green bold">{{response.postedBy}}</span><p>
+                  <p *ngIf="response?.companyName!== undefined"><span class="brown bold">Posted By : </span><span class="green bold">{{response.postedBy}}</span><p>
+                </td>
+                <td>{{response.createdOn | date: 'MM/dd/yyyy'}}
+                </td>
+
+              </tr>
+
+              <tr >
+                <td *ngIf="!showAdminChatData"><img src="../../assets/images/ext-user.png" style="height: 45px;width: 45px" ></td>
+                <td *ngIf="showAdminChatData"><img src="../../assets/images/forte-user.png" style="height: 45px;width: 45px" ></td>
+                <td> <textarea class="form-control" rows="3" placeholder="Add Comments" formControlName="message"></textarea>
+                </td>
+                <td>
+
+                  <a (click)="sendChatMessage(chatForm.value, 'quotechat')" class="detail"><em class="fa fa-send" style="margin-right:5px;"></em>SEND</a>
+                </td>
+
+
+              </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="">
+          <div class="row">
+            <div class="col-md-3 col-md-push-3 green-button text-center">
+              <a (click)="viewAll()" data-dismiss="modal"><em class="fa fa-eye" aria-hidden="true" style="margin-right:5px;"></em>VIEW ALL</a>
+            </div>
+            <div class="col-md-3 col-md-push-3 green-button text-center">
+              <a href="#" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>CLOSE</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+</form>
+  </div>
+</div>
+
+
+<!-- Chat conversation modal --->
+
+
+ <!-- chat Modal end -->
+
+
+
+<!-- rate quote Modal -->
+<div *ngIf="tableValues">
+  <div id="rate-modal" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+          <i  class="close" data-dismiss="modal" style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times;</i>
+          <h4 style="color: #FFFFFF" class="modal-title">Forte Rate Quote</h4>
+        </div>
+        <div class="modal-body">
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="div-margin text-left">
+                <p><span class="green bold">Status : </span><br><span class="brown bold">{{clickIdData?.status}}</span></p>
+                <p><span class="green bold">Created Date : </span><br><span class="brown bold">{{clickIdData?.createdOn | date: 'MM/dd/yyyy'}}</span></p>
+                <p><span class="green bold">Forte Reference Number : </span><br><span class="brown bold">{{clickIdData?.quoteReferenceNumber}}</span></p>
+                <p><span class="green bold">Customer Name : </span><br><span class="brown bold">{{clickIdData?.customerName}}</span></p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="div-margin text-center">
+                <h3 style="text-transform: uppercase" class="green bold"><em class="fa fa-truck"></em>  {{clickIdData?.transportationType}}</h3>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="div-margin text-right">
+                <p><span class="green bold">Control Number : </span><br><span class="brown bold">{{clickIdData?.salomonReferenceNumber}}</span></p>
+                <p><span class="green bold">Time Created : </span><br><span class="brown bold">{{clickIdData?.createdOn | date:'shortTime'}}</span></p>
+                <p><span class="green bold">Company Name : </span><br><span class="brown bold">{{clickIdData?.shipperCompanyName}}</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h4 class="sub-head text-left">Shipper Information</h4>
+              <div class="track-quote" *ngIf="fullQuote">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                      <th width="40%">Shipper:</th>
+                      <td width="60%">{{clickIdData?.shipperCompanyName}}</td>
+                    </tr>
+                    <tr>
+                      <th>Contact Name:</th>
+                      <td>{{clickIdData?.shipperContactName}}</td>
+                    </tr>
+
+                    <tr>
+                      <th>Phone Number:</th>
+                      <td>{{clickIdData?.shipperPhone}}</td>
+                    </tr>
+                    <tr>
+                      <th>Shipper Address:</th>
+                      <td>{{clickIdData?.shipperStreet1}}, {{clickIdData?.shipperStreet2}}, {{clickIdData?.shipperCity}},
+                        {{clickIdData?.shipperState}}, {{clickIdData?.shipperZip}}, {{clickIdData?.shipperCountry}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="track-quote" *ngIf="quikeQuote">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr *ngIf="showShipperInformation">
+                      <th width="40%">Shipper</th>
+                      <td width="60%">{{clickIdData?.shipperCompanyName}}</td>
+                    </tr>
+                    <tr *ngIf="showShipperInformation">
+                      <th>Contact Name</th>
+                      <td>{{clickIdData?.shipperContactName}}</td>
+                    </tr>
+
+                    <tr *ngIf="showShipperInformation">
+                      <th>Phone Number</th>
+                      <td>{{clickIdData?.shipperPhone}}</td>
+                    </tr>
+                    <tr *ngIf="showShipperInformation">
+                      <th>Shipper Address</th>
+                      <td>{{clickIdData?.shipperStreet1}},<br>
+                        {{clickIdData?.shipperCity}}, {{clickIdData?.shipperState}}, {{clickIdData?.shipperZip}}</td>
+                    </tr>
+                    <tr *ngIf="!showShipperInformation">
+                      <th>Shipper Address</th>
+                      <td>{{clickIdData?.shipperCity}}, {{clickIdData?.shipperState}}, {{clickIdData?.shipperZip}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="col-md-6">
+              <h4 class="sub-head text-left">Consignee Information</h4>
+              <div class="track-quote" *ngIf="fullQuote">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                      <th width="40%">Consignee:</th>
+                      <td width="60%">{{clickIdData?.consigneeCompany}}</td>
+                    </tr>
+                    <tr>
+                      <th>Contact Name:</th>
+                      <td>{{clickIdData?.consigneeContactName}}</td>
+                    </tr>
+
+                    <tr>
+                      <th>Phone Number:</th>
+                      <td>{{clickIdData?.consigneePhone}}</td>
+                    </tr>
+                    <tr>
+                      <th>Consignee Address:</th>
+                      <td>{{clickIdData?.consigneeStreet1}}, {{clickIdData?.consigneeStreet2}}, {{clickIdData?.consigneeCity}},
+                        {{clickIdData?.consigneeState}}, {{clickIdData?.consigneeZip}}, {{clickIdData?.consigneeCountry}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="track-quote" *ngIf="quikeQuote">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr *ngIf="showConsigneeInformation">
+                      <th width="40%">Consignee</th>
+                      <td width="60%">{{clickIdData?.consigneeCompany}}</td>
+                    </tr>
+                    <tr *ngIf="showConsigneeInformation">
+                      <th>Contact Name</th>
+                      <td>{{clickIdData?.consigneeContactName}}</td>
+                    </tr>
+
+                    <tr *ngIf="showConsigneeInformation">
+                      <th>Phone Number</th>
+                      <td>{{clickIdData?.consigneePhone}}</td>
+                    </tr>
+                    <tr *ngIf="showConsigneeInformation">
+                      <th>Consignee Address</th>
+                      <td>{{clickIdData.consigneeStreet1}},<br>
+                        {{clickIdData?.consigneeCity}}, {{clickIdData?.consigneeState}}, {{clickIdData?.consigneeZip}}</td>
+                    </tr>
+                    <tr *ngIf="!showConsigneeInformation">
+                      <th>Consignee Address</th>
+                      <td>{{clickIdData?.consigneeCity}}, {{clickIdData?.consigneeState}}, {{clickIdData?.consigneeZip}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <h4 class="sub-head text-left">Shipment Information</h4>
+            <div class="table-div">
+              <div class="table-responsive">
+
+                <table class="table table-bordered" *ngIf="nonVolumeType">
+                  <thead>
+                  <tr>
+
+                    <td>Pieces</td>
+                    <td>HM(X)</td>
+                    <td>Weight(lbs)</td>
+                    <td>Description</td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let val of lineItem">
+                    <td>{{val.Pieces}}</td>
+                    <td>{{this.hazmat}}</td>
+                    <td>{{val.Weight.Value}} {{val.Weight.Units}}</td>
+                    <td>{{val.Description}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><span class="green">Total Weight (LB) :</span> {{weightTotal}}</td>
+                    <td colspan="2"><span class="green">Total Pieces :</span> {{piecesTotal}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" *ngIf="forTruck"><span class="green">Type of Equipment :</span> {{clickIdData?.typeOfEquipment}}</td>
+                    <td colspan="3" *ngIf="forVolume"><span class="green">Linear Feet of Trailer :</span> {{clickIdData?.linearFeetOfTrailer}}</td>
+                    <td colspan="3" *ngIf="forAir"><span class="green">Service Level :</span> {{clickIdData?.serviceLevel}}</td>
+                    <td colspan="5" *ngIf="forOcean"><span class="green">Competitive Price :</span> $ {{clickIdData?.competitivePrice}}</td>
+                    <td colspan="2" *ngIf="forOther"><span class="green">Competitive Price :</span> $ {{clickIdData?.competitivePrice}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><span class="green">Shipment Ready Date :</span> {{clickIdData?.shipmentReadyDate | date: 'MM/dd/yyyy'}}</td>
+                    <td colspan="2"><span class="green">Requested Delivery Date :</span> {{clickIdData?.requestedDeliveryDate | date: 'MM/dd/yyyy'}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="6"><span class="green">Special Instructions :</span>{{clickIdData?.notes}} </td>
+                  </tr>
+
+
+                  <tr *ngIf="upDateSuccess">
+                    <td colspan="3"><span class="green"><label>Control Number:</label></span>{{clickIdData?.salomonReferenceNumber}}</td>
+                    <td colspan="3"><span class="green"><label> Rate:</label></span><b> $ {{clickIdData?.amount}}</b></td>
+                  </tr>
+                  <tr *ngIf="acceptCustomerFlag">
+                    <td colspan="3" *ngIf="showFillInformation"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#quickie-modal">ACCEPT</button></td>
+                    <td colspan="3" *ngIf="!showFillInformation"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#fulltruckload-modal" (click) = "fullTruckload(clickIdData)">ACCEPT</button></td>
+                    <td colspan="3"><button class="btn green-update-button" style="color:#ffffff" (click) = "declineQuote(clickIdData?.id)">DECLINE</button></td>
+                  </tr>
+                  <tr *ngIf="showForOperationTeamBooked">
+                      <td colspan="8"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal"  data-target="#booked-modal">BOOK</button></td>
+                  </tr>
+                  <tr *ngIf="!showCancelOrder">
+                      <td colspan="8"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#delete-modal">Cancel the Order</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!--<table class="table table-bordered" *ngIf="nonVolumeType">-->
+                  <!--<tbody>-->
+                  <!--<form [formGroup]="amountUpdate" >-->
+                    <!--<tr *ngIf="showForOperationTeam">-->
+                      <!--<td colspan="3"><span class="green"><label>Control Number:</label><input type="text"  formControlName="nonVolumeRefNum" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"-->
+                                                                                               <!--(change)="checkForNumber(amountUpdate.controls.nonVolumeRefNum.value, 'nonVolumeRefNum')">-->
+                      <!--<app-error-message [control]="amountUpdate.controls.nonVolumeRefNum"-->
+                                         <!--style="font-size: 13px;"></app-error-message>-->
+                      <!--</span></td>-->
+                      <!--<td colspan="3"><span class="green"><label>Rate:</label><input type="text"  formControlName="nonVolumeAmount" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"-->
+                                                                                     <!--(change)="checkForNumber(amountUpdate.controls.nonVolumeAmount.value, 'nonVolumeAmount')">-->
+                      <!--<app-error-message [control]="amountUpdate.controls.nonVolumeAmount"-->
+                                         <!--style="font-size: 13px;"></app-error-message>-->
+                      <!--</span></td>-->
+                    <!--</tr>-->
+
+
+                    <!--<tr *ngIf="showForOperationTeam">-->
+
+                      <!--<td colspan="3"> <span class="green"><label>Shipment Ready Date(update): </label>-->
+                          <!--<input placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"-->
+                                 <!--date-only="true" formControlName="nonVolumeReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">-->
+                          <!--&lt;!&ndash;<app-error-message [control]="amountUpdate.controls.nonVolumeReadyDate"&ndash;&gt;-->
+                                             <!--&lt;!&ndash;style="font-size: 13px;"></app-error-message>&ndash;&gt;-->
+
+                      <!--</span>-->
+                      <!--</td>-->
+
+                      <!--<td colspan="3"><span class="green"><label>Requested Delivery Date(update): </label>-->
+                        <!--<span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>-->
+                         <!--<input placement="top" ngModel [minDate]="nonVolMinDate2" bsDatepicker-->
+                                 <!--date-only="true" (bsValueChange)="onValueChange($event, 'delivery')" [bsConfig]="{ showWeekNumbers: false }"-->
+                                 <!--formControlName="nonVolumeDeliveryDate">-->
+                          <!--&lt;!&ndash;<app-error-message [control]="amountUpdate.controls.nonVolumeDeliveryDate"&ndash;&gt;-->
+                                             <!--&lt;!&ndash;style="font-size: 13px;"></app-error-message>&ndash;&gt;-->
+                      <!--</span>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+
+                    <!--<tr>-->
+                      <!--<td colspan="6" *ngIf="showForOperationTeam"><button *ngIf="dateValidation" class="btn green-update-button" style="color:#ffffff" (click)="updateRate(amountUpdate.value, clickIdData?.id, 'nonVolume')"-->
+                                                                           <!--[disabled]="(!amountUpdate.controls.nonVolumeRefNum.valid || !amountUpdate.controls.nonVolumeAmount.valid)">Update</button></td>-->
+                    <!--</tr>-->
+                  <!--</form>-->
+
+                  <!--</tbody>-->
+                <!--</table>-->
+
+                <table class="table table-bordered" *ngIf="volumeType">
+                  <thead>
+                  <tr>
+
+                    <td>Pieces</td>
+                    <td>HM(X)</td>
+                    <td>Weight(lbs)</td>
+                    <td>Description</td>
+                    <td>Dimensions (in.) (L*W*H)</td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let val of lineItem">
+                    <td>{{val?.Pieces}}</td>
+                    <td>{{this.hazmat}}</td>
+                    <td>{{val.Weight?.Value}} {{val.Weight.Units}}</td>
+                    <td>{{val?.Description}}</td>
+                    <td *ngIf="val.Dimensions?.Length !== null">{{val.Dimensions?.Length}}*{{val.Dimensions?.Width}}*{{val.Dimensions?.Height}}</td>
+                    <td *ngIf="val.Dimensions?.Length === null">No Dimensions</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><span class="green">Total Weight (LB) :</span> {{weightTotal}}</td>
+                    <td colspan="2"><span class="green">Total Pieces :</span> {{piecesTotal}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><span class="green">Type of Equipment :</span> {{clickIdData?.typeOfEquipment}}</td>
+                    <td colspan="2"><span class="green">Competitive Price :</span> $ {{clickIdData?.competitivePrice}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><span class="green">Shipment Ready Date :</span> {{clickIdData?.shipmentReadyDate | date: 'MM/dd/yyyy'}}</td>
+                    <td colspan="2"><span class="green">Requested Delivery Date :</span> {{clickIdData?.requestedDeliveryDate | date: 'MM/dd/yyyy'}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="6"><span class="green">Special Instructions : </span> {{clickIdData?.notes}} </td>
+
+                  </tr>
+
+                  <tr *ngIf="upDateSuccess">
+                    <td colspan="3"><span class="green"><label>Control Number: </label></span>{{clickIdData?.salomonReferenceNumber}}</td>
+                    <td colspan="3"><span class="green"><label> Rate: </label></span><b> $ {{clickIdData?.amount}}</b></td>
+                  </tr>
+                    <tr *ngIf="acceptCustomerFlag">
+                      <td colspan="3" *ngIf="showFillInformation"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#quickie-modal">ACCEPT</button></td>
+                      <td colspan="3" *ngIf="!showFillInformation"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#fulltruckload-modal" (click)="fullTruckload(clickIdData)">ACCEPT</button></td>
+                      <td colspan="3"><button class="btn green-update-button" style="color:#ffffff" (click) = "declineQuote(clickIdData?.id)">DECLINE</button></td>
+                    </tr>
+<tr *ngIf="showForOperationTeamBooked">
+    <!-- <td colspan="3"><label>Control Number</label><input type="text" placeholder="Enter the Control Number" [(ngModel)]="setControlNumber"  (change)="setValues(setControlNumber)"></td> -->
+    <td colspan="6"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#booked-modal">BOOK</button></td>
+
+</tr>
+<tr *ngIf="!showCancelOrder">
+    <td colspan="8"><button class="btn green-update-button" style="color:#ffffff" data-dismiss="modal" data-toggle="modal" data-target="#delete-modal">Cancel the Order</button></td>
+  </tr>
+                  </tbody>
+                </table>
+
+                <!--<table class="table table-bordered" *ngIf="volumeType">-->
+                  <!--<tbody>-->
+                  <!--<form [formGroup]="amountUpdate">-->
+                  <!--<tr *ngIf="showForOperationTeam">-->
+                  <!--<td colspan="3"><span class="green"><label>Control Number:</label><input type="text"  formControlName="volumeRefNum" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"-->
+                                                                                           <!--(change)="checkForNumber(amountUpdate.controls.volumeRefNum.value, 'volumeRefNum')">-->
+                  <!--<app-error-message [control]="amountUpdate.controls.volumeRefNum"-->
+                                     <!--style="font-size: 13px;"></app-error-message>-->
+                  <!--</span></td>-->
+                  <!--<td colspan="3"><span class="green"><label>Rate:</label><input type="text"  formControlName="volumeAmount" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"-->
+                                                                                 <!--(change)="checkForNumber(amountUpdate.controls.volumeAmount.value, 'volumeAmount')">-->
+                  <!--<app-error-message [control]="amountUpdate.controls.volumeAmount"-->
+                                     <!--style="font-size: 13px;"></app-error-message>-->
+                  <!--</span></td>-->
+                  <!--</tr>-->
+
+                    <!--<tr *ngIf="showForOperationTeam">-->
+
+                      <!--<td colspan="3"> <span class="green"><label>Shipment Ready Date(update): </label>-->
+                          <!--<input placement="top" ngModel [minDate]="volMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"-->
+                                 <!--date-only="true" formControlName="volumeReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">-->
+                          <!--&lt;!&ndash;<app-error-message [control]="amountUpdate.controls.volumeReadyDate"&ndash;&gt;-->
+                                             <!--&lt;!&ndash;style="font-size: 13px;"></app-error-message>&ndash;&gt;-->
+                      <!--</span>-->
+                      <!--</td>-->
+
+                      <!--<td colspan="3"><span class="green"><label>Requested Delivery Date(update): </label>-->
+                        <!--<span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>-->
+                         <!--<input placement="top" ngModel [minDate]="volMinDate2" bsDatepicker-->
+                                <!--date-only="true" (bsValueChange)="onValueChange($event, 'delivery')" [bsConfig]="{ showWeekNumbers: false }"-->
+                                <!--formControlName="volumeDeliveryDate">-->
+                          <!--&lt;!&ndash;<app-error-message [control]="amountUpdate.controls.volumeDeliveryDate"&ndash;&gt;-->
+                                             <!--&lt;!&ndash;style="font-size: 13px;"></app-error-message>&ndash;&gt;-->
+                      <!--</span>-->
+                      <!--</td>-->
+                    <!--</tr>-->
+
+                    <!--<tr>-->
+                      <!--<td colspan="6" *ngIf="showForOperationTeam"><button *ngIf="dateValidation" class="btn green-update-button" style="color:#ffffff" (click)="updateRate(amountUpdate.value, clickIdData?.id, 'volume')"-->
+                                                                           <!--[disabled]="!amountUpdate.controls.volumeRefNum.valid || !amountUpdate.controls.volumeAmount.valid">Update</button></td>-->
+                    <!--</tr>-->
+
+                  <!--</form>-->
+
+                  <!--</tbody>-->
+                <!--</table>-->
+              </div>
+              <!--<amount and date update form>-->
+
+
+              <div class="col-md-12 main_cont">
+                <div *ngIf="showForOperationTeam">
+                <div *ngIf="nonVolumeType">
+                <form [formGroup]="amountUpdate" >
+                  <h2 class="main-head" style="text-align: center;">Details Update</h2>
+                  <!--<div class="col-md-10 col-md-push-1 div-border">-->
+
+                    <div class="row">
+                      <!--<div class="col-md-6 form-group">-->
+                        <!--<label>Control Number</label>-->
+                        <!--<input class="form-control" type="text"  formControlName="nonVolumeRefNum" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"-->
+                               <!--(change)="checkForNumber(amountUpdate.controls.nonVolumeRefNum.value, 'nonVolumeRefNum')">-->
+                        <!--<app-error-message [control]="amountUpdate.controls.nonVolumeRefNum"-->
+                                           <!--style="font-size: 13px;"></app-error-message>-->
+                      <!--</div>-->
+                      <div class="col-md-6 form-group">
+                        <label>Rate</label>
+                        <input class="form-control" type="text"  formControlName="nonVolumeAmount" ngPattern="/[0-9.]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                               (change)="checkForNumber(amountUpdate.controls['nonVolumeAmount'].value, 'nonVolumeAmount')">
+                        <app-error-message [control]="$any(amountUpdate).controls['nonVolumeAmount']"
+                                           style="font-size: 13px;"></app-error-message>
+                      </div>
+                    </div>
+                  <div class="row">
+                    <div class="col-md-6 form-group">
+                      <label>Shipment Ready Date(update)</label>
+                      <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                             date-only="true" formControlName="nonVolumeReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label>Requested Delivery Date(update)</label>
+                      <span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>
+                      <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate2" bsDatepicker
+                             date-only="true" (bsValueChange)="onValueChange($event, 'delivery')" [bsConfig]="{ showWeekNumbers: false }"
+                             formControlName="nonVolumeDeliveryDate">
+                    </div>
+                  </div>
+                    <div class="row">
+                      <!--<div class="col-md-4 col-md-push-4 square-button text-center">-->
+                        <!--<a class="noIbar" (click)="updateRate(amountUpdate.value, clickIdData?.id, 'nonVolume')"-->
+                           <!--disabled="(!amountUpdate.controls.nonVolumeAmount.valid)"><i class="fa fa-search icon"></i>Update</a>-->
+                      <!--</div>-->
+                      <div class="modal-footer">
+
+                        <button type="button" class="btn btn-primary noIbar" data-dismiss="modal" [disabled]="(!amountUpdate.controls['nonVolumeAmount'].valid)" (click)="updateRate(amountUpdate.value, clickIdData?.id, 'nonVolume')">UPDATE</button>
+                      </div>
+                    </div>
+
+
+                  <!--</div>-->
+                </form>
+                </div>
+                  <div *ngIf="volumeType">
+                    <form [formGroup]="amountUpdate" >
+                      <h2 class="main-head" style="text-align: center;">Details Update</h2>
+                      <!--<div class="col-md-10 col-md-push-1 div-border">-->
+
+                      <div class="row">
+                        <!--<div class="col-md-6 form-group">-->
+                          <!--<label>Control Number</label>-->
+                          <!--<input type="text" class="form-control" formControlName="volumeRefNum" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"-->
+                                 <!--(change)="checkForNumber(amountUpdate.controls.volumeRefNum.value, 'volumeRefNum')">-->
+                          <!--<app-error-message [control]="amountUpdate.controls.volumeRefNum"-->
+                                             <!--style="font-size: 13px;"></app-error-message>-->
+                        <!--</div>-->
+                        <div class="col-md-6 form-group">
+                          <label>Rate</label>
+                          <input type="text" class="form-control" formControlName="volumeAmount" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                 (change)="checkForNumber(amountUpdate.controls['volumeAmount'].value, 'volumeAmount')">
+                          <app-error-message [control]="$any(amountUpdate).controls['volumeAmount']"
+                                             style="font-size: 13px;"></app-error-message>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label>Shipment Ready Date(update)</label>
+                          <input placement="top" ngModel class="form-control" [minDate]="volMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                                 date-only="true" formControlName="volumeReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label>Requested Delivery Date(update)</label>
+                          <span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>
+                          <input placement="top" class="form-control" ngModel [minDate]="volMinDate2" bsDatepicker
+                                 date-only="true" (bsValueChange)="onValueChange($event, 'delivery')" [bsConfig]="{ showWeekNumbers: false }"
+                                 formControlName="volumeDeliveryDate">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <!--<div class="col-md-4 col-md-push-4 square-button text-center">-->
+                          <!--<a class="noIbar" (click)="updateRate(amountUpdate.value, clickIdData?.id, 'volume')"-->
+                             <!--disabled="!amountUpdate.controls.volumeAmount.valid"><i class="fa fa-search icon"></i>Update</a>-->
+                        <!--</div>-->
+                        <div class="modal-footer">
+
+                          <button type="button" class="btn btn-primary noIbar" data-dismiss="modal" [disabled]="!amountUpdate.controls['volumeAmount'].valid" (click)="updateRate(amountUpdate.value, clickIdData?.id, 'volume')">UPDATE</button>
+                        </div>
+                      </div>
+
+
+                      <!--</div>-->
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-md-12 main_cont">
+                <div *ngIf="showforBooked">
+                  <div *ngIf="amountUpdateAfterBook">
+                    <form [formGroup]="bookedStatusUpdateForm" >
+                      <h2 class="main-head" style="text-align: center;">Details Update</h2>
+                      <!--<div class="col-md-10 col-md-push-1 div-border">-->
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label>Rate(update)</label>
+                          <input type="text" class="form-control"  formControlName="amount" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label>Shipment Ready Date(update)</label>
+                          <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                                 date-only="true" formControlName="shipmentReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label>Requested Delivery Date(update)</label><span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>
+                          <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                                 date-only="true" formControlName="requestedDeliveryDate" (bsValueChange)="onValueChange($event, 'delivery')">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="modal-footer">
+
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" [disabled]="showMessageForDatePicker === true" (click)="bookedStatusUpdate(clickIdData?.id, bookedStatusUpdateForm.value)">UPDATE</button>
+                        </div>
+                      </div>
+
+
+                      <!--</div>-->
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12 main_cont">
+                <div *ngIf="showForTracking">
+                  
+                    <form [formGroup]="trackingForm" >
+                      <h2 class="main-head" style="text-align: center;">Tracking Information </h2>
+                      <!--<div class="col-md-10 col-md-push-1 div-border">-->
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label>Track Link</label>
+                          <input type="text" class="form-control"  formControlName="trackLink">
+
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label>Tracking Number</label>
+                          <input type="text" class="form-control"  formControlName="trackingNumber">
+
+                        </div>
+                      </div>
+                      
+                      <div class="row">
+                        <div class="modal-footer">
+
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveTrackingInfo(clickIdData?.id, trackingForm.value)">UPDATE</button>
+                        </div>
+                      </div>
+
+
+                      <!--</div>-->
+                    </form>
+                  </div>
+                </div>
+              
+              <!--<amount and date update form>-->
+
+              <!--<div *ngIf="showChat">-->
+<form [formGroup]="chatForm">
+
+              <div class="table-thread">
+                <div class="text-right">
+                  <button *ngIf="showAllChat" class="leg" (click)="popUpShowAllChat('allchat')">
+                    <em class="fa fa-eye" style="margin-right:5px"></em>View All Messages</button>
+                  <button *ngIf="showMinChat" class="leg" (click)="popUpShowAllChat('quotechat')">
+                    <em class="fa fa-eye" style="margin-right:5px"></em>Hide Messages</button>
+                </div>
+                <div class="table-responsive" style="overflow-x: inherit!important">
+                  <table class="table-thread">
+                    <thead>
+                    <tr>
+                      <td width="10%">&nbsp;&nbsp;&nbsp;</td>
+                      <td width="70%">Discussion Threads</td>
+                      <td width="20%">Last Updated</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr *ngFor="let response of customerMessage">
+                      <td *ngIf="response.image === false"><img src="../../assets/images/ext-user.png" style="height: 45px;width: 45px" ></td>
+                      <td *ngIf="response.image === true"><img src="../../assets/images/forte-user.png" style="height: 45px;width: 45px" ></td>
+                      <td>{{response.customerMessage}}
+                        <p><span class="brown bold">Posted By : </span><span class="green bold">{{response.postedBy}}</span><p>
+                        <p *ngIf="response?.companyName!==undefined"><span class="brown bold">Company Name : </span><span class="green bold">{{response.companyName}}</span><p>
+                      </td>
+                      <td>{{response.createdOn | date: 'MM/dd/yyyy'}}
+                      </td>
+
+                    </tr>
+
+                    <tr >
+                      <td *ngIf="!showAdminChatData"><img src="../../assets/images/ext-user.png" style="height: 45px;width: 45px" ></td>
+                      <td *ngIf="showAdminChatData"><img src="../../assets/images/forte-user.png" style="height: 45px;width: 45px" ></td>
+                      <td> <textarea class="form-control" rows="3" placeholder="Add Comments" formControlName="message"></textarea>
+                      </td>
+                      <td>
+
+                        <a (click)="sendChatMessage(chatForm.value, 'quotechat')" class="detail"><em class="fa fa-send" aria-hidden="true" style="margin-right:5px;"></em>SEND</a>
+                      </td>
+
+
+                    </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+  <!--<div class="">-->
+    <!--<div class="row">-->
+      <!--<div class="col-md-3 col-md-push-3 green-button text-center">-->
+        <!--<a (click)="viewAll()" data-dismiss="modal"><i class="fa fa-eye" aria-hidden="true" style="margin-right:5px;"></i>VIEW ALL</a>-->
+      <!--</div>-->
+      <!--&lt;!&ndash;<div class="col-md-3 col-md-push-3 green-button text-center">&ndash;&gt;-->
+        <!--&lt;!&ndash;<a href="#" data-dismiss="modal"><i class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></i>CLOSE</a>&ndash;&gt;-->
+      <!--&lt;!&ndash;</div>&ndash;&gt;-->
+    <!--</div>-->
+  <!--</div>-->
+</form>
+<!--</div>-->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" >
+          <div class="row" *ngIf="operationTeam">
+            <div class="col-md-6  green-button text-center">
+              <a data-dismiss="modal" class="noIbar" data-toggle="modal" data-target="#mail-modal"  (click)="sendMail(clickIdData.id)"><em class="fa fa-mail-forward" aria-hidden="true" style="margin-right:5px;"></em>SEND MAIL</a>
+            </div>
+            <div class="col-md-6 green-button text-center">
+              <a data-dismiss="modal" class="noIbar" ><em class="fa fa-times-circle" aria-hidden="true" style="margin-right:5px;"></em>CANCEL</a>
+            </div>
+          </div>
+          <div class="row" *ngIf="externalTeam">
+            <div class="col-md-6 col-md-push-3 green-button text-center">
+              <a data-dismiss="modal" class="noIbar"><em class="fa fa-times-circle" aria-hidden="true" style="margin-right:5px;"></em>CANCEL</a>
+            </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+  <div id="mail-modal" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+
+      <!-- Modal content-->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><em class="fa fa-mail-forward"></em>&nbsp;Send Mail</h4>
+      </div>
+      <form [formGroup]="activeRequest">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <label>Choose Carrier</label>
+              <label class="label-radio">
+                <input type="checkbox" name="example" value="true" formControlName="fedex">
+                Fedex
+              </label>
+              <label class="label-radio">
+                <input type="checkbox" name="example" value="true" formControlName="yrc"/>
+                YRC
+              </label>
+              <label class="label-radio">
+                <input type="checkbox" name="example" value="true" formControlName="reddaway"/>
+                Reddaway
+              </label>
+              <label class="label-radio">
+                <input type="checkbox" name="example" value="true"
+                       (change)="selectedCarrier(activeRequest.controls['othersCarrier'].value)" formControlName="othersCarrier"/>
+                Others
+              </label>
+            </div>
+          </div>
+          <div class="row div-space" *ngIf="showEmailId">
+            <div class="col-md-2">
+              <label>Email ID</label>
+            </div>
+            <div class="col-md-10">
+              <input type="text" class="form-control" placeholder="Carrier Email ID" formControlName="others">
+            </div>
+          </div>
+          <div class="row div-space">
+            <div class="col-md-2">
+              <label>Notes</label>
+            </div>
+            <div class="col-md-10">
+              <textarea class="form-control" rows="5" placeholder="Message" formControlName="notes" ></textarea>
+            </div>
+            <div *ngIf="showErrorMessage" class="text-center">
+              <span style="font-size: 14px; color: #FF0000">Please fill the {{showError.name}}</span>
+            </div>
+
+
+            <!--<div class="modal-footer">-->
+            <div class="row">
+              <div class="col-md-3 col-md-offset-6 green-button text-center">
+                <a class="noIbar" (click)="send(activeRequest.value)"><em class="fa fa-mail-forward" aria-hidden="true" style="margin-right:5px;" ></em>SEND</a>
+              </div>
+              <div class="col-md-3 green-button text-center">
+                <a class="noIbar"data-dismiss="modal" (click)="cancel()"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>CANCEL</a>
+              </div>
+
+
+
+
+            </div>
+            <!--</div>-->
+
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- Email Modal -->
+  <!-- Message Modal -->
+  <app-dialog [visible]="showMailSentPopUp" >
+    <div id="" class="" role="dialog">
+      <div class="">
+
+        <!-- Modal content-->
+        <div class="">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class=""><em class="fa fa-check-circle"></em>&nbsp;Mail Sent</h4>
+          </div>
+          <div class="">
+            <div class="row">
+              <div class="col-md-12">
+                <p *ngIf="emailRequest?.fedex==true" class="brown bold">Your mail has been sent to FEDEX carriers. We will reach you shortly with the responses from carriers.</p>
+                <p *ngIf="emailRequest?.yrc==true" class="brown bold">Your mail has been sent to YRC carriers. We will reach you shortly with the responses from carriers.</p>
+                <p *ngIf="emailRequest?.reddaway==true" class="brown bold">Your mail has been sent to REDDAWAY carriers. We will reach you shortly with the responses from carriers.</p>
+                <p *ngIf="emailRequest?.othersCarrier==true" class="brown bold">Your mail has been sent to OTHERS carriers. We will reach you shortly with the responses from carriers.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="row">
+              <div class="col-md-4 col-md-push-4 green-button text-center">
+                <a href="#" data-dismiss="modal" (click)="close()"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>CLOSE</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-dialog>
+
+
+
+  <div class="modal fade" id="quickie-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" ><span aria-hidden="true" style="color: #FFFFFF">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel" style="color: #FFFFFF">Address</h4>
+        </div>
+        <form [formGroup]="quickieFormUpdate">
+        <div class="modal-body">
+            <div class="row">
+              <h4 class="sub-head">Shipper Information</h4>
+              <div class="col-md-4">
+                <div class="input-group">
+                <label>Company</label><span style="color: #FF0000">*</span>
+                <!--<div class="input-group">-->
+                <input type="text" class="form-control" aria-label="Text input with dropdown button"
+                       placeholder="e.g. ABC Company" formControlName="shipperCompanyName" required>
+
+                  <div class="input-group-btn">
+                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 22px" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                  <div class="dropdown-menu" style="padding: 0px">
+                    <table class="table table-bordered" style="margin-bottom: 0px">
+                      <div class="scrollit">
+
+                        <thead>
+                        <tr style="background-color: #134c3e!important;color: white;">
+                          <td>Template Name</td>
+                          <td>Company</td>
+                          <td>Zip/Post</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let addressTemplates of shipperTemplate" class="noIbar" (click)="getAddressClickValues(addressTemplates.id, 'shipperid')">
+                          <td>{{addressTemplates?.templateName}}</td>
+                          <td>{{addressTemplates?.companyName}}</td>
+                          <td>{{addressTemplates?.zip}}</td>
+                        </tr>
+                        </tbody>
+                        <label *ngIf="shipperTemplatesPresent">No Templates Available</label>
+
+                      </div>
+                    </table>
+                  </div>
+                </div>
+                </div>
+
+              </div>
+
+              <div class="col-md-4 form-group">
+                <label>Contact Name</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" placeholder="" formControlName="shipperContactName" required>
+
+              </div>
+
+              <div class="col-md-4 form-group">
+                <label>Phone</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" placeholder="(###) ###-####" required
+                       formControlName="shipperPhone" maxlength="10" (change)="checkPhoneNumber(quickieFormUpdate.controls['shipperPhone'].value, 'shipper')"
+                       ngPattern="/[0-9]/"
+                       onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                <!--<app-error-message [control]="pickupForm.controls.pickUpContactNumber"-->
+                <!--style="font-size: 13px;"></app-error-message>-->
+              </div>
+            </div>
+
+            <div class="row">
+
+              <div class="col-md-4 form-group">
+                <label>Street 1</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" placeholder="Street 1" formControlName="shipperStreet1" required>
+                <app-error-message [control]="$any(quickieFormUpdate).controls['shipperStreet1']"
+                                   style="font-size: 13px;"></app-error-message>
+              </div>
+              <div class="col-md-4 form-group">
+                <label>Street 2</label>
+                <input type="text" class="form-control" placeholder="Street 1" formControlName="shipperStreet2">
+                <!--<app-error-message [control]="quickieFormUpdate.controls.shipperStreet1"
+                                   style="font-size: 13px;"></app-error-message>-->
+              </div>
+
+              <div class="col-md-4 form-group">
+                <label>Country</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" formControlName="shipperCountry" [disabled]="true">
+                <app-error-message [control]="$any(quickieFormUpdate).controls['shipperCountry']"
+                                   style="font-size: 13px;"></app-error-message>
+              </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-4 form-group">
+                  <label>Shipper's BOL #</label>
+                  <input type="text" class="form-control" placeholder="Street 1" formControlName="shippersBillOfLading" maxlength="20" minlength="5">
+
+                </div>
+                <div class="col-md-4 form-group">
+                  <label>PO #</label>
+                  <input type="text" class="form-control" placeholder="Street 1" formControlName="purchaseOrderNumber" maxlength="20" minlength="5">
+
+                </div>
+
+                <div class="col-md-4 form-group">
+                  <label>Shipper #</label>
+                  <input type="text" class="form-control" formControlName="shipperIdNumber" maxlength="20" minlength="5">
+
+                </div>
+              </div>
+              <div class="row">
+
+                  <div class="col-md-6 form-group">
+                    <label>Opening Time</label>
+                    <timepicker formControlName="companyOpenTime" [showMeridian]="ismeridian"></timepicker>
+
+
+                  </div>
+                  <div class="col-md-4 form-group">
+                    <label>Closing Time</label>
+                    <timepicker formControlName="companyCloseTime" [showMeridian]="ismeridian"></timepicker>
+                    <!--<app-error-message [control]="quickieFormUpdate.controls.shipperStreet1"
+                                       style="font-size: 13px;"></app-error-message>-->
+                  </div>
+                </div>
+            <div class="row">
+              <h4 class="sub-head">Consignee Information</h4>
+              <div class="col-md-4">
+                <div class="input-group">
+
+                <label>Company</label><span style="color: #FF0000">*</span>
+                <!--<div class="input-group">-->
+                <input type="text" class="form-control" aria-label="Text input with dropdown button"
+                       placeholder="e.g. ABC Company" formControlName="consigneeCompany" required>
+
+                <div class="input-group-btn">
+                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 22px" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                  <div class="dropdown-menu" style="padding: 0px">
+                    <table class="table table-bordered" style="margin-bottom: 0px">
+                      <div class="scrollit">
+
+                        <thead>
+                        <tr style="background-color: #134c3e!important;color: white;">
+                          <td>Template Name</td>
+                          <td>Company</td>
+                          <td>Zip/Post</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let addressTemplates of consigneeTemplate" class="noIbar" (click)="getAddressClickValues(addressTemplates.id,'')">
+                          <td>{{addressTemplates?.templateName}}</td>
+                          <td>{{addressTemplates?.companyName}}</td>
+                          <td>{{addressTemplates?.zip}}</td>
+                        </tr>
+                        </tbody>
+                        <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                      </div>
+                    </table>
+                  </div>
+                </div>
+                </div>
+
+              </div>
+
+              <div class="col-md-4 form-group">
+                <label>Contact Name</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" placeholder="" formControlName="consigneeContactName" required>
+
+              </div>
+
+              <div class="col-md-4 form-group">
+                <label>Phone</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" placeholder="(###) ###-####"
+                       formControlName="consigneePhone" maxlength="10" (change)="checkPhoneNumber(quickieFormUpdate.controls['consigneePhone'].value, 'consignee')"
+                       ngPattern="/[0-9]/" required
+                       onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                <!--<app-error-message [control]="pickupForm.controls.pickUpContactNumber"-->
+                <!--style="font-size: 13px;"></app-error-message>-->
+              </div>
+            </div>
+
+            <div class="row">
+
+              <div class="col-md-4 form-group">
+                <label>Street 1</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" placeholder="Street 1" formControlName="consigneeStreet1">
+                <app-error-message [control]="$any(quickieFormUpdate).controls['consigneeStreet1']" required
+                                   style="font-size: 13px;"></app-error-message>
+              </div>
+              <div class="col-md-4 form-group">
+                <label>Street 2</label>
+                <input type="text" class="form-control" placeholder="Street 1" formControlName="consigneeStreet2">
+                <!--<app-error-message [control]="quickieFormUpdate.controls.shipperStreet1"
+                                   style="font-size: 13px;"></app-error-message>-->
+              </div>
+
+              <div class="col-md-4 form-group">
+                <label>Country</label><span style="color: #FF0000">*</span>
+                <input type="text" class="form-control" formControlName="consigneeCountry" [disabled]="true">
+                <app-error-message [control]="$any(quickieFormUpdate).controls['consigneeCountry']"
+                                   style="font-size: 13px;"></app-error-message>
+              </div>
+            </div>
+
+
+
+        </div>
+          <div>
+            <span *ngIf="enableUpdateQuote" style="font-size: 13px;color: #FF0000">Please Fill All the Required Fields</span>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" (click)="cancelStatus()">CANCEL</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" [disabled] ="!quickieFormUpdate.controls['shipperCompanyName'].valid ||
+!quickieFormUpdate.controls['shipperContactName'].valid ||
+!quickieFormUpdate.controls['shipperStreet1'].valid ||
+!quickieFormUpdate.controls['consigneeCompany'].valid ||
+!quickieFormUpdate.controls['consigneeContactName'].valid ||
+!quickieFormUpdate.controls['consigneeStreet1'].valid"
+                  (click)="acceptQuote(clickIdData?.id, clickIdData?.quoteType, quickieFormUpdate.value)">UPDATE</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="booked-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: #FFFFFF">&times;</span></button>
+          <h4 class="modal-title" id="1" style="color: #FFFFFF">Update Status</h4>
+        </div>
+        <div class="modal-body">
+
+          <form [formGroup]="bookedStatusUpdateForm">
+            <div class="row">
+
+              <div class="col-md-6">
+                <label>Shipment Ready Date(update): </label>
+                <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                       date-only="true" formControlName="shipmentReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>Requested Delivery Date(update): </label><span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>
+                <input class="form-control" placement="top" ngModel [minDate]="nonVolMinDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                       date-only="true" formControlName="requestedDeliveryDate" (bsValueChange)="onValueChange($event, 'delivery')">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Rate(update): </label>
+                <input type="text" class="form-control"  formControlName="amount" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+              </div>
+              <div class="col-md-6">
+                  <label>Control Number: </label>
+                  <input type="text" class="form-control"  formControlName="controlNumber" ngPattern="/[0-9]" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" (change)="bookModal(bookedStatusUpdateForm.controls['controlNumber'].value)">
+                </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+            <span *ngIf="setMsgForControlNumber" style="color:#FF0000">Please Enter the Control Number</span>
+          <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" [disabled]="showMessageForDatePicker === true || setMsgForControlNumber === true" (click)="bookedStatus(clickIdData?.id, bookedStatusUpdateForm.value, setControlNumber)">CONFIRM BOOKING</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="fulltruckload-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" ><span aria-hidden="true" style="color: #FFFFFF">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel" style="color: #FFFFFF">Address</h4>
+          </div>
+          <form [formGroup]="fulltruckloadFormUpdate">
+          <div class="modal-body">
+              <div class="row">
+                <h4 class="sub-head">Shipper Information</h4>
+                <div class="col-md-6">
+                  <div class="input-group">
+                  <label>Company</label><span style="color: #FF0000">*</span>
+                  <!--<div class="input-group">-->
+                  <input type="text" class="form-control" aria-label="Text input with dropdown button"
+                         placeholder="e.g. ABC Company" formControlName="shipperCompanyName" required>
+
+
+                  </div>
+
+                </div>
+
+                <div class="col-md-6 form-group">
+                  <label>Contact Name</label><span style="color: #FF0000">*</span>
+                  <input type="text" class="form-control" placeholder="" formControlName="shipperContactName" required>
+
+                </div>
+
+              </div>
+
+              <div class="row">
+
+                  <div class="col-md-4 form-group">
+                    <label>Shipper's BOL #</label>
+                    <input type="text" class="form-control" placeholder="Street 1" formControlName="shippersBillOfLading" maxlength="20" minlength="5">
+
+                  </div>
+                  <div class="col-md-4 form-group">
+                    <label>PO #</label>
+                    <input type="text" class="form-control" placeholder="Street 1" formControlName="purchaseOrderNumber" maxlength="20" minlength="5">
+
+                  </div>
+
+                  <div class="col-md-4 form-group">
+                    <label>Shipper #</label>
+                    <input type="text" class="form-control" formControlName="shipperIdNumber" maxlength="20" minlength="5">
+
+                  </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-6 form-group">
+                      <label>Opening Time</label>
+                      <timepicker formControlName="companyOpenTime" [showMeridian]="ismeridian"></timepicker>
+
+
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label>Closing Time</label>
+                      <timepicker formControlName="companyCloseTime" [showMeridian]="ismeridian"></timepicker>
+                      <!--<app-error-message [control]="quickieFormUpdate.controls.shipperStreet1"
+                                         style="font-size: 13px;"></app-error-message>-->
+                    </div>
+                  </div>
+              <div class="row">
+                <h4 class="sub-head">Consignee Information</h4>
+                <div class="col-md-6">
+                  <div class="input-group">
+                  <label>Company</label><span style="color: #FF0000">*</span>
+                  <!--<div class="input-group">-->
+                  <input type="text" class="form-control" aria-label="Text input with dropdown button"
+                         placeholder="e.g. ABC Company" formControlName="consigneeCompany" required>
+                  </div>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Contact Name</label><span style="color: #FF0000">*</span>
+                  <input type="text" class="form-control" placeholder="" formControlName="consigneeContactName" required>
+                </div>
+              </div>
+          </div>
+            <div>
+              <span *ngIf="enableUpdateQuote" style="font-size: 13px;color: #FF0000">Please Fill All the Required Fields</span>
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="cancelStatus()">CANCEL</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    (click)="acceptQuote(clickIdData?.id, clickIdData?.quoteType, fulltruckloadFormUpdate.value)">UPDATE</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: #FFFFFF">&times;</span></button>
+              <h4 class="modal-title" id="1" style="color: #FFFFFF">Are you sure? Do you want to cancel the order? </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <label>Reason for cancelling:</label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="reason">
+                      </textarea>
+                  </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="cancelStatusUpdate(clickIdData?.id, reason)">CANCEL THE ORDER</button>
+            </div>
+          </div>
+        </div>
+      </div>

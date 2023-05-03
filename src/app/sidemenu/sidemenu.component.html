@@ -1,0 +1,122 @@
+<div class="col-md-2 side-div">
+  <div class="sidemenu" *ngIf="showForExternalCustomer">
+    <div class="user-cont text-center">
+      <img src="../../assets/images/profilePic.png" alt="" class="icon-img img-responsive center-block">
+      <p class="user-info">{{salesRepValues?.salesRepName}}</p>
+      <p class="user-info" *ngIf="customerType === 'admin'">Admin</p>
+      <p class="user-info" *ngIf="customerType !== 'admin'">External Customer</p>
+    </div>
+    <div class="sidelist">
+      <div id="accordion" class="accordion">
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown" [routerLink]="[('/dashboard')]">
+            <em class="fa fa-dashboard"></em>
+            <span class="list-head">Dashboard</span>
+          </a>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <em class="fa fa-star"></em>
+            <span class="list-head">Rates</span>
+            <em class="fa fa-chevron-down"></em>
+          </a>
+          <ul class="dropdown-menu" style="padding-left: 20%">
+            <li><a [routerLink]="[('/home')]">LTL Quote</a></li>
+            <li><a [routerLink]="[('/other_quote')]">Other Quote</a></li>
+          </ul>
+        </li>
+        <!-- <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <em class="fa fa-cubes"></em>
+            <span class="list-head">Tracking</span>
+            <em class="fa fa-chevron-down"></em>
+          </a>
+          <ul class="dropdown-menu" style="padding-left: 20%">
+            <li><a [routerLink]="[('/ltlRate')]">LTL</a></li>
+            <li><a [routerLink]="[('/list_packages')]">SMALL PAC</a></li>
+            <li><a (click)="routing('ftl')">OTHER FREIGHTS</a></li>
+            <li><a [routerLink]="[('/tracking')]">INFORMATION</a></li>
+          </ul>
+        </li> -->
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <em class="fa fa-truck"></em>
+            <span class="list-head">Shipment Information</span>
+            <em class="fa fa-chevron-down"></em>
+          </a>
+          <ul class="dropdown-menu" style="padding-left: 20%">
+            <li><a [routerLink]="[('/tracking')]">SHIPMENT TRACKING</a></li>
+            <li><a [routerLink]="[('/shipmentsNew')]">SHIPMENT INFO</a></li>
+            <li><a (click)="routing('activeRequest')"> FTL AND OTHER ACTIVITIES</a></li>
+            <!-- <li><a [routerLink]="[('/shipmentsNew')]">INFORMATION DUPLICATE</a></li> -->
+
+          </ul>
+        </li>
+
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <em class="fa fa-money"></em>
+            <span class="list-head">Bill of Lading</span>
+            <em class="fa fa-chevron-down"></em>
+          </a>
+          <ul class="dropdown-menu" style="padding-left: 20%">
+            <li><a [routerLink]="[('/analytics')]">ANALYTICS</a></li>
+            <li><a [routerLink]="[('/my_bill')]">MY BILL OF LADING</a></li>
+            <li><a [routerLink]="[('/bill')] ">CREATE BILL OF LADING</a></li>
+            <!-- <li><a [routerLink]="[('/inwardShipments')] ">INWARD SHIPMENTS</a></li> -->
+            <!-- <li><a (click)="getBolScreen()">BOL MULTI LINEITEM SCREEN</a></li> -->
+          </ul>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <em class="fa fa-wrench"></em>
+            <span class="list-head">Tools</span>
+            <em class="fa fa-chevron-down"></em>
+          </a>
+          <ul class="dropdown-menu" style="padding-left: 20%">
+            <li><a (click)="routing('density')">DENSITY CALCULATOR</a></li>
+            <li><a (click)="routing('class')">FREIGHT CLASS ESTIMATOR</a></li>
+          </ul>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" [routerLink]="[('/templates')]">
+            <em class="fa fa-truck"></em>
+            <span class="list-head">Templates</span></a>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <em class="fa fa-wrench"></em>
+            <span class="list-head">Warehouse</span>
+            <em class="fa fa-chevron-down"></em>
+          </a>
+          <ul class="dropdown-menu" style="padding-left: 20%">
+            <!-- <li><a class="dropdown-toggle" [routerLink]="[('/warehouse')]">
+                <span class="list-head">WMS</span></a></li> -->
+            <!-- <li><a class="dropdown-toggle" [routerLink]="[('/intlEnRoute')]">
+                <span class="list-head">INTL ENROUTE</span></a></li> -->
+            <li><a class="dropdown-toggle" [routerLink]="[('/inventoryStatus')]">
+                <span class="list-head">WMS INVENTORY</span></a></li>
+          </ul>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" [routerLink]="[('/carrier')]">
+            <em class="fa fa-file"></em>
+            <span class="list-head">Carrier Rules</span>
+          </a>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" [routerLink]="[('/myaccount')]">
+            <em class="fa fa-user"></em>
+            <span class="list-head">My Account</span>
+          </a>
+        </li>
+        <li class="dropdown link" style="padding-left: 8%">
+          <a class="dropdown-toggle" data-toggle="dropdown" (click)="logout()">
+            <em class="fa fa-sign-out"></em>
+            <span class="list-head">Logout</span>
+          </a>
+        </li>
+      </div>
+    </div>
+  </div>
+</div>

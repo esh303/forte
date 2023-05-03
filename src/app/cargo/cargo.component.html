@@ -1,0 +1,207 @@
+<div class="header">
+  <nav class="navbar navbar-default">
+    <app-header></app-header>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <app-sidemenu></app-sidemenu>
+
+
+    <div class="col-md-10 main_cont">
+
+      <div class="col-md-10 col-md-push-1 div-border ship-border">
+        <h2 class="bill-head">Cargo Claims</h2>
+        <div class="col-md-10 col-md-push-1">
+          <div class="row">
+            <div class="user-cont text-center">
+              <img src="../../assets/images/caution.png" alt="" class="icon-img img-responsive center-block">
+              <h5 class="head bold">Before you do anything else, please contact the carrier and advise them of the damage or loss. Also get the contact person's name, phone number and time of the call.</h5>
+            </div>
+          </div>
+          
+
+          <div class="row radio-carrier-margin">
+            <form [formGroup]="cargoClaims">
+            <div class="col-md-12" >
+              <h4 class="" style="text-align: center;text-transform: uppercase;font-weight: 600;color: #134c3e;margin-bottom: 1.2em;" >
+                Choose the appropriate carrier
+              </h4>
+              </div>
+              <div class="col-md-12" >
+              <label  class="">
+                <input type="radio" value="fedex" class="option-input radio" formControlName="cargo" (change) ="getCargo(cargoClaims.controls['cargo'].value)">
+                Fedex Economy
+              </label>
+              <label class="label-radio">
+                <input type="radio" value="fedexPriority" class="option-input radio" formControlName="cargo" (change) ="getCargo(cargoClaims.controls['cargo'].value)">
+                Fedex Priority
+              </label>
+              <label class="label-radio">
+                <input type="radio" value="yrc" class="option-input radio" formControlName="cargo" (change) ="getCargo(cargoClaims.controls['cargo'].value)">
+                Yrc
+              </label>
+              <label class="label-radio">
+                <input type="radio" value="reddaway" class="option-input radio" formControlName="cargo" (change) ="getCargo(cargoClaims.controls['cargo'].value)">
+                Reddaway
+              </label>
+            </div>
+            </form>
+          </div>
+          <div class="margin-top" *ngIf="showFedex">
+            <div class="row">
+              <div class="col-md-12 col-sm-12">
+                <h4 class="sub-head text-center">Fedex Economy Cargo Claim</h4>
+                <div class="cont text-center">
+                  <img src="../../assets/images/call.png"> <span class="head bold">Contact Fedex Economy Cargo Claim Department at </span><span class="body bold">(800-463-3339)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row margin-top">
+              <div class="col-md-10 col-sm-12 col-md-offset-1">
+                <div class="cont text-left">
+                  <span class="head">If you wish to file a Cargo Claim with Fedex Economy, you must download the Cargo Claim form below. The instructions on how to fill it out are contained on the first page of the PDF download.</span>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="row margin-top">
+              <div class="col-md-6 col-md-offset-3 green-button text-center">
+                <a href="../../assets/pdf/fedex_cargo_claim_form.pdf" target="_blank"><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Claim Form (PDF)</a>
+              </div>
+            </div>
+            <div class="row margin-top">
+              <div class="col-md-10 col-sm-12 col-md-offset-1">
+                <div class="cont text-left">
+                  <span class="head">Also contained below is a link to download a PDF guide on how to file a Loss and Damage Claim with FedexEconomy.</span>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="row margin-top">
+              <div class="col-md-10 col-md-offset-1 green-button text-center">
+                <a href="../../assets/pdf/fedex_loss_and_damage_claim_guide.pdf" target="_blank"><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Loss and Damage Claim Guide (PDF)</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="margin-top" *ngIf="showYrc">
+            <div class="row">
+              <div class="col-md-12 col-sm-12">
+                <h4 class="sub-head text-center">Yrc Cargo Claim</h4>
+                <div class="cont text-center">
+                  <img src="../../assets/images/call.png"> <span class="head bold">Contact Yrc Cargo Claim Department at </span><span class="body bold">(800-463-3339)</span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row margin-top">
+              <div class="col-md-10 col-sm-12 col-md-offset-1">
+                <div class="cont text-left">
+                  <span class="head">If you wish to file a Cargo Claim with yrc, you must download the Cargo Claim form below. The instructions on how to fill it out are contained on the first page of the PDF download.</span>
+                </div>
+
+              </div>
+            </div>
+            <div class="row margin-top">
+              <div class="col-md-6 col-md-offset-3 green-button text-center">
+                <a href="../../assets/pdf/yrc_claim_form.pdf" target="_blank"><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Claim Form (PDF)</a>
+              </div>
+            </div>
+            
+          </div>
+
+          <div class="margin-top" *ngIf="showFedexPriority">
+              <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <h4 class="sub-head text-center">Fedexpriority Cargo Claim</h4>
+                  <div class="cont text-center">
+                    <img src="../../assets/images/call.png"><span class="head bold">Contact Fedexpriority Cargo Claim Department at </span><span class="body bold">(800-463-3339)</span>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="row margin-top">
+                <div class="col-md-10 col-sm-12 col-md-offset-1">
+                  <div class="cont text-left">
+                    <span class="head">If you wish to file a Cargo Claim with Fedexpriority, you must download the Cargo Claim form below. The instructions on how to fill it out are contained on the first page of the PDF download.</span>
+                  </div>
+
+                </div>
+              </div>
+              <div class="row margin-top">
+                <div class="col-md-6 col-md-offset-3 green-button text-center">
+                  <a href="../../assets/pdf/fedex_cargo_claim_form.pdf" target="_blank" ><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Claim Form (PDF)</a>
+                </div>
+              </div>
+              <div class="row margin-top">
+                <div class="col-md-10 col-sm-12 col-md-offset-1">
+                  <div class="cont text-left">
+                    <span class="head">Also contained below is a link to download a PDF guide on how to file a Loss and Damage Claim with Fedexpriority.</span>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="row margin-top">
+                <div class="col-md-10 col-md-offset-1 green-button text-center">
+                  <a href="../../assets/pdf/fedex_loss_and_damage_claim_guide.pdf" target="_blank"><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Loss and Damage Claim Guide (PDF)</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="margin-top" *ngIf="showReddaway">
+                <div class="row">
+                  <div class="col-md-12 col-sm-12">
+                    <h4 class="sub-head text-center">Reddaway Cargo Claim</h4>
+                    <div class="cont text-center">
+                      <img src="../../assets/images/call.png"> <span class="head bold">Contact Reddaway Cargo Claim Department at </span><span class="body bold">(800-463-3339)</span>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="row margin-top">
+                  <div class="col-md-10 col-sm-12 col-md-offset-1">
+                    <div class="cont text-left">
+                      <span class="head">If you wish to file a Cargo Claim with Reddaway, you must download the Cargo Claim form below. The instructions on how to fill it out are contained on the first page of the PDF download.</span>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="row margin-top">
+                  <div class="col-md-6 col-md-offset-3 green-button text-center">
+                    <a href="../../assets/pdf/yrc_claim_form.pdf" target="_blank"><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Claim Form (PDF)</a>
+                  </div>
+                </div>
+                <!--<div class="row margin-top">
+                  <div class="col-md-10 col-sm-12 col-md-offset-1">
+                    <div class="cont text-left">
+                      <span class="head">Also contained below is a link to download a PDF guide on how to file a Loss and Damage Claim with Reddaway.</span>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="row margin-top">
+                  <div class="col-md-10 col-md-offset-1 green-button text-center">
+                    <a href="../../assets/pdf/fedex_loss_and_damage_claim_guide.pdf" target="_blank"><em class="fa fa-desktop" aria-hidden="true" style="margin-right:10px;"></em>Download Loss and Damage Claim Guide (PDF)</a>
+                  </div>
+                </div>-->
+              </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <app-footer></app-footer>
+

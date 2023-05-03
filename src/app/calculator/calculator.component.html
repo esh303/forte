@@ -1,0 +1,161 @@
+<style>
+    .table-bordered>thead>tr>th,
+    .table-bordered>tbody>tr>th,
+    .table-bordered>tfoot>tr>th,
+    .table-bordered>thead>tr>td,
+    .table-bordered>tbody>tr>td,
+    .table-bordered>tfoot>tr>td {
+        border: 1px solid #a9a0a0;
+        text-align: -webkit-center;
+    }
+</style>
+<div class="banner-w3layoutsSales" id="home">
+    <!--Top-Bar-->
+    <div class="header">
+        <nav class="navbar navbar-default">
+            <app-header></app-header>
+            <div class="clearfix"> </div>
+        </nav>
+
+    </div>
+    <!--//Top-Bar-->
+
+    <!--banner-->
+    <!--Slider-->
+    <!--main screen-->
+    <div class="w3l_banner_info" id="name">
+        <h1 class="text-center" style="font-size:20px;">{{calculatorName}}</h1>
+        <div class="col-md-6 col-md-push-3 banner-form-agileinfo">
+            <form [formGroup]="calculatorForm">
+                <div class="col-md-12 div-sep">
+                    <div class="row form-group" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                        <div class="col-md-4 col-md-push-1" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" class="option-input radio" name="dimension" formControlName="dimension"
+                                        value="cubicMeter" (change)="getCalculator(calculatorForm.controls['dimension'].value)">Cubic Meter</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-md-push-2" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" class="option-input radio" name="dimension" formControlName="dimension"
+                                        value="cubicFeet" (change)="getCalculator(calculatorForm.controls['dimension'].value)">Cubic Feet</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="showForCubicMeter === true" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                        <div class="col-md-11 col-md-push-1" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" class="option-input radio" name="dimensionCategoryForMeter" formControlName="dimensionCategoryForMeter"
+                                        value="meter" (change)="getDimension(calculatorForm.controls['dimensionCategoryForMeter'].value)">Meter</label>
+                            </div>
+                        </div>
+                        <div class="col-md-11 col-md-push-1" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" class="option-input radio" name="dimensionCategoryForMeter" formControlName="dimensionCategoryForMeter"
+                                        value="centimeter" (change)="getDimension(calculatorForm.controls['dimensionCategoryForMeter'].value)">Centimeter</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="showForCubicFeet === true" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                        <div class="col-md-6 col-md-push-6" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" class="option-input radio" name="dimensionCategoryForFeet" formControlName="dimensionCategoryForFeet"
+                                        value="inches" (change)="getDimension(calculatorForm.controls['dimensionCategoryForFeet'].value)">Inches</label>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                            <div class="col-md-6 " style="margin-top: 0px;padding-top: 0px; margin-bottom: 0px;padding-bottom: 0px;">
+                                <div class="radio" style="margin-top: 4em">
+                                    <label>
+                                        <input type="radio" class="option-input radio" name="dimensionCategoryForFeet" formControlName="dimensionCategoryForFeet"
+                                            value="feet" (change)="getDimension(calculatorForm.controls['dimensionCategoryForFeet'].value)">Feet</label>
+                                </div>
+                            </div>
+                        </div>s
+                    </div>
+                    <div class="row" *ngIf="showAllDetails">
+                        <div class="col-md-4 col-md-push-4 text-center">
+                            <button  type="submit" class="logisticsBtn" style="height: 35px;" (click)="clear('category')">
+                                <em class="fa fa-close icon" style="margin-right: 3px;"></em> Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 div-sep" *ngIf="showAllDetails">
+                    <div class="row" style="margin-left:-20px; margin-right:-20px;">
+                        <div class="col-md-3">
+                            <label>Length ({{lwhUnit}})</label>
+                            <input type="text" class="form-control" id="length" placeholder="" formControlName="length" ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                (input)="getValue()" (blur)="getCrtInputValues('length')" (keydown)="checkEnterKey($event, 'length')">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Width ({{lwhUnit}})</label>
+                            <input type="text" class="form-control" id="width" placeholder="" formControlName="width" ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                (input)="getValue()" (blur)="getCrtInputValues('width')" (keydown)="checkEnterKey($event, 'width')">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Height ({{lwhUnit}})</label>
+                            <input type="text" class="form-control" id="height" placeholder="" formControlName="height" ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                (input)="getValue()" (blur)="getCrtInputValues('height')" (keydown)="checkEnterKey($event, 'height')">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Gross wt ({{weightUnit}})</label>
+                            <input type="text" class="form-control" id="grossWt" placeholder="" formControlName="grossWeight" ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                (input)="getValue()" (blur)="getCrtInputValues('grossWt')" (keydown)="checkEnterKey($event, 'grossWt')">
+                        </div>
+                    </div>
+                    <span *ngIf="showErrorMessage" style="color: #ff0000">Please check the <b>{{errorMsg}}</b> value</span>
+                </div>
+                <div class="col-md-12 div-sep" *ngIf="showAllDetails">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Weight (kg)</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="weight">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Weight (lb)</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="weightlb">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Volume (cu.m)</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="volume">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Volume (cu.ft)</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="volumecft">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Density (kg/cu.m)</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="density">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Density (lb/cu.ft)</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="densitycft">
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="showClass">
+                        <div class="col-md-12">
+                            <label>Recommended Freight Class</label>
+                            <input type="text" class="form-control" placeholder="" readonly formControlName="classification">
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix">&nbsp;</div>
+                <div class="clearfix">&nbsp;</div>
+            </form>
+        </div>
+    </div>
+    <!--//Slider-->
+    <div class="clearfix"></div>
+    <!-- </div> -->
+
+    <!--//banner-->

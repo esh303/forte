@@ -1,0 +1,2814 @@
+<div>
+  <ngx-loading [show]="loading"></ngx-loading>
+<div class="header">
+  <nav class="navbar navbar-default">
+    <app-header></app-header>
+
+    <div class="clearfix"></div>
+  </nav>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <app-sidemenu></app-sidemenu>
+    <!-- <div class="col-md-1 side-div" *ngIf="!showSideMenu"></div> -->
+    <div class="col-md-10 main_cont">
+      <h2 class="main-head">My Bill of Lading
+        <span class="legend" data-toggle="modal" data-target="#legend-modal">
+          <em class="fa fa-key"></em>
+        </span>
+      </h2>
+      <div class="col-md-12 div-border">
+        <form [formGroup]="myBillOfLading">
+          <div class="row">
+            <div class="col-md-3 form-group">
+              <label>Vol/Ref No</label>
+              <input type="text" class="form-control" placeholder="Forte Reference No"
+                formControlName="bolReferenceNumber" maxlength="15" ngPattern="/[0-9]/"
+                onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')">
+            </div>
+            <div class="col-md-3 form-group">
+              <label>ProNumber</label>
+              <input type="text" class="form-control" placeholder="ProNumber" formControlName="proNumber"
+                maxlength="20" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')">
+            </div>
+            <div class="col-md-3 form-group">
+              <label>Shipper Zip</label>
+              <input type="text" class="form-control" placeholder="Shipper zip" formControlName="shipperZip"
+                maxlength="5" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')">
+            </div>
+            <div class="col-md-3 form-group">
+              <label>Consignee zip</label>
+              <input type="text" class="form-control" placeholder="Consignee zip" formControlName="consigneeZip"
+                maxlength="5" ngPattern="/[0-9]/" onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 form-group">
+              <label>Carrier SCAC Code</label>
+              <select class="form-control" formControlName="bolCarrier">
+                <option value="" hidden>Select</option>
+                <option value="FEDEX_FREIGHT_ECONOMY">FXFE</option>
+                <option value="FEDEX_FREIGHT_PRIORITY">FXFP</option>
+                <option value="YRC">YRC</option>
+                <option value="REDDAWAY">REDDAWAY</option>
+                <option value="OTHERS">OTHERS</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Shipper</label>
+              <input type="text" class="form-control" placeholder="Shipper" formControlName="shipper">
+            </div>
+            <div class="col-md-4 form-group">
+              <label>Consignee</label>
+              <input type="text" class="form-control" placeholder="Consignee" formControlName="consignee">
+            </div>
+
+
+          </div>
+          <div class="row">
+            <div class="col-md-4 square-button text-center">
+              <a (click)="search(myBillOfLading.value)">
+                <em class="fa fa-search icon"></em>Search</a>
+              <span *ngIf="showErrorMessage" class="text-center"
+                style="font-size:14px; color: #FF0000; text-align:center">(Please give atleast one field)</span>
+            </div>
+
+
+            <div class="col-md-4 square-button text-center">
+              <a (click)="clear()">
+                <em class="fa fa-close icon"></em>Clear</a>
+
+            </div>
+            <div class="col-md-4 square-button text-center">
+              <a (click)="refresh()">
+                <em class="fa fa-refresh icon"></em>Refresh</a>
+            </div>
+
+          </div>
+          <div class="text-center" *ngIf="showLoader">
+            <span style="padding: 35px; color: #a2705c; font-size: 20px; ">
+              <em class="fa fa-spinner fa-spin" aria-hidden="true"
+                style="color: #a2705c; font-size: 20px;"></em>&nbsp;Loading</span>
+          </div>
+        </form>
+      </div>
+      <div class="row">
+
+        <div class="col-md-10 col-md-push-1 div-border text-center" *ngIf="entryLoader">
+          <span style="padding:40px; color: #4c7971; font-size: 22px; ">
+            <em class="fa fa-spinner fa-spin" aria-hidden="true"
+              style="color: #4c7971;font-size: 22px;"></em>&nbsp;Loading</span>
+        </div>
+        <div class="col-md-10 col-md-push-1 div-border text-center" *ngIf="searchLoader">
+          <span style="padding:40px; color: #4c7971; font-size: 22px; ">
+            <em class="fa fa-spinner fa-spin" aria-hidden="true"
+              style="color: #4c7971;font-size: 22px;"></em>&nbsp;Loading</span>
+        </div>
+      </div>
+
+      <div class="col-md-12 main_cont" *ngIf="recordsNotFoundMsg">
+        <div class="col-md-10 col-md-push-1 div-border">
+          <h4 class="sub-head">No Results to Show</h4>
+          <label>Not Found</label>
+          <div class="row">
+            <div class="col-md-4">
+              <label></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12 table-div" style="margin-top: 30px" *ngIf="showSearchDetail">
+        <div class="row">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead style="color:#ffffff">
+                <tr>
+
+                  <th>Vol/Ref No</th>
+                  <th>Pro #</th>
+                  <th>Shipper Company Name</th>
+                  <!-- <th>Shipper Contact Name</th> -->
+                  <th>Consignee Company Name</th>
+                  <!-- <th>Consignee Contact <br> Name</th> -->
+                  <th>Carrier SCAC Code</th>
+                  <th>Pcs/Weight</th>
+                  <th>Origin</th>
+                  <th>Destination</th>
+                  <th>BOL Creation Date</th>
+                  <th> BOL Created By</th>
+                  <th>BOL</th>
+                  <!-- <th>Print</th> -->
+                  <th>Pick Up</th>
+                  <th style="padding:20px!important;">Carrier Data</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of myBolData | paginate: { itemsPerPage: numberPerPage, currentPage: p };let i = index;">
+                  <td>{{data?.bolReferenceNumber}}</td>
+                  <td><a class="align:center"  style="color: #4c7a71;text-decoration: underline;" (click)="checkMyBill(data)"  data-toggle="modal" href="#bolType-modal">{{data?.bolTrackingNumber}}
+                  </a></td>        
+                     <td align="center">{{data?.companyName}}</td>
+                  <!-- <td align="center">{{data?.shipperContactName}}</td> -->
+                  <td style="text-transform: uppercase "
+                    *ngIf="data?.consigneeCompanyName !== null && data?.consigneeCompanyName !== undefined && data?.consigneeCompanyName !== ''">
+                    {{data?.consigneeCompanyName}}</td>
+                  <td style="text-transform: uppercase "
+                    *ngIf="data?.consigneeCompanyName === null || data?.consigneeCompanyName === undefined || data?.consigneeCompanyName === ''">
+                    -</td>
+                  <!-- <td style="text-transform: uppercase " *ngIf="data?.consigneeContactName !== null && data?.consigneeContactName !== undefined && data?.consigneeContactName !== ''">{{data?.consigneeContactName}}</td>
+                      <td style="text-transform: uppercase " *ngIf="data?.consigneeContactName === null || data?.consigneeContactName === undefined || data?.consigneeContactName === ''">-</td> -->
+                  <td align="center">{{data?.carrierName}}</td>
+                  <td align="center">{{data?.handlingUnitsWeights}}</td>
+                  <td align="center">{{data?.shipperZip}}</td>
+                  <td align="center">{{data?.consigneeZip}}</td>
+                  <td align="center">{{data?.shipment | date: 'MM/dd/yyyy'}}</td>
+                  <td align="center">{{data?.createdBy}} / {{data?.companyName}}</td>
+                  <td style="text-align: center" *ngIf="data?.carrierName !== 'OTHERS'">
+                    <a class="align:center" data-toggle="modal" data-target="#bolType-modal">
+                      <em class="fa fa-table" (click)="checkMyBill(data)"></em>
+                    </a>
+                  </td>
+                  <td style="text-align: center" *ngIf="data?.carrierName === 'OTHERS' && data?.routinePickup === false">
+                    <a class="align:center" data-toggle="modal" data-target="#bolType-modal" >
+                      <em class="fa fa-table" (click)="checkMyBill(data)"></em>
+                    </a>
+                  </td>
+                  <td style="text-align: center" *ngIf="data?.carrierName === 'OTHERS' && data?.routinePickup === true">
+                    <a class="align:center" data-toggle="modal" data-target="#bolType-modal">
+                    <em class="fa fa-table"></em>
+                    </a>
+                  </td>
+                  <!-- <td style="text-align: center" >
+                          <a class="align:center" data-toggle="modal" data-target="#bolType-modal">
+                            <em class="fa fa-print" >Print</em>
+                          </a>
+                        </td> -->
+                  <td align="center">
+                    <a data-toggle="tooltip" title="Shipment can be done"
+                      *ngIf="(data?.bolService === true && data?.pickupStatus !== 'pickup')"
+                      (click)="createPickup(data.bolReferenceNumber)"> <img src="../../assets/images/schedulepickup.png"
+                        style="height: 20px;width: 20px"></a>
+                    <a data-toggle="tooltip" title="Shipment is done"
+                      *ngIf="data?.bolService === true && data?.pickupStatus === 'pickup' && data?.otherCarrierName !== 'Rate Quote'">
+                      <img src="../../assets/images/shipped.png" style="height: 20px;width: 20px"></a>
+                    <a data-toggle="tooltip" title="Shipment is done"
+                      *ngIf="data?.bolService === false && data?.otherCarrierName === 'Rate Quote' && data?.trackLink !== null">
+                      <img src="../../assets/images/shipped.png" style="height: 20px;width: 20px"></a>
+                    <a data-toggle="tooltip" title="Shipment cannot be done"
+                      *ngIf="data?.bolService === false && data?.trackLink === null"> <img
+                        src="../../assets/images/nopickup.png" style="height: 20px;width: 20px"></a>
+                    <!-- <span >
+                            Link
+                          </span>
+                          <span *ngIf="data?.bolService === true && data?.pickupStatus === 'pickup'">Pick up is done</span>
+                          <span *ngIf="data?.bolService === false">Pick up cannot be done</span> -->
+                  </td>
+                  <td   *ngIf="data?.bolCarrier !== 'OTHERS'" [class.red-td]="(this.customerType === 'admin' &&  data.companyDetails?.byOrder === true) && (data.showWeight || data.showDelivery || data.showOnlineBol || data.showInvoice )">
+                    <a class="align:center" style="padding:5px;"  (click)="getBolYrc(data,'BOL')" *ngIf="(data.showOnlineBol  && this.customerType !== 'admin') && data.uploadBol " data-toggle="tooltip" title="Online BOL">
+BOL                    </a>
+<a class="align:center" style="padding:5px;" (click)="getBolYrc(data,'BOL')" *ngIf="data.showOnlineBol && this.customerType === 'admin'" data-toggle="tooltip" title="Online BOL">
+  BOL                    </a>
+
+                    <a class="align:center" *ngIf="(data.showDelivery   &&  this.customerType !== 'admin')&& data.uploadDelivery " (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt">DR
+                      <!-- <em class="fa fa-save" style="color:f44336;" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt" ></em> -->
+                    </a>
+                    <a class="align:center" *ngIf="data.showDelivery && this.customerType === 'admin'" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt">DR
+                      <!-- <em class="fa fa-save" style="color:f44336;" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt" ></em> -->
+                    </a>
+                    <!-- <a class="align:center" *ngIf="data.showWeight && data.companyDetails.weightUpload">
+                      <em class="fa fa-balance-scale" (click)="getBolYrc(data,'Weight')" data-toggle="tooltip" title="Weight Inspection" ></em>
+                    </a> -->
+
+                    <a class="align:center" *ngIf="(data.showWeight &&  this.customerType !== 'admin') && data.uploadWeight" (click)="getBolYrc(data,'Weight')" data-toggle="tooltip" title="Weight Inspection">WI
+                      <!-- <em class="fa fa-save" style="color:f44336;" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt" ></em> -->
+                    </a>
+                    <a class="align:center" *ngIf="data.showWeight && this.customerType === 'admin'" (click)="getBolYrc(data,'Weight')" data-toggle="tooltip" title="Weight Inspection">WI
+                      <!-- <em class="fa fa-save" style="color:f44336;" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt" ></em> -->
+                    </a>
+                    <a class="align:center" *ngIf="(data.showInvoice   &&  this.customerType !== 'admin')&& data.uploadInvoice " (click)="getBolYrc(data,'Invoice')" data-toggle="tooltip" title="Invoice">INV
+                      <!-- <em class="fa fa-save" style="color:f44336;" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt" ></em> -->
+                    </a>
+                    <a class="align:center" *ngIf="data.showInvoice && this.customerType === 'admin'" (click)="getBolYrc(data,'Invoice')" data-toggle="tooltip" title="Invoice">INV
+                      <!-- <em class="fa fa-save" style="color:f44336;" (click)="getBolYrc(data,'Delivery')" data-toggle="tooltip" title="Delivery Receipt" ></em> -->
+                    </a>
+
+                    <a class="align:center" style="padding:5px;" *ngIf="this.customerType === 'admin'">
+                      <em class="fa fa-cloud-upload"   (click) ="getBolById(data,data.tempId)" data-toggle="modal" data-target="#myModal" ></em>
+                    </a>
+                    <span class="align:center" style="padding:5px;" data-toggle="modal" data-target="#ByOrderModal"  *ngIf="(this.customerType === 'admin' &&  data.companyDetails?.byOrder) && (data.showWeight || data.showDelivery || data.showOnlineBol|| data.showInvoice )">
+                      <em class="fa fa-toggle-on"  (click)="changeByOrderModal(data)"   ></em>
+                    </span>
+                  </td> 
+                  <td *ngIf="data?.bolCarrier === 'OTHERS'"></td>
+                  <td align="center">
+                    <em class="fa fa-edit icon" (click)="editBol(data)"></em>Edit
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row" *ngIf="myBolData.length>0">
+            <div class="col-sm-4 pull-right">
+              <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+            </div>
+            <div class="col-sm-4">
+              <label>Items per page</label>
+              <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+                <option *ngFor="let number of numberOfPages">{{number}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+<app-footer></app-footer>
+<!-- Legend Modal -->
+<div id="legend-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" style="color: #ffffff">
+          <em class="fa fa-key"></em>&nbsp;Legend</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="legend-body">
+          <div class="row">
+            <div class="col-md-6 col-md-push-3 text-center">
+              <table class="table legend-table table-responsive">
+                <caption>Status Types</caption>
+                <tbody>
+                  <tr>
+                    <td class="th-head">
+                      <em class="fa fa-link"></em>
+                    </td>
+                    <td class="th-body">BOL linked to Quote / Shipment</td>
+                  </tr>
+                  <tr>
+                    <td class="th-head">
+                      <em class="fa fa-table"></em>
+                    </td>
+                    <td class="th-body">Stand-alone BOL</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Legend Modal -->
+
+<!--BOL Type Modal -->
+
+<div id="bolType-modal" class="modal" role="">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <em (click)="close()" class="close" data-dismiss="modal"
+          style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+        <h4 class="modal-title" style="color: #ffffff">My Bill of Lading </h4>
+      </div>
+
+      <div class="modal-body" id="print-section" style="background-color: #ffffff">
+        <div id="section1" class="print-modal" style="margin: 0em;">
+
+          <html>
+
+          <head>
+            <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+            <style type="text/css">
+              .txt-justify {
+                text-align: justify;
+              }
+
+              .txt-center {
+                text-align: center;
+              }
+
+              .txt-right {
+                text-align: right;
+              }
+
+              .txt-left {
+                text-align: left;
+              }
+
+              .fontpt {
+                font-size: 10pt;
+              }
+
+              .font9pt {
+                font-size: 9pt;
+              }
+
+              .full-width {
+                width: 100%;
+              }
+
+              .full-height {
+                width: 100%;
+              }
+
+              .left-float {
+                float: left;
+              }
+
+              .right-float {
+                float: right;
+              }
+
+              .padding-rgt3 {
+                padding-right: 3%;
+              }
+
+              .width22 {
+                width: 22%;
+              }
+
+              .width38 {
+                width: 38%;
+              }
+
+              .height110 {
+                height: 110px;
+              }
+
+              .height80 {
+                height: 80px;
+              }
+
+              .height20 {
+                height: 20px;
+              }
+
+              .border {
+                border: 1px solid black;
+              }
+
+              .div-col3 {
+                border-top: 1px solid black;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
+                float: left;
+                width: 39.6%;
+                height: 110px;
+              }
+
+              .valign {
+                valign: top;
+              }
+
+              .inline {
+                display: inline-block;
+              }
+
+              .normalfont {
+                font-weight: normal;
+              }
+
+              .mediumfont {
+                font-size: medium;
+              }
+
+              .smallfont {
+                font-size: small;
+              }
+
+              .boldfont {
+                font-weight: bold;
+              }
+
+              .border-left {
+                border-left: 1px solid black;
+              }
+
+              .font11 {
+                font-size: 11pt;
+              }
+
+              .font12 {
+                font-size: 12pt;
+              }
+
+              .ml-60 {
+                margin-left: 60px;
+              }
+
+              .ml-10 {
+                margin-left: 10px;
+              }
+
+              .ml-20 {
+                margin-left: 20px;
+              }
+
+              .ml-40 {
+                margin-left: 40px;
+              }
+
+              .ml-50 {
+                margin-left: 50px;
+              }
+
+              .ml-80 {
+                margin-left: 80px;
+              }
+
+              .ml-5 {
+                margin-left: 5px;
+              }
+
+              .pl-20 {
+                padding-left: 20px;
+              }
+
+              .bt-2 {
+                border-top: 2px solid black;
+              }
+
+              .bbnone {
+                border-bottom: none;
+              }
+
+              .div-col4 {
+                margin-left: 50px;
+                float: left;
+                height: 80%;
+                width: 40px;
+                border: 2px solid black;
+              }
+
+              .div-col5 {
+                margin-left: 25px;
+                float: left;
+                height: 80%;
+                width: 40px;
+                border: 2px solid black;
+                text-align: center;
+              }
+
+              .div-col6 {
+                margin-left: 45px;
+                float: left;
+                height: 80%;
+                width: 40px;
+                border: 2px solid black;
+              }
+
+              .div-col7 {
+                margin-left: 72px;
+                float: left;
+                height: 80%;
+                width: 40px;
+                border: 2px solid black;
+              }
+
+              .tr-1 {
+                width: 100%;
+                background-color: #CCCCCC;
+                margin-top: 1px;
+              }
+
+              .undertxt {
+                text-decoration: underline;
+              }
+
+              .printForte {
+                display: inline;
+              }
+
+              .pdfForte {
+                display: none;
+              }
+
+              .itemRow td {
+                font-weight: normal !important;
+              }
+
+              td {
+                font-size: 9pt;
+                font-family: arial;
+                line-height: 1.5em;
+              }
+
+              span {
+                font-size: 9pt;
+                font-family: arial;
+                line-height: 1.5em;
+              }
+
+              div {
+                font-size: 9pt;
+                font-family: arial;
+                line-height: 1.5em;
+              }
+
+              #bolContainer {
+                width: 850px;
+                margin: 0 auto;
+                font-family: Arial;
+                line-height: 1.5em;
+                margin-top: 4.5em;
+                font-size: 9pt;
+              }
+
+              #bolContainer td {
+                font-size: 9pt;
+              }
+
+              .controlContainer {
+                font-weight: bold;
+              }
+
+              .controlInline {
+                margin-left: 10px;
+              }
+
+              .sectionHeader {
+                width: 100%;
+                background-color: #CCCCCC;
+                font-size: small;
+                clear: both;
+                font-weight: bold;
+              }
+
+              .itemHeaders {
+                font-weight: bold;
+              }
+
+              tr.border_bottom td {
+                border-bottom: 1px solid black;
+              }
+
+              tr.border_right,
+              td.right {
+                border-right: 1px solid black;
+              }
+
+              tr.border_not_top td.not_top {
+                border-left: 1px solid black;
+                border-bottom: 1px solid black;
+                border-right: 1px solid black;
+              }
+
+              tr.border_all,
+              td.all {
+                border: 1px solid black;
+              }
+
+              tr.border_top,
+              td.top {
+                border-top: 1px solid black;
+              }
+
+              tr.border_left {
+                border-left: 1px solid black;
+              }
+
+              td.left {
+                border-left: 1px solid black;
+              }
+
+              table {
+                border-collapse: collapse;
+              }
+
+              #codInfo {
+                width: 100%;
+              }
+
+              #codAmount {
+                margin-left: 5%;
+                width: 15%;
+                font-size: 10pt;
+                float: left;
+              }
+
+              #codChecks {
+                margin-left: 2%;
+                width: 78%;
+                float: left;
+              }
+
+          /*     @media print {
+                #bolContainer {
+                  width: 850px;
+                  margin: 0 auto;
+                  font-family: Arial;
+                  line-height: 1.5em;
+                  margin-top: 4.5em;
+                  font-size: 9pt;
+                }
+
+                #bolContainer td {
+                  font-size: 9pt;
+                }
+
+                td {
+                  font-size: 9pt;
+                  font-family: arial;
+                  line-height: 1.5em;
+                }
+
+                span {
+                  font-size: 9pt;
+                  font-family: arial;
+                  line-height: 1.5em;
+                }
+
+                div {
+                  font-size: 9pt;
+                  font-family: arial;
+                  line-height: 1.5em;
+                }
+
+                body {
+                  margin: 0.5cm 1cm 0.5cm 0.5cm;
+                  -webkit-print-color-adjust: exact;
+                }
+
+                .printSize {
+                  font-size: 7pt !important;
+                }
+
+                .firstRow {
+                  height: 10% !important;
+                }
+
+                .smaller {
+                  font-size: 6.5pt !important;
+                }
+
+                .bigger {
+                  font-size: 8.5pt !important;
+                }
+
+                .noPrint {
+                  display: none;
+                }
+
+                .top-right {
+                  width: 36.8% !important;
+                }
+
+                .shipCons {
+                  height: 18% !important;
+                }
+
+                .specInst {
+                  height: 15% !important;
+                }
+
+                .bigger2 {
+                  font-size: 10pt !important;
+                }
+
+                .secondLine {
+                  padding-right: 13.3% !important;
+                }
+
+                #consTable {
+                  width: 50.1% !important;
+                }
+
+                .printForte {
+                  display: inline;
+                }
+
+                .pdfForte {
+                  display: none !important;
+                }
+              } */
+            </style>
+          </head>
+         <body style="margin-top: 2em;margin-left: 2em; ">
+            <div id="bolContainer"
+              style="margin:2em;padding:20px;font-size:9pt; font-family:arial; line-height:1.5em;width: 850px; margin: 0 auto;">
+              <h4 class="fontpt" style="font-size:15pt; font-family:arial; line-height:1.5em;text-align:center;color:#000;font-weight:bold">UNIFORM STRAIGHT BILL OF LADING</h4>
+              <div class="firstRow left-float padding-rgt3 width22 height110"
+                style="float:left;padding-right:3%; width:22%;height: 110px;font-size:9pt; font-family:arial; line-height:1.5em;">
+                <table width="100%" height="100%"
+                  style="font-size:9pt; font-family:arial; line-height:1.5em;border-spacing: 0px !important;">
+                
+                  <tbody>
+                    <tr>
+                      <td>
+                        <img src="assets/images/forte_logo.png" style="height: 60px; width:150px!important;" class="full-width">
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="firstRow border left-float width38 height110"
+                style="text-align: center;float:left;width:38%;height: 110px;border: 1px solid black;font-size:9pt; font-family:arial; line-height:1.5em;">
+                <!-- <br><strong>
+                  <div class="fontpt" style="font-size:10pt; font-family:arial; line-height:1.5em;">UNIFORM STRAIGHT
+                    BILL OF LADING</div>
+                  </strong><br> -->
+                  <div style="margin-top:7px;">
+                    <ngx-barcode *ngIf="bolValue?.serviceType =='YRC' && showProNumber === true" [bc-value]="bolValue?.proNumber"
+                       [bc-width]="1" [bc-height]="25" [bc-element-type]="img"></ngx-barcode>
+                    <ngx-barcode *ngIf="bolValue?.serviceType =='FEDEX FREIGHT ECONOMY' && showTrackingNumber === true"
+                      [bc-value]="bolValue?.trackingNumber"  [bc-width]="1" [bc-height]="25" [bc-element-type]="img"></ngx-barcode>
+                    <ngx-barcode *ngIf="bolValue?.serviceType =='FEDEX FREIGHT PRIORITY' && showTrackingNumber === true"
+                      [bc-value]="bolValue?.trackingNumber"  [bc-width]="1" [bc-height]="25" [bc-element-type]="img"></ngx-barcode>
+                    <ngx-barcode *ngIf="bolValue?.serviceType === 'REDDAWAY' && showReddawayNumber === true"
+                      [bc-value]="bolValue?.bolTrackingNumber"  [bc-width]="1" [bc-height]="25" [bc-element-type]="img"></ngx-barcode>
+                    <ngx-barcode *ngIf="bolValue?.serviceType === 'OTHERS' && showOthersTrackingNumber === true"
+                      [bc-value]="bolValue?.bolTrackingNumber"  [bc-width]="1" [bc-height]="25" [bc-element-type]="img"></ngx-barcode>
+                  </div>
+                Carrier: <span
+                  style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                  id="bolSCAC" class="controlContainer controlInline">{{bolValue?.serviceType}}</span><br>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='YRC' && showProNumber === true">PRO#:<b
+                    style="font-size: 16px;">{{bolValue?.proNumber}}</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='YRC' && showProNumber === false">PRO#:<b
+                    style="font-size: 16px;">-</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='FEDEX FREIGHT ECONOMY' && showTrackingNumber === true">PRO#:<b
+                    style="font-size: 16px;">{{bolValue?.trackingNumber}}</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='FEDEX FREIGHT ECONOMY' && showTrackingNumber === false">PRO#:<b
+                    style="font-size: 16px;">-</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType === 'FEDEX FREIGHT PRIORITY' && showTrackingNumber === true">PRO#:<b
+                    style="font-size: 16px;">{{bolValue?.trackingNumber}}</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='FEDEX FREIGHT PRIORITY' && showTrackingNumber === false">PRO#:<b
+                    style="font-size: 16px;">-</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType === 'REDDAWAY' && showReddawayNumber === true">PRO#: <b
+                    style="font-size: 16px;">{{bolValue?.bolTrackingNumber}}</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='REDDAWAY' && showReddawayNumber === false">PRO#: <b
+                    style="font-size: 16px;">-</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType === 'OTHERS' && showOthersTrackingNumber === true">PRO#: <b
+                    style="font-size: 16px;">{{bolValue?.bolTrackingNumber}}</b></span>
+                <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                  *ngIf="bolValue?.serviceType =='OTHERS' && showOthersTrackingNumber === false">PRO#: <b
+                    style="font-size: 16px;">-</b></span>
+
+
+              </div>
+              <div class="top-right firstRow div-col3"
+                style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; float:left; width:35.9%; height: 110px;">
+                <table class="full-width full-height"
+                  style="width: 100%;font-size:9pt; font-family:arial; line-height:1.5em;height: 110px;border-spacing: 0px;">
+                  <tbody>
+                    <tr class="border_bottom" style="border-bottom:1px solid black;" width="100%" height="30%">
+                      <td valign="top" style="valign:top;">
+                        <div class="valign" style="valign:top;font-size:9pt; font-family:arial; line-height:1.5em;margin-left:5px;">
+                          Date: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                            *ngIf="bolValue?.shipment!== ''" id="bolDate" class="controlContainer controlInline"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                                style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                                id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.DATE_TIME" class="GrTanGridData inline"
+                                title="">{{bolValue?.shipment | date:'MM/dd/yyyy'}}</span>
+                            </span></span></div>
+                      </td>
+                    </tr>
+                    <tr class="border_bottom" style="border-bottom:1px solid black;" width="100%" height="30%">
+                      <td valign="top" style="valign:top;">
+                        <div class="" style="font-size:9pt; font-family:arial; line-height:1.5em;margin-left:5px;">Shipper's Bill of
+                          Lading #: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                            id="bolShipperBolNumber" class="controlContainer controlInline"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                                style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                                id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_BOL_NUMBER"
+                                class="GrTanGridData inline" style=" display: inline-block;"
+                                title="">{{bolValue?.shippersBillOfLading}}</span>
+                            </span></span></div>
+                      </td>
+                    </tr>
+                    <tr class="border_bottom" style="border-bottom:1px solid black;" width="100%" height="20%">
+                      <td>
+                        <div class="" style="font-size:9pt; font-family:arial; line-height:1.5em;margin-left:5px;">PO #: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                            id="bolPONumber" class="controlContainer controlInline"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                                style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                                id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.PO_NUMBER" class="GrTanGridData inline"
+                                style=" display: inline-block;" title="">{{bolValue?.purchaseOrderNumber}}</span>
+                            </span></span></div>
+                      </td>
+                    </tr>
+                    <tr width="100%" height="20%">
+                      <td>
+                        <div class="" style="font-size:9pt; font-family:arial; line-height:1.5em;margin-left:5px;">Shipper #: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                            id="bolShipperNumber" class="controlContainer controlInline"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                                style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                                id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_NUMBER" class="GrTanGridData inline"
+                                style=" display: inline-block;" title="">{{bolValue?.shipperIdNumber}}</span>
+                            </span></span></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="shipConsInfo" style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                <table width="100%" style="font-size:9pt; font-family:arial; line-height:1.5em;border-spacing: 0px;">
+                  <tbody>
+                    <tr id="shipConsHead" class="sectionHeader"
+                      style="width: 100%; background-color: #CCCCCC; font-size: small; clear: both; font-weight: bold;">
+                      <td width="25%" class="txt-right font9pt" style="text-align: right; font-size:9pt;">Shipper (from)
+                      </td>
+                      <td class="txt-center font9pt normalfont" width="50%" style="text-align: center; font-size:9pt;">
+                      </td>
+                      <td width="25%" class="txt-left font9pt" style="text-align: left; font-size:9pt;">Consignee (to)
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table width="100%" style="font-size:9pt; font-family:arial; line-height:1.5em; border-spacing: 0px;">
+                  <tbody>
+                    <tr class="border_all">
+                      <td width="50%" colspan="3" class="right"
+                        style="border-right:1px solid black;border-left: 1px solid black;border-top: 1px solid black">
+                        Shipper:
+                        <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolShipperName" class="controlContainer controlInline">
+                          <span style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperName}}
+                            </span>
+                          </span></span></td>
+                      <td width="50%" colspan="3" style="border-right:1px solid black;border-top: 1px solid black">
+                        Consignee: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolConsigneeName" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.consigneeName}}</span>
+                          </span></span></td>
+                    </tr>
+                    <tr class="border_all">
+                      <td width="50%" colspan="3" class="right"
+                        style="border-right:1px solid black;border-left: 1px solid black;border-top: 1px solid black">
+                        Contact Name: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolShipperName" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperContactName}}
+                            </span>
+                          </span></span></td>
+                      <td width="50%" colspan="3" style="border-right:1px solid black;border-top: 1px solid black">
+                        Contact Name: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolConsigneeName" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.consigneeContactName}}</span>
+                          </span></span></td>
+                    </tr>
+                    <tr class="border_all" style="border: 1px solid black;">
+                      <td width="50%" colspan="3" class="right"
+                        style="border-right:1px solid black;border-left: 1px solid black;border-top: 1px solid black">
+                        Street: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolShipperStreet" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPERSTREET1" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperStreet1}}</span>
+                          </span> <span style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;margin-left: 10px;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPERSTREET2" class="GrTanGridData"
+                              style="display:inline-block" title="">{{bolValue?.shipperStreet2}}</span>
+                          </span></span></td>
+                      <td width="50%" colspan="3" style="border-right:1px solid black;border-top: 1px solid black">
+                        Destination Street: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolConsigneeStreet" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEESTREET1" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.consigneeStreet1}}</span>
+                          </span> <span style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;margin-left: 10px;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEESTREET2" class="GrTanGridData"
+                              style="display:inline-block" title="">{{bolValue?.consigneeStreet2}}</span>
+                          </span></span></td>
+                    </tr>
+                    <tr class="border_all" style="border: 1px solid black;" height="35px">
+                      <td width="25%" valign="top" class="right"
+                        style="valign:top;border-right:1px solid black;border-left: 1px solid black;border-top: 1px solid black">
+                        City: <br><span style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolShipperCity" class="controlContainer"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_CITY" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperCity}}</span>
+                          </span></span></td>
+                      <td width="15%" valign="top" class="right"
+                        style="valign:top;border-right:1px solid black;border-top: 1px solid black">State / Province
+                        <br><span style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolShipperState" class="controlContainer"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_STATE_PROVINCE"
+                              class="GrTanGridData inline" style=" display: inline-block;"
+                              title="">{{bolValue?.shipperState}}</span>
+                          </span></span></td>
+                      <td width="10%" valign="top" class="right"
+                        style="valign:top;border-right:1px solid black;border-top: 1px solid black">Zip <br><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolShipperZip" class="controlContainer"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_ZIP" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperZip}}</span>
+                          </span></span></td>
+                      <td width="25%" valign="top" class="right"
+                        style="valign:top;border-right:1px solid black;border-top: 1px solid black">City: <br><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolConsigneeCity" class="controlContainer"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_CITY" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.consigneeCity}}</span>
+                          </span></span></td>
+                      <td width="15%" valign="top" class="right"
+                        style="valign:top;border-right:1px solid black;border-top: 1px solid black">State / Province
+                        <br><span style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolConsigneeState" class="controlContainer"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_STATE_PROVINCE"
+                              class="GrTanGridData inline" style=" display: inline-block;"
+                              title="">{{bolValue?.consigneeState}}</span>
+                          </span></span></td>
+                      <td width="10%" valign="top"
+                        style="valign:top;border-right:1px solid black;border-top: 1px solid black;">Zip <br><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolConsigneeZip" class="controlContainer"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_ZIP" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.consigneeZip}}</span>
+                          </span></span></td>
+                    </tr>
+                    <tr class="border_all" style="border: 1px solid black;">
+                      <td width="25%" class="right"
+                        style="border-right:1px solid black;border-left: 1px solid black;border-top: 1px solid black">
+                        Country: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolShipperCountry" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_COUNTRY" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperCountry}}</span>
+                          </span></span></td>
+                      <td width="25%" class="right" style="border-right:1px solid black;border-top: 1px solid black"
+                        colspan="2">Phone: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolShipperPhone" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_PHONE" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.shipperPhoneNumber}}</span>
+                          </span></span></td>
+                      <td width="25%" class="right" style="border-right:1px solid black;border-top: 1px solid black">
+                        Country: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolConsigneeCountry" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_COUNTRY" class="GrTanGridData inline"
+                              title="">{{bolValue?.consigneeCountry}}</span>
+                          </span></span></td>
+                      <td width="25%" colspan="2" style="border-right:1px solid black;border-top: 1px solid black">
+                        Phone: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolConsigneePhone" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                              style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                              id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_PHONE" class="GrTanGridData inline"
+                              style=" display: inline-block;" title="">{{bolValue?.consigneePhoneNumber}}</span>
+                          </span></span></td>
+                    </tr>
+                    <tr class="border_all">
+                      <td height="40px" class="boldfont" valign="top" colspan="3"
+                        style="valign:top; font-weight: bold;font-weight: bold;border-right:1px solid black;border-left: 1px solid black;border-top: 1px solid black">
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolSpecialInstructions" class="controlContainer font12" style="font-size: 12pt;"> Vol/Ref
+                          Number: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;">{{bolValue?.ReferenceNumber}}
+                          </span></span></td>
+                      <td height="40px" class="boldfont" valign="top" colspan="3"
+                        style="valign:top; font-weight: bold;font-weight: bold;border-right:1px solid black;border-top: 1px solid black"
+                        *ngIf="bolValue?.pickupConformationNumber !== null"><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolSpecialInstructions" class="controlContainer font12" style="font-size: 12pt;"> P/U
+                          Confirmation#: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;">{{bolValue?.pickupConformationNumber}}
+                          </span></span> </td>
+                      <td height="40px" class="boldfont" valign="top" colspan="3"
+                        style="valign:top; font-weight: bold;font-weight: bold;border-right:1px solid black;border-top: 1px solid black"
+                        *ngIf="bolValue?.pickupConformationNumber === null"><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolSpecialInstructions" class="controlContainer font12" style="font-size: 12pt;"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"></span></span></td>
+                    </tr>
+                    <tr class="border_all" style="border: 1px solid black;">
+                      <td height="40px" class="boldfont" valign="top" colspan="6"
+                        style="valign:top;font-weight: bold;border:1px solid black"><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                          id="bolSpecialInstructions" class="controlContainer font12" style="font-size: 12pt">Special
+                          Instructions: <span style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                            {{bolValue?.spclInstructions}}</span><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                            *ngIf="bolValue?.accessorials!== null && bolValue?.accessorials!=='' && bolValue?.accessorials!== undefined">
+                            {{bolValue?.accessorials}}</span></span></td>
+
+                    </tr>
+                    <!-- <tr class="border_all" *ngIf="bolValue?.accessorials!== null && bolValue?.accessorials!=='' && bolValue?.accessorials!== undefined">
+        <td height="40px" class="boldfont" valign="top" colspan="6" ><span style="font-size:9pt; font-family:arial; line-height:1.5em;" id="bolSpecialInstructions" class="controlContainer font12" >Assessorials: <span style="font-size:9pt; font-family:arial; line-height:1.5em;"> {{bolValue?.accessorials}}</span></span></td>
+        </tr> -->
+                    <tr class="border_all" style="border-bottom: 1px solid black;">
+                      <td class="boldfont txt-center" width="100%" colspan="6"
+                        style="text-align: center;font-weight: bold;border-bottom: 1px solid black;border-left:1px solid black; border-right:1px solid black;">
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="mediumfont"
+                          *ngIf="bolValue?.billPaidTo?.name !== 'Third Party'" style="font-size:medium;">Bill Freight
+                          Charges {{bolValue?.billPaidTo?.name}}:</span>
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="mediumfont"
+                          *ngIf="bolValue?.billPaidTo?.name === 'Third Party'" style="font-size:medium;">Bill Freight
+                          Charges {{bolValue?.billPaidTo?.name}} to:</span>
+                      </td>
+                    </tr>
+                    <tr class="border_left border_right"
+                      style="border-left:1px solid black;border-right:1px solid black;">
+                      <td *ngIf="billPaidNamePricing" width="100%" colspan="6" style="border-left:1px solid black;border-right:1px solid black;">
+                        Name: <span style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolBillToName" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;" class="printForte"
+                            style="display: inline;">{{bolValue?.shipperName}} C/O {{bolValue?.billPaidTo?.companyName}}</span><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;" class="pdfForte"
+                            style="display: none;">{{bolValue?.shipperName}} C/O {{bolValue?.billPaidTo?.companyName}}</span></span></td>
+                      <td *ngIf="!billPaidNamePricing" width="100%" colspan="6" style="border-left:1px solid black;border-right:1px solid black;">
+                        Name: <span style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolBillToName" class="controlContainer controlInline"><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;" class="printForte"
+                            style="display: inline;">{{bolValue?.billPaidTo?.companyName}}</span><span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;" class="pdfForte"
+                            style="display: none;">{{bolValue?.billPaidTo?.companyName}}</span></span></td>
+                    </tr>
+                    <tr class="border_left border_bottom border_right"
+                      style="border-bottom:1px solid black;border-left:1px solid black;border-right:1px solid black;">
+                      <td width="100%" colspan="6"
+                        style="border-left:1px solid black;border-right:1px solid black;border-bottom: 1px solid black;">
+                        Street: <span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                          id="bolBillToStreet"
+                          class="controlContainer controlInline">{{bolValue?.billPaidTo?.address}}</span>
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-60"
+                          style="margin-left:60px;">City: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                            id="bolBillToCity"
+                            class="controlContainer controlInline">{{bolValue?.billPaidTo?.city}}</span></span>
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-60"
+                          style="margin-left:60px;">State/Province: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;"
+                            id="bolBillToState"
+                            class="controlContainer controlInline">{{bolValue?.billPaidTo?.state}}</span></span>
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-60"
+                          style="margin-left:60px;">Zip: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                            id="bolBillToZip" class="controlContainer controlInline">{{bolValue?.billPaidTo?.zip}}
+                          </span></span>
+                          <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-60"
+                          style="margin-left:60px;">REF ID: <span
+                            style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight:bold;margin-left: 10px;"
+                            id="bolBillToZip" class="controlContainer controlInline">{{companyData?.referenceId}}
+                          </span></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="codInfo" style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                <div id="codChecks"
+                  style="font-size:9pt; font-family:arial; line-height:1.5em;margin-left: 2%; width: 78%; ">
+                  <div class="boldfont" height="20px"
+                    style="font-weight: bold;font-size:9pt; font-family:arial; line-height:1.5em;">1. The Letters
+                    "C.O.D." must appear in box before consignee's name above.</div>
+                  <div class="left-float height20"
+                    style="float:left;height: 20px;font-size:9pt; font-family:arial; line-height:1.5em;"><span
+                      style="font-size:9pt; font-family:arial; line-height:1.5em;" class="left-float"
+                      style="float:left;">2. C.O.D. funds need to be collected as:</span>
+                    <div class="div-col4"
+                      style=" margin-left: 50px; float: left; height: 80%; width: 40px; border: 2px solid black;"></div>
+                    <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="left-float ml-5"
+                      style="float:left;margin-left:5px;">Certified Funds</span>
+                    <div class="div-col4"
+                      style=" margin-left: 50px; float: left; height: 80%; width: 40px; border: 2px solid black;"></div>
+                    <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="left-float ml-5"
+                      style="float:left;margin-left:5px;">Company Check</span>
+                  </div><br>
+                  <div class="left-float height20"
+                    style="float:left;height: 20px;font-size:9pt; font-family:arial; line-height:1.5em;">
+                    <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="left-float"
+                      style="float:left;">3. C.O.D. fee to be paid by:</span>
+                    <div class="div-col5"
+                      style="margin-left: 25px; float: left; height: 80%; width: 40px; border: 2px solid black; text-align: center;font-size:9pt; font-family:arial; line-height:1.5em;">
+                    </div> <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                      class="left-float ml-5 boldfont"
+                      style="float:left;font-weight: bold;margin-left:5px;">Shipper</span>
+                    <div class="div-col6"
+                      style="margin-left: 45px; float: left; height: 80%; width: 40px; border: 2px solid black;font-size:9pt; font-family:arial; line-height:1.5em;">
+                    </div> <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                      class="left-float ml-5 boldfont"
+                      style="float:left;font-weight: bold;margin-left:5px;">Consignee</span>
+                    <div class="div-col7"
+                      style="margin-left: 72px; float: left; height: 80%; width: 40px; border: 2px solid black;font-size:9pt; font-family:arial; line-height:1.5em;">
+                    </div> <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="left-float ml-5"
+                      style="float:left;margin-left:5px;">Personal Check</span>
+                  </div>
+                </div>
+                <div class="sectionHeader" id="shipConsHead"
+                  style="font-size:9pt; font-family:arial; line-height:1.5em;width: 100%;float: left;background-color: #CCCCCC; font-size: small; font-weight: bold;">
+                  <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="pl-20"
+                    style="padding-left: 20px;">REMIT C.O.D. TO: (If different than above)</span></div>
+
+              </div>
+              <div id="itemInfo" style="font-size:9pt; font-family:arial; line-height:1.5em;float: left;">
+                <div style="font-size: 4.5pt!important;text-align: justify;font-family:arial; line-height:1.5em;">
+                  Received, subject to individually determined rates or contracts that have been agreed upon in writing
+                  between the carrier and shipper, if applicable, otherwise to the rates, classifications, and rules
+                  that have been established by the carrier and are available to the shipper, on request, and to all
+                  applicable state and federal regulations, the property described below. In apparent good order, except
+                  as noted (contents and condition of contents of packages unknown) marked, consigned, and destined as
+                  shown here on, which said carrier agrees to carry to its destination, if on its route, or otherwise to
+                  deliver to another carrier on the route to destination. Every service to be performed hereunder shall
+                  be subject to all the conditions not prohibited by law, whether printed or written, herein contained,
+                  including the conditions on the back hereof, or otherwise referenced, which are hereby agreed to by
+                  the shipper and accepted for himself and his assigns.
+                </div>
+                <table width="100%"
+                  style="font-size:9pt; font-family:arial; line-height:1.5em;border:1px solid #000; border-spacing: 0px;">
+                  <tbody>
+                    <tr class="border_top border_left border_bottom itemHeaders txt-center" id="itemHeaders1"
+                      width="100%" style="text-align: center;font-weight: bold;border-bottom:1px solid black;">
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="12.5%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">No
+                          Handling Units</div>
+
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="12.5%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">
+                          Handling Units Type</div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="12.5%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">
+                          Pieces</div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="3.5%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">HM
+                        </div>
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">(X)
+                        </div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="39%">
+                        <div class="bigger" style="font-size:9pt; font-family:arial; line-height:1.5em;">Description of
+                          articles, kind of package, special</div>
+                        <div class="bigger" style="font-size:9pt; font-family:arial; line-height:1.5em;">marks and
+                          exceptions (Subject to correction)</div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="11%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">
+                          Dimensions (in.)</div>
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">(L x
+                          W x H)</div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;" width="6%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">
+                          Weight</div>
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">(IN
+                          LBS)</div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="14%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">NMFC
+                          Item #</div>
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">
+                          (Subject to correction)</div>
+                      </td>
+                      <td class="right" style="border-right:1px solid black;border-bottom: 1px solid black;"
+                        width="5.5%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">Class
+                        </div>
+                      </td>
+                      <td class="right" style="border-bottom: 1px solid black;" width="5.5%">
+                        <div class="bigger"
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;font-size: 8.5pt !important;">Cube
+                        </div>
+                      </td>
+                    </tr> 
+                  </tbody>
+
+                  <tbody *ngFor="let array of bolValue?.lineItemsFormat">
+                    <tr *ngIf="array.bolType === 'Non Itemize' "
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;width:100%;font-weight:normal !important;border-bottom:1px solid black;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.HandlingUnitQuantity}}</td>
+                      <td style="border-right: 1px solid #000000;border-bottom: 1px solid black;font-size:13px;"
+                        *ngIf="array.HandlingUnitType !== 'PIECE' && array.HandlingUnitType !== 'PALLET' && array.HandlingUnitType !== 'DRUM' && array.HandlingUnitType !=='CARTON'">
+                        {{array.HandlingUnitType}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PIECE'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        PCS</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PALLET'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        PLT</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'DRUM'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        DRM</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'CARTON'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        CTN</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.PackageQuantity}}</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer" *ngIf="array.isHazardous === true" 
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <em class="fa fa-check" aria-hidden="true"></em></td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array.isHazardous === false || array.isHazardous === ''"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.Description}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.Dimensions!== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.Dimensions.Length}} x {{array.Dimensions.Width}} x {{array.Dimensions.Height}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.Dimensions === undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer" *ngIf="array.Weight.Value !== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.Weight.Value}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.nmfc === undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer" *ngIf="array.nmfc !== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.nmfc}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.FreightClass}}</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array?.cube!==undefined && array?.cube!== '' && array?.cube!==null"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.cube}}</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array?.cube==undefined || array?.cube== '' || array?.cube==null"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;">-</td>
+                    </tr>
+                    <tr *ngIf="array.bolType === 'voltl' "
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;width:100%;font-weight:normal !important;border-bottom:1px solid black;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.HandlingUnitQuantity}}</td>
+                      <td style="border-right: 1px solid #000000;border-bottom: 1px solid black;font-size:13px;"
+                        *ngIf="array.HandlingUnitType !== 'PIECE' && array.HandlingUnitType !== 'PALLET' && array.HandlingUnitType !== 'DRUM' && array.HandlingUnitType !=='CARTON'">
+                        {{array.HandlingUnitType}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PIECE'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        PCS</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PALLET'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        PLT</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'DRUM'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        DRM</td>
+                      <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'CARTON'"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        CTN</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.PackageQuantity}}</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer" *ngIf="array.isHazardous === true" 
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <em class="fa fa-check" aria-hidden="true"></em></td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array.isHazardous === false || array.isHazardous === ''"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.Description}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.Dimensions!== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.Dimensions.Length}} x {{array.Dimensions.Width}} x {{array.Dimensions.Height}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.Dimensions === undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer" *ngIf="array.Weight.Value !== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.Weight.Value}}</td>
+                      <td class="right bigger controlContainer" *ngIf="array.nmfc === undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        -</td>
+                      <td class="right bigger controlContainer" *ngIf="array.nmfc !== undefined"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.nmfc}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.FreightClass}}</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array?.cube!==undefined && array?.cube!== '' && array?.cube!==null"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.cube}}</td>
+                      <td class="right bigger controlContainer"
+                        *ngIf="array?.cube==undefined || array?.cube== '' || array?.cube==null"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;">-</td>
+                    </tr>
+
+                    <tr *ngIf="array?.bolType =='Itemize'"
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;width: 100%;font-weight:normal !important;border-bottom:1px solid black;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.HandlingUnitQuantity}}</td>
+                      <td style="border-right: 1px solid #000000;border-bottom:1px solid black;font-size:13px;"
+                        *ngIf="array.HandlingUnitType !== 'PIECE' && array.HandlingUnitType !== 'PALLET' && array.HandlingUnitType !== 'DRUM' && array.HandlingUnitType !=='CARTON'">
+                        {{array.HandlingUnitType}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'PIECE'">PCS</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'PALLET'">PLT</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'DRUM'">DRM</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'CARTON'">CTN</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === true"><em class="fa fa-check" aria-hidden="true"></em></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === false || array.isHazardous === ''">-</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        See below for breakdown</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Dimensions!== undefined">{{array.Dimensions.Length}} x {{array.Dimensions.Width}} x
+                        {{array.Dimensions.Height}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Dimensions === undefined">-</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Weight.Value !== undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc === undefined">-</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc !== undefined">{{array.nmfc}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.FreightClass}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array?.cube!==undefined && array?.cube!== '' && array?.cube!==null">{{array.cube}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array?.cube==undefined || array?.cube== '' || array?.cube==null">-</td>
+                    </tr>
+                    <tr *ngIf="array?.bolType =='Multi Classed Pallet'"
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;width: 100%;font-weight:normal !important;border-bottom:1px solid black;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{array.HandlingUnitQuantity}}</td>
+                      <td style="border-right: 1px solid #000000;border-bottom:1px solid black;font-size:13px;"
+                        *ngIf="array.HandlingUnitType !== 'PIECE' && array.HandlingUnitType !== 'PALLET' && array.HandlingUnitType !== 'DRUM' && array.HandlingUnitType !=='CARTON'">
+                        {{array.HandlingUnitType}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'PIECE'">PCS</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'PALLET'">PLT</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'DRUM'">DRM</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.HandlingUnitType === 'CARTON'">CTN</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === true"><em class="fa fa-check" aria-hidden="true"></em></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === false || array.isHazardous === ''">-</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        See below for breakdown</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Dimensions!== undefined">{{array?.Dimensions?.Length}} x
+                        {{array?.Dimensions?.Width}} x {{array?.Dimensions?.Height}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Dimensions === undefined">-</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Weight.Value !== undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc === undefined">-</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc !== undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array?.cube!==undefined && array?.cube!== '' && array?.cube!==null">{{array.cube}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array?.cube==undefined || array?.cube== '' || array?.cube==null">-</td>
+                    </tr>
+                    <tr *ngFor="let pieces of array.newAddPieces; let i=index"
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;width: 100%;font-weight:normal !important;border-bottom:1px solid black;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;">&nbsp;</span></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <b>Itemized</b></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{pieces.PackageQuantity}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        {{pieces.Description}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer" style="font-weight:bold;font-size: 8.5pt !important;border-bottom: 1px solid black;border-right: 1px solid black;">
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                          *ngIf="pieces?.showFlag!== 'Itemize'">{{pieces.Weight.Value}}</span>
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                          *ngIf="pieces?.showFlag== 'Itemize'">&nbsp;</span></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                          *ngIf="pieces?.showFlag!== 'Itemize'">{{pieces.nmfc}}</span><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                          *ngIf="pieces?.showFlag== 'Itemize'">&nbsp;</span></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                          *ngIf="pieces?.showFlag!== 'Itemize'">{{pieces.FreightClass}}</span><span
+                          style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                          *ngIf="pieces?.showFlag== 'Itemize'">&nbsp;</span></td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;">&nbsp;</td>
+                    </tr>
+                    <tr *ngIf="array?.bolType =='Itemize'"
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;font-weight:normal !important;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <b>SubTotal</b></td>
+                      <td style="border-right: 1px solid #000000;font-size:13px;border-bottom: 1px solid black;">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined">
+                        {{array?.PackageQuantity}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined">
+                        -</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === true">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === false || array.isHazardous === ''">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <!-- <td class="right bigger controlContainer"  *ngIf="array.Dimensions === undefined">-</td> -->
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Weight.Value !== undefined">{{array.Weight.Value}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc === undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc !== undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;">&nbsp;</td>
+                    </tr>
+                    <tr *ngIf="array?.bolType =='Multi Classed Pallet'"
+                      class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1"
+                      style="text-align: center;width: 100%;font-weight:normal !important;border-bottom:1px solid black;">
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        <b>SubTotal</b></td>
+                      <td style="border-right: 1px solid #000000;font-size:13px;border-bottom: 1px solid black;">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;font-size: 8.5pt !important;border-bottom: 1px solid black;"
+                        *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined">
+                        {{array?.PackageQuantity}} </td>
+                      <!-- <td class="right bigger controlContainer"  *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined">-</td>  -->
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === true">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.isHazardous === false || array.isHazardous === ''">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.Weight.Value !== undefined">{{array?.Weight.Value}}</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc === undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;"
+                        *ngIf="array.nmfc !== undefined">&nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-right:1px solid black;border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                        &nbsp;</td>
+                      <td class="right bigger controlContainer"
+                        style="font-weight:bold;border-bottom: 1px solid black;font-size: 8.5pt !important;">&nbsp;</td>
+                    </tr>
+                  
+                  <!-- <tr *ngFor="let array of bolValue?.lineItem"class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1">
+        
+        <td class="right bigger controlContainer">{{array.HandlingUnitQuantity}}</td><td style="border-right: 1px solid #000000;font-size:13px;" *ngIf="array.HandlingUnitType !== 'PIECE' && array.HandlingUnitType !== 'PALLET' && array.HandlingUnitType !== 'DRUM' && array.HandlingUnitType !=='CARTON'">{{array.HandlingUnitType}}</td>
+        <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PIECE'">PCS</td>
+        <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PALLET'">PLT</td>
+        <td class="right bigger controlContainer"  *ngIf="array.HandlingUnitType === 'DRUM'">DRM</td>
+        <td class="right bigger controlContainer"  *ngIf="array.HandlingUnitType === 'CARTON'">CTN</td>
+        <td class="right bigger controlContainer"  *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined">{{array.PackageQuantity}}</td>
+        <td class="right bigger controlContainer"  *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined">-</td>
+        <td class="right bigger controlContainer"  *ngIf="array.isHazardous === true"><em class="fa fa-check" aria-hidden="true"></em></td>
+        <td class="right bigger controlContainer"  *ngIf="array.isHazardous === false || array.isHazardous === ''">-</td>
+        <td class="right bigger controlContainer">{{array.Description}}</td>
+        <td class="right bigger controlContainer"  *ngIf="array.Dimensions!== undefined">{{array.Dimensions.Length}} x {{array.Dimensions.Width}} x {{array.Dimensions.Height}}</td>
+        <td class="right bigger controlContainer"  *ngIf="array.Dimensions === undefined">-</td>
+        <td class="right bigger controlContainer" *ngIf="array.Weight.Value !== undefined">{{array.Weight.Value}}</td>
+        <td class="right bigger controlContainer"  *ngIf="array.Weight !== undefined">{{array.Weight}}</td>
+        <td class="right bigger controlContainer" *ngIf="array.nmfc === undefined">-</td>
+        <td class="right bigger controlContainer" *ngIf="array.nmfc !== undefined" >{{array.nmfc}}</td>
+        
+        <td class="right bigger controlContainer" >{{array.FreightClass}}</td>
+        <td class="right bigger controlContainer" >&nbsp;</td>
+        </tr> -->
+
+                  <tr class="border_bottom border_left full-width" id="itemTotals"
+                    style="width:100%;border-bottom:1px solid black;">
+                    <td class="right bigger" colspan="10"
+                      style="border-bottom: 1px solid black;font-size: 8.5pt !important;">
+                      <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-20"
+                        style="margin-left:20px;">TOTAL HANDLING UNITS: <b>{{totalPieces}}</b> </span>
+                      <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-20"
+                        style="margin-left:20px;">Total Pallets:</span> <span
+                        style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight: bold;margin-left: 10px;"
+                        id="bolTotalPieces" class="controlContainer controlInline">{{bolValue?.previewTotalPallets}}</span>
+                      <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-40"
+                        style="margin-left:40px;">Total Pieces Count:</span> <span
+                        style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight: bold;margin-left: 10px;"
+                        id="bolTotalPallets" class="controlContainer controlInline">{{bolValue?.previewTotalPieces}}</span>
+                      <!-- <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-40">TOTAL</span> <span style="font-size:9pt; font-family:arial; line-height:1.5em;" id="bolTotalHandlingUnits" class="controlContainer controlInline">1</span> -->
+                      <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-40"
+                        style="margin-left:40px;">Total Weight:</span> <span
+                        style="font-size:9pt; font-family:arial; line-height:1.5em;font-weight: bold;margin-left: 10px;"
+                        id="bolTotalWeight" class="controlContainer controlInline">{{totalWeights}} lbs</span>
+                    </td>
+                  </tr>
+                  <tr class="border_bottom border_left sectionHeader tr-1" id="hmNote"
+                    style="margin-top: 1px;width: 100%; background-color: #CCCCCC; font-size: small; clear: both; font-weight: bold;border-bottom:1px solid black;">
+                    <td class="right" style="border-right:1px solid black;" colspan="10"><span
+                        style="font-size:9pt; font-family:arial; line-height:1.5em;" class="boldfont ml-80 smallfont"
+                        style="font-size:small;font-weight: bold; margin-left:80px;">Mark "X" in the HM COLUMN TO
+                        DESIGNATE HAZARDOUS MATERIALS AS DEFINED IN DOT REGULATIONS</span></td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="bolLegalNotes" style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                <div style="font-size: 4.5pt!important;;    margin-top: 48px;">NOTE (1) Where the rate and carrier's
+                  liability for loss or damage may be dependant on value, shippers must state specifically in writing
+                  the agreed to declared value of the property as follows: "The agreed to declared value of the property
+                  is specifically stated by the shipper to be not <br>
+                  exceeding <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="undertxt"
+                    style="text-decoration: underline;">________________</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; per
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:9pt; font-family:arial; line-height:1.5em;"
+                    class="undertxt" style="text-decoration: underline;">________________</span> ."</div>
+                <div style="font-size: 4.5pt!important;">NOTE (2) Liability limitation for loss or damage on this
+                  shipment shall be applicable as provided by contract or in the current National Motor Freight
+                  Classification, DOT 100 series, or this carrier's governing tariffs, in no event shall carrier's
+                  liability exceed $100,000 per incident.</div>
+                <div style="font-size: 4.5pt!important;">NOTE (3) Commodities requiring special or additional care or
+                  attention in handling or stowing must be so marked and packaged as to ensure safe transportation with
+                  ordinary care. See Sec 2 (e) of NMFC Item 350.</div>
+              </div>
+              <div id="shipperCertification" style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                <div class="sectionHeader" class="border sectionHeader"
+                  style="border: 1px solid black;width: 100%; background-color: #CCCCCC; font-size: small; clear: both; font-weight: bold;">
+                  <div style="text-align: center;"><strong>SHIPPER CERTIFICATION</strong></div>
+                </div>
+                <div>
+                  This is to certify that the above named materials are properly classified, described, packaged,
+                  marked, and labeled, and are in proper condition for transportation according to the applicable
+                  regulations of the Department of Transportation.<br> <br>
+                  <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="ml-5"
+                    style="margin-left:5px;">Shipper Signature:</span>
+                  <span style="font-size:9pt; font-family:arial; line-height:1.5em;" class="right"
+                    style="float: right;margin-right: 200px;">Date:</span>
+                </div>
+              </div>
+              <div id="carrierCertification" style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                <div class="border sectionHeader"
+                  style="border: 1px solid black;font-size:9pt; font-family:arial; line-height:1.5em;width: 100%; background-color: #CCCCCC; font-size: small; clear: both; font-weight: bold;">
+                  <div style="text-align: center;font-size:9pt; font-family:arial; line-height:1.5em;"><strong>CARRIER
+                      CERTIFICATION</strong></div>
+                </div>
+                <div style="font-size:9pt; font-family:arial; line-height:1.5em;">
+                  Carrier acknowledges receipt of packages and required placards. Carrier certifies emergency response
+                  information was made available and/or carrier has the DOT emergency response guidebook or equivalent
+                  document in the vehicle.
+                </div>
+                <table width="100%"
+                  style="font-size:9pt; font-family:arial; line-height:1.5em;border:1px solid #000; border-spacing: 0px;">
+                  <tbody>
+                    <tr class="border_all" style="border: 1px solid black;" width="100%">
+                      <td class="right txt-center" width="15%" colspan="2"
+                        style="text-align: center;border-right:1px solid black;border-bottom: 1px solid black;">
+                        <div class="bigger" style="font-size: 8.5pt !important;">SINGLE SHIPMENT</div>
+                      </td>
+                      <td class="right txt-center" width="15%"
+                        style="text-align: center;border-right:1px solid black;border-bottom: 1px solid black;">
+                        <div class="bigger" style="font-size: 8.5pt !important;">DATE</div>
+                      </td>
+                      <td class="right txt-center" width="70%"
+                        style="text-align: center;border-bottom: 1px solid black;">
+                        <div class="bigger" style="font-size: 8.5pt !important;">DRIVER/EMPLOYEE NUMBER &amp; SIGNATURE
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="border_right border_left" width="100%">
+                      <td class="right smallfont txt-center" colspan="2"
+                        style="text-align: center;font-size:small;border-right:1px solid black;">Circle One</td>
+                      <td class="right txt-center" style="text-align: center;border-right:1px solid black;"></td>
+                      <td class="right" style="">&nbsp;</td>
+                    </tr>
+                    <tr class="border_bottom border_right border_left" style="border-bottom:1px solid black;"
+                      width="100%">
+                      <td class="mediumfont txt-center" style="text-align: center;font-size:medium;">Y</td>
+                      <td class="right mediumfont txt-center"
+                        style="text-align: center;font-size:medium;border-right:1px solid black;">N</td>
+                      <td class="right " style="border-right:1px solid black;">&nbsp;</td>
+                      <td class="right" style="">&nbsp;</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </body>
+
+          </html>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="row">
+          <div class="col-md-6 green-button text-center" style="width: 33%">
+            <a class="close" data-dismiss="modal" data-toggle="modal" data-target="#bolType-modal"
+              (click)="downloadPdfTest(bolValue)">
+              <em class="fa fa-download" aria-hidden="true" style="margin-right:5px;"></em>DOWNLOAD</a>
+          </div>
+          <!-- <div class="col-md-4 green-button text-center">
+        <a (click)="sendMail(bolValue)">
+        <em class="fa fa-envelope" style="margin-right:5px;"></em>SEND MAIL</a>
+        </div> -->
+          <div class="col-md-6 green-button text-center" style="width: 33%">
+            <a class="align:center" data-toggle="modal" (click)="printLabel(bolValue.bolReferenceNumber)">
+
+              <!-- <a class="close" data-dismiss="modal"  data-toggle="modal" data-target="#bolType-modal" (click)="downloadPdfTest(bolValue)"> -->
+              <em class="fa fa-print" aria-hidden="true" style="margin-right:5px;"></em>PRINT BOL</a>
+          </div>
+          <div class="col-md-6 green-button text-center" style="width: 33%">
+            <a class="close" data-dismiss="modal">
+              <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>CLOSE</a>
+          </div>
+
+
+        </div>
+        <!-- <div class="row">
+          <div class="col-md-4 col-md-push-4 green-button text-center">
+            <a (click)="downloadOnlineOdf()"><em class="fa fa-arrow-circle-right" aria-hidden="true"
+              style="margin-right:3px;"></em>DOWNLOAD ONLINE PDF </a>
+          <a data-toggle="modal" data-target="#bolType-modal" (click)="export(billOfLadingValues)"><i
+              class="fa fa-download" aria-hidden="true" style="margin-right:10px;"></em>GENERATE AS PDF</a> 
+        </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--BOL Type Modal -->
+<div id="label-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" style="color: #ffffff">
+          Print Label</h4>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="form-group">
+        <label for="countForPrint">No of labels need to be printed:</label>
+        <input type = 'number' [(ngModel)]= 'countForPrint' name="countForPrint" class="form-control" >
+        </div> -->
+        <div id="print-label"  >
+          <html>
+
+          <head>
+            <style>
+              /* @media print {
+                table {
+                  page-break-after: auto
+                }
+
+                tr {
+                  page-break-inside: avoid;
+                  page-break-after: auto
+                }
+
+                td {
+                  page-break-inside: avoid;
+                  page-break-after: auto
+                }
+
+                thead {
+                  display: table-header-group
+                }
+
+                tfoot {
+                  display: table-footer-group
+                }
+              } */
+            </style>
+          </head>
+
+          <body style="margin-top: 2em;margin-left: 2em; ">
+            <!-- {{table.length}} -->
+            <div style="display: -webkit-box;margin: 0px;
+display: -webkit-flex;
+display: -ms-flexbox;
+display: flex;
+-webkit-flex-wrap: wrap;
+-ms-flex-wrap: wrap;
+flex-wrap: wrap;" >
+ <!-- <div
+ style="border: 1px solid black;width:100%;"> -->
+ <div  style="border: 1px solid black;padding:10px;width:100%;height:870px" >
+  <table cellspacing="0" cellpadding="0"
+  style="width: 100%;height:100%;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;">
+  <tr>
+
+   <td style="text-align: center;">
+     <!-- padding:10px 10px -->
+     <ngx-barcode *ngIf="printData?.serviceType =='YRC' && showProNumber === true"
+       [bc-value]="printData?.proNumber" [bc-display-value]="true" [bc-width]="3"
+       [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+     <ngx-barcode
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true"
+       [bc-value]="printData?.trackingNumber" [bc-display-value]="true" [bc-width]="3"
+       [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+     <ngx-barcode
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true"
+       [bc-value]="printData?.trackingNumber" [bc-display-value]="true" [bc-width]="3"
+       [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+     <ngx-barcode *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true"
+       [bc-value]="printData?.bolTrackingNumber" [bc-display-value]="true" [bc-width]="3"
+       [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+     <ngx-barcode
+       *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true"
+       [bc-value]="printData?.bolTrackingNumber" [bc-display-value]="true" [bc-width]="3"
+       [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+
+   </td>
+
+ </tr>
+ <tr>
+   <td>
+     <p style="font-size: 30px;line-height:50px;margin:5px 50px">Carrier Name: <b>{{printCarrier}}</b></p>  
+   </td>
+
+ </tr>
+ <tr>
+   <td>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='YRC' && showProNumber === true">PRO#:<b>{{printData?.proNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='YRC' && showProNumber === false">PRO #:<b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true">
+       PRO #:<b>{{printData?.trackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === false">
+       PRO #:<b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType === 'FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true">
+       PRO #:<b>{{printData?.trackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === false">
+       PRO #:<b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true">PRO #:
+       <b>{{printData?.bolTrackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='REDDAWAY' && showReddawayNumber === false">PRO #:
+       <b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true">
+       PRO #: <b>{{printData?.bolTrackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='OTHERS' && showOthersTrackingNumber === false">
+       PRO #: <b>-</b></p>
+     <h4
+       style=" font-size: 34px;font-weight: 600;text-align: left;line-height:40px;margin:2px 50px">
+       Shipper</h4>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">{{printData?.shipperName}}</p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">{{printData?.shipperStreet1}}
+     </p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">
+       {{printData?.shipperCity}},{{printData?.shipperState}},{{printData?.shipperZip}}</p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">{{printData?.shipperCountry }}
+     </p>
+   </td>
+
+ </tr>
+ <tr>
+   <td>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='YRC' && showProNumber === true">PRO#:<b>{{printData?.proNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='YRC' && showProNumber === false">PRO #:<b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true">
+       PRO #:<b>{{printData?.trackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === false">
+       PRO #:<b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType === 'FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true">
+       PRO #:<b>{{printData?.trackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === false">
+       PRO #:<b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true">PRO #:
+       <b>{{printData?.bolTrackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='REDDAWAY' && showReddawayNumber === false">PRO #:
+       <b>-</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true">
+       PRO #: <b>{{printData?.bolTrackingNumber}}</b></p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px"
+       *ngIf="printData?.serviceType =='OTHERS' && showOthersTrackingNumber === false">
+       PRO #: <b>-</b></p>
+     <h4
+       style="font-size: 34px;font-weight: 600;text-align: left;line-height:40px;margin:2px 50px">
+       Consignee</h4>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">{{printData?.consigneeName}}
+     </p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">
+       {{printData?.consigneeStreet1}}
+     </p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">
+       {{printData?.consigneeCity}},{{printData?.consigneeState}},{{printData?.consigneeZip}}
+     </p>
+     <p style="font-size: 30px;line-height:40px;margin:2px 50px">
+       {{printData?.consigneeCountry }}
+     </p>
+   </td>
+ </tr>
+  <!--  <tr *ngIf="i % 2 === 0">
+     <td width="50%"  style="padding:10px 20px;">
+       <div *ngIf="i < table.length" >
+       <div
+         style="border: 1px solid black;width:100%;">
+         <div  style="padding:10px;width:100%;height:541px">
+           <table cellspacing="0" cellpadding="0"
+             style="width: 100%;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;">
+             <tr>
+
+               <td style="text-align: left;padding:10px 10px">
+                 <ngx-barcode *ngIf="printData?.serviceType =='YRC' && showProNumber === true"
+                   [bc-value]="printData?.proNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true"
+                   [bc-value]="printData?.trackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true"
+                   [bc-value]="printData?.trackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true"
+                   [bc-value]="printData?.bolTrackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode
+                   *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true"
+                   [bc-value]="printData?.bolTrackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+
+               </td>
+
+             </tr>
+             <tr>
+               <td>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">Carrier Name: <b>{{printCarrier}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='YRC' && showProNumber === true">PRO#:<b>{{printData?.proNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='YRC' && showProNumber === false">PRO #:<b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true">
+                   PRO #:<b>{{printData?.trackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === false">
+                   PRO #:<b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType === 'FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true">
+                   PRO #:<b>{{printData?.trackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === false">
+                   PRO #:<b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true">PRO #:
+                   <b>{{printData?.bolTrackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='REDDAWAY' && showReddawayNumber === false">PRO #:
+                   <b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true">
+                   PRO #: <b>{{printData?.bolTrackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='OTHERS' && showOthersTrackingNumber === false">
+                   PRO #: <b>-</b></p>
+
+               </td>
+
+             </tr>
+             <tr>
+               <td>
+                 <h4
+                   style=" font-size: 20px;font-weight: 600;text-align: left;line-height:20px;margin:5px 20px">
+                   Shipper</h4>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.shipperName}}</p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.shipperStreet1}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.shipperCity}},{{printData?.shipperState}},{{printData?.shipperZip}}</p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.shipperCountry }}
+                 </p>
+               </td>
+
+             </tr>
+             <tr>
+               <td>
+                 <h4
+                   style="font-size: 20px;font-weight: 600;text-align: left;line-height:20px;margin:5px 20px">
+                   Consignee</h4>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.consigneeName}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.consigneeStreet1}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.consigneeCity}},{{printData?.consigneeState}},{{printData?.consigneeZip}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.consigneeCountry }}
+                 </p>
+               </td>
+             </tr>
+         
+           </table>
+           <h2> {{i + 1}}  of {{tableCount}}</h2>
+         </div>
+
+       </div>
+     
+     </div>
+
+     
+        </td>
+
+
+     <td  width="50%" style="padding:10px 20px;">
+       <div *ngIf="i+1 < table.length">
+       <div 
+         style="border: 1px solid black; width: 100%;">
+         <div  style="padding:10px;width:100%;height:541px">
+           <table cellspacing="0" cellpadding="0"
+             style="width: 100%;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;">
+             <tr>
+
+               <td style="text-align: left;padding:10px 10px;width:100%">
+                 <ngx-barcode *ngIf="printData?.serviceType =='YRC' && showProNumber === true"
+                   [bc-value]="printData?.proNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true"
+                   [bc-value]="printData?.trackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true"
+                   [bc-value]="printData?.trackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true"
+                   [bc-value]="printData?.bolTrackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+                 <ngx-barcode
+                   *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true"
+                   [bc-value]="printData?.bolTrackingNumber" [bc-display-value]="true" [bc-width]="2"
+                   [bc-height]="50" [bc-element-type]="img"></ngx-barcode>
+
+
+               </td>
+
+             </tr>
+             <tr>
+               <td>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">Carrier Name: <b>{{printCarrier}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='YRC' && showProNumber === true">PRO #:
+                   <b>{{printData?.proNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='YRC' && showProNumber === false">PRO #:<b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === true">
+                   PRO #:<b>{{printData?.trackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_ECONOMY' && showTrackingNumber === false">
+                   PRO #:<b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType === 'FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === true">
+                   PRO #:<b>{{printData?.trackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='FEDEX_FREIGHT_PRIORITY' && showTrackingNumber === false">
+                   PRO #:<b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType === 'REDDAWAY' && showReddawayNumber === true">PRO #:
+                   <b>{{printData?.bolTrackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='REDDAWAY' && showReddawayNumber === false">PRO #:
+                   <b>-</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType === 'OTHERS' && showOthersTrackingNumber === true">
+                   PRO #: <b>{{printData?.bolTrackingNumber}}</b></p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px"
+                   *ngIf="printData?.serviceType =='OTHERS' && showOthersTrackingNumber === false">
+                   PRO #: <b>-</b></p>
+
+               </td>
+
+             </tr>
+             <tr>
+               <td>
+                 <h4
+                   style=" font-size:20px;font-weight: 600;text-align: left;line-height:20px;margin:5px 20px">
+                   Shipper</h4>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.shipperName}}</p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.shipperStreet1}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.shipperCity}},{{printData?.shipperState}},{{printData?.shipperZip}}</p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.shipperCountry }}
+                 </p>
+               </td>
+
+             </tr>
+             <tr>
+               <td>
+                 <h4
+                   style="font-size:20px;font-weight: 600;text-align: left;line-height:20px;margin:5px 20px">
+                   Consignee</h4>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">{{printData?.consigneeName}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.consigneeStreet1}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.consigneeCity}},{{printData?.consigneeState}},{{printData?.consigneeZip}}
+                 </p>
+                 <p style="font-size: 20px;line-height:24px;margin:5px 20px">
+                   {{printData?.consigneeCountry }}
+                 </p>
+               </td>
+             </tr>
+             </table>
+          <h2> {{i + 2}}  of {{tableCount}}</h2>
+          
+         </div>
+       </div>
+     </div>
+
+      </td>
+   </tr> -->
+
+ </table>
+ </div>
+            <!-- </div> -->
+            </div>
+
+          </body>
+
+          </html>
+
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row">
+          <div class="col-md-6 green-button text-center" (click)="printlabelForRefNo(countForPrint)">
+            <a class="close">
+              <em class="fa fa-download" aria-hidden="true" style="margin-right:5px;" data-toggle="modal"
+                data-target="#label-modal"></em>Print</a>
+          </div>
+
+          <div class="col-md-6 green-button text-center">
+            <a class="close" data-dismiss="modal">
+              <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"
+                (click)="closeLabelModal()"></em>CLOSE</a>
+          </div>
+
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Print Modal-->
+
+<!-- Popup modal-->
+
+<div id="popup-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" style="color: #ffffff">
+          Print Label</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="countForPrint">No of labels need to be printed:</label>
+          <input type='number' [(ngModel)]='countForPrint' name="countForPrint" class="form-control" >
+          <!-- <label> <input type="radio" [(ngModel)]= 'bolPrint' name="bolPrint" class="form-control" value="bol" >BOL</label>
+          <label> <input type="radio" [(ngModel)]= 'bolPrint' name="bolPrint" class="form-control" value="label">PRINT LABEL</label> -->
+          <!-- <input type="radio" [(ngModel)]= 'bolPrint' name="bolPrint" class="form-control" > -->
+
+          <!-- <input type = "number" ngModel name = "countForPrint"> -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row">
+          <div class="col-md-6 green-button text-center" >
+            <button class="close" [disabled]="countForPrint === 0" (click)="printlabelForRefNolabel(countForPrint)">
+              <em class="fa fa-download" aria-hidden="true" style="margin-right:5px;"></em>Print Label</button>
+          </div>
+
+          <div class="col-md-6 green-button text-center" >
+            <button class="close"  (click)="printlabelForRefNoBOL(countForPrint)">
+              <em class="fa fa-download" aria-hidden="true" style="margin-right:5px;"></em>Print BOL</button>
+          </div>
+
+
+        </div>
+        <div class = "row">
+        <div class="col-md-6 green-button text-center" >
+          <button class="close" (click)="printlabelForRefNo(countForPrint)">
+            <em class="fa fa-download" aria-hidden="true" style="margin-right:5px;"></em>Print Both</button>
+        </div>
+        <div class="col-md-6 green-button text-center">
+          <button class="close" data-dismiss="modal">
+            <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"
+              (click)="closeLabelModal()"></em>CLOSE</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+   
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" style="color: white;">File Upload</h4>
+   
+     
+      </div>
+      <div class="modal-body">
+       
+   
+        
+        <div class="row"style="border-bottom:none;height:auto;">
+          <div class="col-md-3" style="padding:50px 0px ;border-right: 1px dashed #d9d9d9;height:300px;">
+          
+            <div *ngIf="showuploadIcon">
+              <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+               <!-- <button class="btn_close"><em class="fa fa-close"></em></button> -->
+
+              <div></div>
+              <p *ngIf="showuploadIcon" class="dash-head" style="margin-top:57px;font-size:15px;">Upload Online BOL</p>
+
+          
+              <div class="card-body text-center" style="margin:10px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                    Files</button>
+                  <input type="file" (change)="fileChanged($event, 'BOL')" />
+                </div>
+          
+              </div>
+            </div>
+          
+            <div *ngIf="!showuploadIcon">
+              <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+                style="height:100px;width:100px">
+                <button class="btn_close"><em class="fa fa-close" (click)="deleteCarrierdataRequest(onlineBOlName,'BOL')"></em></button>
+                <div style="text-overflow: ellipsis;width: 150px;margin: 25px 75px 0px 75px;">
+                  <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;text-overflow: ellipsis;white-space: nowrap; overflow: hidden" data-toggle="tooltip" title={{onlineBOlName}}>{{onlineBOlName}}</p>
+                 </div>
+              <!-- <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;">{{onlineBOlName}}</p> -->
+              <!-- <p class="dash-head" style="margin-top:10px;font-size:15px;">Upload Online BOL</p> -->
+              <p *ngIf="!showuploadIcon" class="dash-head" style="margin-top:10px;font-size:15px;">Online BOL</p>
+
+              <div *ngIf = "showuploadfileIcon" class="text-center" style="margin:10px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn" (click)="uploadDocument('BOL')"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                      class="fa fa-upload icon"></em>Upload File</button>
+                </div>
+              </div>
+            </div>
+            
+
+
+
+
+<!--after uploded successfully-->
+<!-- <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+style="height:100px;width:100px">
+ <button class="btn_close"><em class="fa fa-close"></em></button>
+<p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;">sample.txt</p>
+<p class="dash-head" style="margin-top:10px;font-size:15px;">Online BOL</p>
+
+<div class="card-body text-center" style="margin:10px 0px">
+  <div class="upload-btn-wrapper">
+    <button class="btn"
+      style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+      Files</button>
+    <input type="file" accept='text/plain' (change)="fileChanged($event, 'Weight')" />
+  </div>
+
+</div> -->
+
+
+<!--/after upload successfully-->
+
+            <div *ngIf="errorOnUploadMsg">
+              <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+                style="height: 130px;">
+              <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+            </div>
+          
+          
+          
+          </div>
+        <div class="col-md-3" style="padding:50px 0px;height:300px;border-right: 1px dashed #d9d9d9;">
+          <div *ngIf="showuploadIconDelivery">
+            <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+            <p class="dash-head" style="margin-top:57px;font-size:15px;">Upload Delivery Receipt</p>
+          
+        
+            <div class="card-body text-center" style="margin:10px 0px">
+              <div class="upload-btn-wrapper">
+                <button class="btn"
+                  style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                  Files</button>
+                <input type="file"  (change)="fileChanged($event, 'Delivery')" />
+              </div>
+        
+            </div>
+          </div>
+        
+          <div *ngIf="!showuploadIconDelivery">
+            <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+              style="height:100px;width:100px">
+              <button class="btn_close"><em class="fa fa-close" (click)="deleteCarrierdataRequest(deliveryFileName,'Delivery')"></em></button>
+              <div style="text-overflow: ellipsis;width: 150px;margin: 25px 75px 0px 75px;">
+                <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;text-overflow: ellipsis;white-space: nowrap; overflow: hidden" data-toggle="tooltip" title={{deliveryFileName}}>{{deliveryFileName}}</p>
+               </div>
+            
+              <!-- <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;">{{deliveryFileName}}</p> -->
+            <p class="dash-head" style="margin-top:10px;font-size:15px;">Delivery Receipt</p>
+            <div *ngIf = "showuploadfileIconDelivery" class="text-center" style="margin:10px 0px">
+              <div class="upload-btn-wrapper">
+                <button class="btn" (click)="uploadDocument('Delivery')"
+                  style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                    class="fa fa-upload icon"></em>Upload File</button>
+              </div>
+            </div>
+          </div>
+        
+          <div *ngIf="errorOnUploadMsgDelivery">
+            <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+              style="height: 130px;">
+            <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+          </div>
+          </div>
+        <!-- </div>
+        <div class="row"style="border-bottom:none;height:auto;"> -->
+
+          <div class="col-md-3" style="padding:50px 0px;height:300px;border-right: 1px dashed #d9d9d9;">
+            <div *ngIf="showuploadIconWeight">
+              <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+              <p class="dash-head" style="margin-top:57px;font-size:15px;"> Upload Weight Inspection Report</p>
+          
+              <div class="card-body text-center" style="margin:10px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                    Files</button>
+                  <input type="file" 
+                   (change)="fileChanged($event, 'Weight')" />
+                </div>
+          
+              </div>
+            </div>
+          
+            <div *ngIf="!showuploadIconWeight">
+              <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+                style="height:100px;width:100px">
+                 <button class="btn_close"><em class="fa fa-close" (click)="deleteCarrierdataRequest(weightFileName,'Weight')"></em></button>
+                 <div style="text-overflow: ellipsis;width: 150px;margin: 25px 75px 0px 75px;">
+                  <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;text-overflow: ellipsis;white-space: nowrap; overflow: hidden" data-toggle="tooltip" title={{weightFileName}}>{{weightFileName}}</p>
+                 </div>
+              <!-- <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;">{{weightFileName}}</p> -->
+              <p class="dash-head" style="margin-top:10px;font-size:15px;">  Weight Inspection Report</p>
+
+           
+              <div *ngIf = "showuploadfileIconWeight"class="text-center" style="margin:10px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn" (click)="uploadDocument('Weight')"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                      class="fa fa-upload icon"></em>Upload File</button>
+                </div>
+              </div>
+            </div>
+          
+
+<!--after uploded successfully-->
+
+
+<!--/after upload successfully-->
+            <div *ngIf="errorOnUploadMsgWeight">
+              <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+                style="height: 130px;">
+              <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+            </div>
+           
+            </div>
+            <div class="col-md-3" style="padding:50px 0px;height:300px;">
+              <div *ngIf="showuploadIconInvoice">
+                <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+                <p class="dash-head" style="margin-top:57px;font-size:15px;"> Upload Invoice</p>
+            
+                <div class="card-body text-center" style="margin:10px 0px">
+                  <div class="upload-btn-wrapper">
+                    <button class="btn"
+                      style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                      Files</button>
+                    <input type="file" 
+                     (change)="fileChanged($event, 'Invoice')" />
+                  </div>
+            
+                </div>
+              </div>
+            
+              <div *ngIf="!showuploadIconInvoice">
+                <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+                  style="height:100px;width:100px">
+                   <button class="btn_close"><em class="fa fa-close" (click)="deleteCarrierdataRequest(invoiceFileName,'Invoice')"></em></button>
+                   <div style="text-overflow: ellipsis;width: 150px;margin: 25px 75px 0px 75px;">
+                                   <p class="dash-head" style="margin-top:25px;font-size:15px;color:#134c3e;text-overflow: ellipsis;white-space: nowrap; overflow: hidden" data-toggle="tooltip" title={{invoiceFileName}}>{{invoiceFileName}}</p>
+                                  </div>
+                <p class="dash-head" style="margin-top:10px;font-size:15px;">  Invoice</p>
+  
+             
+                <div *ngIf = "showuploadfileIconInvoice"class="text-center" style="margin:10px 0px">
+                  <div class="upload-btn-wrapper">
+                    <button class="btn" (click)="uploadDocument('Invoice')"
+                      style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                        class="fa fa-upload icon"></em>Upload File</button>
+                  </div>
+                </div>
+              </div>
+            
+  
+  <!--after uploded successfully-->
+  
+  
+  <!--/after upload successfully-->
+              <div *ngIf="errorOnUploadMsgInvoice">
+                <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+                  style="height: 130px;">
+                <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+              </div>
+             
+              </div>
+        </div>
+      
+      <!-- <div class="modal-footer">
+        <button type="button" data-dismiss="modal" Style="width:150px;border:2px solid black;border-radius:8px;color:red;height:40px;font-size: medium;font-weight: bold;">Close</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+</div>
+<!--/file upload model-->
+<div class="modal" id="myModal1">
+  <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+   
+      <div class="modal-header">
+        <h4 class="modal-title" style="color: white;">File Upload</h4>
+   
+     
+      </div>
+      <div class="modal-body">
+       
+   
+        
+        <div class="row"style="border-bottom:none;height:auto;">
+          <div class="col-md-4" style="padding:50px 0px ;border-right: 1px dashed #d9d9d9;height:300px;">
+          
+            <div *ngIf="showuploadIcon">
+              <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+              <p class="dash-head" style="margin-top:20px;font-size:15px;">Upload Online BOL</p>
+          
+              <div class="card-body text-center" style="margin:30px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                    Files</button>
+                  <input type="file" accept='text/plain' (change)="fileChanged($event, 'BOL')" />
+                </div>
+          
+              </div>
+            </div>
+          
+            <div *ngIf="!showuploadIcon">
+              <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+                style="height:100px;width:100px">
+              <p class="dash-head" style="margin-top:25px;font-size:15px;">{{onlineBOlName}}</p>
+              <div class="text-center" style="margin:30px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn" (click)="uploadDocument('BOL')"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                      class="fa fa-upload icon"></em>Upload File</button>
+                </div>
+              </div>
+            </div>
+          
+            <div *ngIf="errorOnUploadMsg">
+              <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+                style="height: 130px;">
+              <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+            </div>
+          
+          
+          
+          </div>
+        <div class="col-md-4" style="padding:50px 0px;border-right: 1px dashed #d9d9d9;height:300px;">
+          <div *ngIf="showuploadIconDelivery">
+            <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+            <p class="dash-head" style="margin-top:20px;font-size:15px;">Upload Delivery Receipt</p>
+        
+            <div class="card-body text-center" style="margin:30px 0px">
+              <div class="upload-btn-wrapper">
+                <button class="btn"
+                  style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                  Files</button>
+                <input type="file" accept='text/plain' (change)="fileChanged($event, 'Delivery')" />
+              </div>
+        
+            </div>
+          </div>
+        
+          <div *ngIf="!showuploadIconDelivery">
+            <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+              style="height:100px;width:100px">
+            <p class="dash-head" style="margin-top:25px;font-size:15px;">{{deliveryFileName}}</p>
+            <div class="text-center" style="margin:30px 0px">
+              <div class="upload-btn-wrapper">
+                <button class="btn" (click)="uploadDocument('Delivery')"
+                  style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                    class="fa fa-upload icon"></em>Upload File</button>
+              </div>
+            </div>
+          </div>
+        
+          <div *ngIf="errorOnUploadMsgDelivery">
+            <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+              style="height: 130px;">
+            <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+          </div>
+          </div>
+
+
+
+
+          
+          <div class="col-md-4" style="padding:50px 0px;height:300px;">
+            <div *ngIf="showuploadIconWeight">
+              <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height:100px;width:100px">
+              <p class="dash-head" style="margin-top:20px;font-size:15px;">Upload Weight Inspection Report</p>
+          
+              <div class="card-body text-center" style="margin:30px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;">Browse
+                    Files</button>
+                  <input type="file" accept='text/plain' (change)="fileChanged($event, 'Weight')" />
+                </div>
+          
+              </div>
+            </div>
+          
+            <div *ngIf="!showuploadIconWeight">
+              <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block"
+                style="height:100px;width:100px">
+              <p class="dash-head" style="margin-top:25px;font-size:15px;">{{weightFileName}}</p>
+              <div class="text-center" style="margin:30px 0px">
+                <div class="upload-btn-wrapper">
+                  <button class="btn" (click)="uploadDocument('Weight')"
+                    style="color:white;background-color:#134c3e!important;border:2px solid black; border-radius:14px;height:40px;"><em
+                      class="fa fa-upload icon"></em>Upload File</button>
+                </div>
+              </div>
+            </div>
+          
+            <div *ngIf="errorOnUploadMsgWeight">
+              <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block"
+                style="height: 130px;">
+              <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5">Failed to Upload</h6>
+            </div>
+           
+            </div>
+        </div>
+      
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" Style="width:150px;border:2px solid black;border-radius:8px;color:red;height:40px;font-size: medium;font-weight: bold;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!--/file upload model-->
+
+
+<div  class="modal" id="ByOrderModal">
+  <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+   
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" style="color: white;">By Order</h4>
+   
+     
+      </div>
+      <div   class="modal-body">
+       
+        <!-- <form [formGroup]="byOrderForm"> -->
+
+         
+        <div class="row"style="border-bottom:none;height:auto;">
+          <div class="row" style="border-top: 1px solid #ababab; padding-bottom: 12px;">
+            <h4 style="padding-left: 12px; color: #4c7a71;">Shipping Documents</h4>
+              <!-- <label>Do you want to use WMS?</label> -->
+              <!-- <input type="checkbox" formControlName="deliveryUpload" ><span style="margin-left: 10px;margin-right: 10px;">Delivery Receipt</span>
+              <input type="checkbox" formControlName="weightUpload" ><span style="margin-left: 10px;margin-right: 10px;">Weight Inspection</span>
+              <input type="checkbox" formControlName="invoiceUpload" ><span style="margin-left: 10px;margin-right: 10px;">Invoice</span> -->
+              <!-- <input type="checkbox" formControlName="byOrder">ByOrder -->
+              <!-- <label>ByOrder</label>
+              <input type="radio" formControlName="byOrder" value=true>Yes
+              <input type="radio" formControlName="byOrder" value=false>No -->
+          </div>
+          <div class="col-md-3" style="padding:50px 0px ;border-right: 1px dashed #d9d9d9;height:200px;">
+            <span style="margin-left: 91px; margin-right: 10px;font-size: 20px;">BOL</span><br><br>
+            <!-- <input type="checkbox" style="width: 55px; margin-left: 80px;" formControlName="bolUpload" > -->
+            <label class="switch" style="margin-left: 85px!important">
+
+
+            <input type="checkbox"  [checked]="dataSelected?.uploadBol " (change)="changeDocumentView($event, 'BOL')">
+            <span class="slider round"></span>
+
+            </label>
+          </div>
+        <div class="col-md-3" style="padding:50px 0px;border-right: 1px dashed #d9d9d9;height:200px;">
+          <span style="margin-left: 55px; margin-right: 10px;font-size: 20px;">Delivery Receipt</span><br><br>
+          <!-- <input type="checkbox" style="width: 55px; margin-left: 80px;" formControlName="deliveryUpload" > -->
+          <label class="switch" style="margin-left: 85px!important">
+            <input type="checkbox"  [checked] ="dataSelected?.uploadDelivery" (change)="changeDocumentView($event, 'Delivery')">
+            <span class="slider round"></span>
+
+            </label>
+          </div>
+          
+          <div class="col-md-3" style="padding:50px 0px;border-right: 1px dashed #d9d9d9;height:200px;">
+            <span style="margin-left: 45px; margin-right: 10px;font-size: 20px;">Weight Inspection</span><br><br>
+            <!-- <input type="checkbox" style="width: 55px; margin-left: 80px;" formControlName="weightUpload" > -->
+            <label class="switch" style="margin-left: 85px!important">
+              <input type="checkbox"  [checked]="dataSelected?.uploadWeight" (change)="changeDocumentView($event, 'Weight')">
+              <span class="slider round"></span>
+  
+              </label>
+            </div>
+            <div class="col-md-3" style="padding:50px 0px;height:200px;">
+              <span style="margin-left: 91px; margin-right: 10px;font-size: 20px;">Invoice</span><br><br>
+              <!-- <input type="checkbox" style="width: 55px; margin-left: 80px;" formControlName="invoiceUpload" > -->
+              <label class="switch" style="margin-left: 85px!important">
+                <input type="checkbox"  [checked]="dataSelected?.uploadInvoice" (change)="changeDocumentView($event, 'Invoice')">
+                <span class="slider round"></span>
+    
+                </label>
+              </div>
+        </div>
+      <!-- </form> -->
+      <div class="modal-footer">
+        <button type="button" (click)="updateShippingDocuments()" data-dismiss="modal" Style="width:150px;border:2px solid black;border-radius:8px;color:red;height:40px;font-size: medium;font-weight: bold;">Update</button>
+        <button type="button" data-dismiss="modal" Style="width:150px;border:2px solid black;border-radius:8px;color:red;height:40px;font-size: medium;font-weight: bold;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+

@@ -1,0 +1,2959 @@
+<style>
+    .table-bordered>thead>tr>th,
+    .table-bordered>tbody>tr>th,
+    .table-bordered>tfoot>tr>th,
+    .table-bordered>thead>tr>td,
+    .table-bordered>tbody>tr>td,
+    .table-bordered>tfoot>tr>td {
+        border: 1px solid #a9a0a0;
+        text-align: -webkit-center;
+    }
+</style>
+<div class="banner-w3layoutsSales">
+    <!--Top-Bar-->
+    <div class="header">
+        <nav class="navbar navbar-default">
+            <app-header></app-header>
+            <div class="clearfix"></div>
+        </nav>
+    </div>
+    <!--main screen-->
+    <div class="w3l_banner_info" id="name">
+        <div class="col-md-12 col-sm-12 banner-form-agileinfo">
+            <form [formGroup]="customerForm">
+                <div class="col-md-10 col-md-push-1">
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 button-group">
+                            <div class="btn-group btn-group-justified">
+                                <button style="width:40%" class="btn btn-primary "
+                                    [routerLink]="[('/customerInfoworkbook')]" id="customerInformation">
+                                    <em class="fa fa-user" style="margin-right: 5px"></em>Customer Information</button>
+                                <button style="width:40%" class="btn btn-primary active"
+                                    (click)="nextflow(customerForm.value)" id="uploadTraffic">
+                                    <em class="fa fa-upload" style="margin-right: 5px"></em>Upload Traffic Flow</button>
+                                <button style="width:40%" class="btn btn-primary active" (click)="nextTraffic()"
+                                    id="trafficdata">
+                                    <em class="fa fa-file" style="margin-right: 5px"></em>Traffic Data</button>
+                                <button style="width:40%" class="btn btn-primary active"
+                                    (click)="nextCarrierAnalytics()" id="carrierAnalytics">
+                                    <em class="fa fa-file" style="margin-right: 5px"></em>Analytics</button>
+                                <button style="width:40%" class="btn btn-primary active" (click)="getBusisnessRule()"
+                                    id="contractpage">
+                                    <em class="fa fa-file" style="margin-right: 5px"></em>Create TL contract</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="div-group">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Logistics Consultant</label>
+                                        <span style="color: #FF0000">*</span>
+                                        <span><em class="fa fa-pencil icon" (click)="changeSalesRep()"></em></span>
+                                        <div class="form-group" *ngIf="editSalesrep">
+                                            <!-- <input type="text" class="form-control" formControlName="salesRepId"
+                                                id="salesRepId" > -->
+                                                <select class="selectField" formControlName="salesRepId" (change)="editsave(customerForm.value)"> 
+                                                <option value="" hidden>Select SalesRep</option>
+                                                <option *ngFor="let name of salesRepArray" value="{{name.salesRepName}}" >
+                                                    {{name.salesRepName}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" *ngIf="!editSalesrep">
+                                            <input type="text" class="form-control" formControlName="salesRepId"
+                                                id="salesRepId" >
+                                                <!-- <select class="selectField" formControlName="salesRepId"> 
+                                                <option value="" hidden>Select</option>
+                                                <option *ngFor="let name of salesRepArray" value="{{name.salesRepName}}" >
+                                                    {{name.salesRepName}}</option>
+                                            </select> -->
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group radio-group" style="margin-bottom: 5px;">
+                                            <label>Company Name</label>
+                                            <span style="color: #FF0000">*</span>
+                                            <input type="radio" class="option-input radio" id="existingCompany"
+                                                style="top:5px;margin-left: 10px;" [value]=true
+                                                formControlName="typeOfUser" (change)="clearCompany()" />
+                                            <label style="margin-right: 10px;">Existing Company</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                id="newCompany" [value]=false formControlName="typeOfUser"
+                                                (change)="clearCompany()" />
+                                            <label>New Company</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                (change)="deleteWorkbookCompany()" [value]=false/>
+                                                <label>Delete Company</label>
+<!-- <button  id="picturesView" class="display:block!important;border-radius: 50%;" (click)="deleteWorkbookCompany()">
+   </button> -->
+                                            <!-- <button class="upload-btn" id="picturesView" (click)="deleteWorkbookCompany()" >
+                                            <em class="fa fa-trash"></em>Delete Company</button> -->
+                                        </div>
+                                        <div class="form-group" *ngIf="customerForm.controls['typeOfUser'].value==true">
+                                            <select class="selectField" formControlName="companyName"
+                                                (change)="checkForCompany($event, customerForm.controls['companyName'].value)"
+                                                (keyup.enter)="checkForCompany($event, customerForm.controls['companyName'].value)">
+                                                <option value="" hidden>Select</option>
+                                                <option *ngFor="let company of companyNames" value="{{company}}">
+                                                    {{company}}</option>
+                                            </select>
+                                        </div>
+                                        <!-- <div class="form-group radio-group" style="margin-bottom: 5px;"> -->
+                                            
+                                        <!-- </div> -->
+                                        <div class="form-group" *ngIf="customerForm.controls['typeOfUser'].value==false">
+                                            <span *ngIf="showerrorMessage" style="color: #ff0000">Company Name already
+                                                exists</span>
+
+                                            <input type="text" class="form-control" placeholder="Company Name"
+                                                id="companyName" autofocus formControlName="companyName"
+                                                (keydown)="checkEnterKey($event, 'companyName')"
+                                                (blur)="checkcompanyName(customerForm.controls['companyName'].value)"
+                                                autocomplete="none">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label>Zip</label>
+                                        <span *ngIf="zipCodeErrorResponse"
+                                            style="color: #ff0000;font-size:12px;">Invalid Zipcode</span>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Zip" id="companyZip"
+                                                formControlName="companyZip"
+                                                (blur)="checkForZipCodes(customerForm.controls['companyZip'].value, 'zip'); patchContactInfo(customerForm.value, 'companyZip')"
+                                                ngPattern="/[0-9]/"
+                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" maxlength="5"
+                                                autocomplete="nope" (keydown)="checkEnterKey($event, 'companyZip')">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>City</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="City" id="companyCity"
+                                                formControlName="companyCity"
+                                                (change)="patchContactInfo(customerForm.value, 'companyCity')"
+                                                (keydown)="checkEnterKey($event, 'companyCity')">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>State</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="State"
+                                                formControlName="companyState" [disabled]="true">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="labelText" for="rating"> Shipping Street Address</label>
+                                        <textarea class="form-control fieldsGrey" rows="2" id="address"
+                                            formControlName="companyShippingAddress"
+                                            (keydown)="checkEnterKey($event, 'companyShippingAddress')"
+                                            (blur)="patchContactInfo(customerForm.value, 'companyShippingAddress')"
+                                            autocomplete="nope"></textarea>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="labelText" for="rating">Rating Notes</label>
+                                        <textarea class="form-control fieldsGrey" rows="2" id="ratingNotes"
+                                            formControlName="ratingNotes"
+                                            (keydown)="checkEnterKey($event, 'ratingNotes')"
+                                            autocomplete="nope"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="height: 500px;">
+                        <div class="col-sm-5" style="padding-right: 0px; height: 500px;">
+                            <div class="div-group" style="padding-bottom: 52px;">
+                                <h1 class="card-heading">Customer Contact</h1>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Name</label>
+                                        <span style="color: #FF0000">*</span>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Name"
+                                                id="contactPersonalName" formControlName="contactPersonName"
+                                                (keydown)="checkEnterKey($event, 'contactPersonalName')"
+                                                autocomplete="none">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Title</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="contactPersonDesignation"
+                                                formControlName="contactPersonDesignation" autocomplete="none"
+                                                (keydown)="checkEnterKey($event, 'contactPersonDesignation')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Phone No.</label>
+                                        <div class="form-group">
+                                            <input class="form-control" placeholder="Phone No."
+                                                id="contactPersonPhoneNumber" formControlName="contactPersonPhoneNumber"
+                                                autocomplete="none" minlength="10"
+                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" name="phone"
+                                                [textMask]="{mask: mask,guide:false}"
+                                                (keydown)="checkEnterKey($event, 'contactPersonPhoneNumber')"
+                                                (blur)="patchContactInfo(customerForm.value, 'contactPersonPhoneNumber')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Fax</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="contactPersonFax"
+                                                formControlName="contactPersonFax"
+                                                (keydown)="checkEnterKey($event, 'contactPersonFax')"
+                                                (blur)="patchContactInfo(customerForm.value, 'contactPersonFax')"
+                                                autocomplete="none">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Pictures Attached?</label>
+                                        <div class="form-group radio-group+" style="padding-left: 0px !important;">
+                                            <input type="radio" class="option-input radio" style="top:5px;" [value]=true
+                                                id="pictursAttachedYes" formControlName="picturesAttached" />
+                                            <label style="margin-right: 10px;">Yes</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                id="pictursAttachedNo" [value]=false formControlName="picturesAttached"
+                                                (change)='picturesAttachedCancel()' />
+                                            <label>No</label>
+                                        </div>
+                                        <div class="col-sm-5" style="padding: 0px;margin-top: -40px;
+                                        margin-left: 115px;">
+
+                                            <button class="upload-btn" data-target="#picture-modal" id="picturesUpload"
+                                                data-toggle="modal"><em class="fa fa-upload"
+                                                    style="margin-right: 2px"></em>Upload</button>
+                                        </div>
+                                        <div class="col-sm-4"
+                                            style="padding: 0px 2px;margin-top: -40px;margin-left: 205px;">
+                                            <!-- <button [disabled]="!enableViewPicturesUploaded" class="upload-btn" data-target="#pictureUploaded-modal"
+                                            data-toggle="modal"> -->
+                                            <button class="upload-btn" (click)="viewPicturesUploaded()"
+                                                id="picturesView" data-target="#pictureUploaded-modal"
+                                                data-toggle="modal" style="width: 80px;">
+                                                <em class="fa fa-eye"></em>View</button>
+                                            <!-- </button> -->
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Pre-Pricing Authorization Attached?</label>
+
+                                        <div class="form-group radio-group ">
+                                            <input type="radio" class="option-input radio" style="top:5px;" [value]=true
+                                                id="prepricingYes" formControlName="prePricingAuthorizationAttached" />
+                                            <label style="margin-right: 10px;">Yes</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                id="prepricingNo" [value]=false
+                                                formControlName="prePricingAuthorizationAttached" />
+                                            <label>No</label>
+                                        </div>
+                                        <div class="col-sm-5" style="padding: 0px;margin-top: -40px;
+                                        margin-left: 115px;">
+
+                                            <button class="upload-btn" data-target="#prepricing-modal"
+                                                id="prepricingUpload" data-toggle="modal"><em class="fa fa-upload"
+                                                    style="margin-right: 2px"></em>Upload</button>
+                                        </div>
+                                        <div class="col-sm-4"
+                                            style="padding: 0px 3px;margin-top: -40px;margin-left:205px;">
+                                            <!-- <button [disabled]="!enableViewPrePricingPicturesUploaded" class="upload-btn" data-target="#prepricingUploaded-modal"
+                                            data-toggle="modal"> -->
+                                            <button class="upload-btn" id="prepricingView"
+                                                (click)="viewPrePricingPicturesUploaded()"
+                                                data-target="#prepricingpictureUploaded-modal" data-toggle="modal"
+                                                style="width: 80px;">
+                                                <em class="fa fa-eye"></em>View</button>
+                                            <!-- </button> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>View Contract Details</label>
+                                        <div class="form-group radio-group ">
+                                        </div>
+                                        <div class="col-sm-4" style="padding: 0px;margin-left:84px;">
+                                            <!-- <button [disabled]="!enableViewPrePricingPicturesUploaded" class="upload-btn" data-target="#prepricingUploaded-modal"
+                                        data-toggle="modal"> -->
+                                            <button class="upload-btn" id="viewcontract"
+                                                (click)="viewContractCompanyDetails()" data-target="#contractList-modal"
+                                                data-toggle="modal" style="width: 80px;">
+                                                <em class="fa fa-eye"></em>View</button>
+                                            <!-- </button> -->
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7" style="padding-left: 0px">
+                            <div class="div-group" style="padding-bottom:48px; padding-top: 0px">
+                                <h1 class="card-heading">AP Contact Info. Use the shipping address?
+                                    <span>
+                                        <input type="radio" style="top:5px;" formControlName="isContactAddressSame"
+                                            [value]=true (click)="contactInfo(customerForm.value,'similar')" />
+                                        <label style="margin-right: 10px;">Yes</label>
+                                        <input type="radio" style="top:5px;" formControlName="isContactAddressSame"
+                                            [value]=false (click)="contactInfo(customerForm.value,'unsimilar')" />
+                                        <label>No</label>
+                                    </span>
+                                </h1>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Name</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Name"
+                                                        id="accountPersonName" formControlName="accountPersonName"
+                                                        autocomplete="none"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonName')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Title</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control"
+                                                        id="accountPersonDesignation"
+                                                        formControlName="accountPersonDesignation" autocomplete="none"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonDesignation')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Phone No.</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Phone No."
+                                                        formControlName="accountPersonPhoneNumber" autocomplete="none"
+                                                        id="accountPersonPhoneNumber" minlength="10" ngPattern="/[0-9]/"
+                                                        onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                                        name="phone" [textMask]="{mask: mask,guide:false}"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonPhoneNumber')"
+                                                        (blur)="patchContactInfo(customerForm.value, 'accountPersonPhoneNumber')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Billing Address</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder=""
+                                                        formControlName="accountPersonShippingAddress"
+                                                        autocomplete="none" id="accountPersonShippingAddress"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonShippingAddress')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Fax</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Fax"
+                                                        id="accountPersonFax" formControlName="accountPersonFax"
+                                                        autocomplete="none"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonFax')">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>Zip</label>
+                                                <span *ngIf="zipCodeContactErrorResponse"
+                                                    style="color: #ff0000;font-size: 12px;">Invalid Zipcode</span>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Zip"
+                                                        id="accountPersonZip" formControlName="accountPersonZip"
+                                                        (blur)="checkForZipCodes(customerForm.controls['accountPersonZip'].value, 'contactZip')"
+                                                        ngPattern="/[0-9]/"
+                                                        onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                                        maxlength="5" autocomplete="nope"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonZip')">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>City</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="City"
+                                                        id="accountPersonCity" formControlName="accountPersonCity"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonCity')">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>State</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="State"
+                                                        formControlName="accountPersonState" [disabled]="true">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Potential Annual Forté Revenue</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Forté Revenue"
+                                                        id="potentialRevenue"
+                                                        (keydown)="checkEnterKey($event, 'potentialRevenue')"
+                                                        (blur)="calculateAmtCredit(customerForm.value)"
+                                                        formControlName="potentialAnnualForteRevenue"
+                                                        autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Payment Terms(In days)</label>
+                                                <div class="form-group">
+                                                    <input type="text" [class.pink-tr]="showDifferentColor"
+                                                        class="form-control" placeholder="Payment Terms"
+                                                        id="paymentTerms"
+                                                        (keydown)="checkEnterKey($event, 'paymentTerms')"
+                                                        (blur)="calculateAmtCredit(customerForm.value)"
+                                                        formControlName="paymentTerms" autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Estimated Extended Credit($)</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Estimated Extended Credit"
+                                                        id="estimatedExtendedCredit"
+                                                        formControlName="estimatedExtendedCredit"
+                                                        (keydown)="checkEnterKey($event, 'estimatedExtendedCredit')"
+                                                        autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Credit Report (Score/Date)</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Credit Report"
+                                                        formControlName="creditReport" autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>BOL Required w/Invoice?</label>
+                                                <div class="form-group radio-group">
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=true formControlName="bolRequired" />
+                                                    <label style="margin-right: 10px;">Yes</label>
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=false formControlName="bolRequired" />
+                                                    <label>No</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>PO Required on Invoice?</label>
+                                                <div class="form-group radio-group">
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=true formControlName="poRequired" />
+                                                    <label style="margin-right: 10px;">Yes</label>
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=false formControlName="poRequired" />
+                                                    <label>No</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <button class="logisticsBtn" id="clearDAta" style="width: 100%" type="submit"
+                                (click)="clearForm()">
+                                <em class="fa fa-refresh" aria-hidden="true"
+                                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>Clear
+                                Data</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="logisticsBtn" id="saveBtn" style="width: 100%" type="submit"
+                                (click)="saveData(customerForm.value)">
+                                <em class="fa fa-save" aria-hidden="true"
+                                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>Save
+                                Data</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="logisticsBtn" id="nextdata" style="width: 100%" type="submit"
+                                (click)="next(customerForm.value)">
+                                <em class="fa fa-step-forward" aria-hidden="true"
+                                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>Next</button>
+                        </div>
+                    </div>
+                    <div class="clearfix">&nbsp;</div>
+                </div>
+            </form>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+        <div class="clearfix">&nbsp;</div>
+    </div>
+    <!--//Slider-->
+    <div class="clearfix"></div>
+</div>
+
+<!--//banner-->
+<div class="clearfix">&nbsp;</div>
+<div class="copy">
+    <p>© 2018 Logistics . All Rights Reserved </p>
+</div>
+<a href="#" tabindex="-1" id="toTop" style="display: block;">
+    <span id="toTopHover" style="opacity: 1;"> </span>
+</a>
+<!-- //smooth scrolling -->
+<style>
+    h2,
+    .h2 {
+        font-size: 12px !important;
+    }
+
+    h3,
+    .h3 {
+        font-size: 14px !important;
+    }
+</style>
+
+<div id="picture-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <em class="close" data-dismiss="modal"
+                    style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                <h4 class="modal-title" style="color: #ffffff">Upload Pictures</h4>
+            </div>
+            <form [formGroup]="customerForm">
+                <div class="modal-header" style="background-color:#f8f8f8">
+                    <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                        (click)="picturesAttachedCancel()">&times;</button> -->
+                    <h4 class="modal-title"><em class="fa fa-pencil-square-o"></em>&nbsp;Attach Picture</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="legend-body">
+
+                        <div class="row" style="margin:30px 0px">
+                            <!-- <div class="col-md-8 form-group" style="margin-left: 100px;">
+             
+                <label for="filePicker">Choose a file:</label><br>
+                <input type="file" id="filePicker" class="form-control" formControlName="pictures" autofocus (change)="handleFileSelect($event)" style=" height: 40px !important;">
+            </div> -->
+                            <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">
+                            <!-- <h6 class="dash-head" style="margin-top:20px">Choose a File to Upload...</h6> -->
+
+                            <div class="text-center" style="margin:15px 0px">
+                                <div class="upload-btn-wrapper">
+                                    <button class="btn">Browse Files</button>
+                                    <input type="file" accept='image/*' name="myImage" (change)="fileChanged($event)"
+                                        multiple />
+                                </div>
+                            </div>
+                            <div class="text-center gallery" style="margin:10px 30px">
+                                <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                <table width="100%">
+                                    <tr style="border-bottom:1px solid #ddd;"
+                                        *ngFor="let data of filenames;let i = index">
+                                        <td style="width: 50%;">
+                                            <img style="width:100px; height: 60px;" src="{{data.image}}">
+                                        </td>
+                                        <td style="text-align:left;width:40%" href=""
+                                            (click)="viewImageIndex(data, i)">
+                                            <p><em class="fa fa-file" style="margin-right: 5px"></em>{{data.name}}</p>
+                                        </td>
+                                        <td style="width: 10%;">
+                                            <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                    <!--      <tr style="border-bottom:1px solid #ddd;">
+                                    <td style="text-align:left;width:90%"> 
+                                         <p><em class="fa fa-file" style="margin-right: 5px"></em>File name2.jpg</p> 
+                                    </td>
+                                    <td style="width: 10%;"> 
+                                        <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #ddd;">
+                                        <td style="text-align:left;width:90%"> 
+                                             <p><em class="fa fa-file" style="margin-right: 5px"></em>File name3.jpg</p> 
+                                        </td>
+                                        <td style="width: 10%;"> 
+                                            <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #ddd;">
+                                            <td style="text-align:left;width:90%"> 
+                                                 <p><em class="fa fa-file" style="margin-right: 5px"></em>File name4.jpg</p> 
+                                            </td>
+                                            <td style="width: 10%;"> 
+                                                <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                        </tr> -->
+
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color:#f8f8f8">
+                    <div class="row" style="margin-left: 25px;">
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" class="logisticsBtn" (click)="picturesAttached(filenames)"><em class="fa fa-save icon"></em>Save</button>
+                        </div>
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn"><em class="fa fa-close icon"></em>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="pictureUploaded-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+
+        <!-- Modal content-->
+        <div class="modal-content" *ngIf="!picShowFlag">
+            <div class="modal-header">
+                <em class="close" data-dismiss="modal"
+                    style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                <h4 class="modal-title" style="color: #ffffff">Uploaded Pictures</h4>
+            </div>
+            <form [formGroup]="customerForm">
+                <div class="modal-header" style="background-color:#f8f8f8">
+                    <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                            (click)="picturesAttachedCancel()">&times;</button> -->
+                    <h4 class="modal-title">Attached Pictures</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="legend-body">
+
+                        <div class="row" style="margin:30px 0px">
+                            <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">
+                            <!-- <div class="text-center" style="margin:15px 0px">
+                                    <div class="upload-btn-wrapper">
+                                        <button class="btn">Browse Files</button>
+                                        <input type="file" accept='image/*' name="myImage" (change)="fileChanged($event)"
+                                            multiple />
+                                    </div>
+                                </div> -->
+                            <div class="text-center gallery" style="margin:10px 30px">
+                                <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                <table width="100%">
+                                    <tr style="border-bottom:1px solid #ddd;"
+                                        *ngFor="let data of uploadedPictures;let i = index">
+                                        <td style="width: 50%;">
+                                            <img style="width:100px; height: 60px;" src="{{data.image}}"
+                                                (click)="imageClick(data)">
+                                        </td>
+                                        <td style="text-align:left;width:40%" href=""
+                                            (click)="viewImageIndex(data, i)">
+                                            <p><em class="fa fa-file" style="margin-right: 5px"></em>{{data.name}}</p>
+                                        </td>
+                                        <td style="width: 10%;">
+                                            <button class="btn" (click)="deleteImage(data.name, 'Pictures', i)"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="modal-footer" style="background-color:#f8f8f8">
+                        <div class="row" style="margin-left: 25px;"> -->
+                <!-- <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                                <button data-dismiss="modal" class="logisticsBtn" (click)="picturesAttached()"><i
+                                        class="fa fa-save icon"></em>Save</button>
+                            </div> -->
+                <!-- <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                                <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn">
+                                        Ok</button>
+                            </div>
+                        </div>
+                    </div> -->
+            </form>
+        </div>
+        <div class="modal-content" id="picContent" *ngIf="picShowFlag">
+            <div (click)="hidePic()"><em class="fa fa-arrow-left" aria-hidden="true" style="margin-top: 10px;
+                    margin-left: 10px; font-size: 18px;"></em></div>
+            <div><em class="close" data-dismiss="modal" style="font-size: 35px; margin-top: -25px;
+                    margin-right: 10px;">&times; </em></div>
+            <img class="content" src="{{imageData.image}}"
+                style="display:block; margin-left:auto; margin-right:auto; width: 595px; height: auto;"
+                (click)="downloadImage(imageData)">
+            <div id="caption" style="text-align: center">{{imageData.name}}</div>
+        </div>
+    </div>
+</div>
+
+<div id="prepricing-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <em class="close" data-dismiss="modal"
+                    style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                <h4 class="modal-title" style="color: #ffffff"></h4>
+            </div>
+            <form [formGroup]="customerForm">
+                <div class="modal-header" style="background-color:#f8f8f8">
+                    <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                                (click)="picturesAttachedCancel()">&times;</button> -->
+                    <h4 class="modal-title"><em class="fa fa-pencil-square-o"></em>&nbsp;Attach Picture</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="legend-body">
+
+                        <div class="row" style="margin:30px 0px">
+                            <!-- <div class="col-md-8 form-group" style="margin-left: 100px;">
+                     
+                        <label for="filePicker">Choose a file:</label><br>
+                        <input type="file" id="filePicker" class="form-control" formControlName="pictures" autofocus (change)="handleFileSelect($event)" style=" height: 40px !important;">
+                    </div> -->
+                            <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">
+                            <!-- <h6 class="dash-head" style="margin-top:20px">Choose a File to Upload...</h6> -->
+
+                            <div class="text-center" style="margin:15px 0px">
+                                <div class="upload-btn-wrapper">
+                                    <button class="btn">Browse Files</button>
+                                    <input type="file" accept='image/*' name="myImage" (change)="fileChanged1($event)"
+                                        multiple />
+                                </div>
+                            </div>
+                            <div class="text-center gallery" style="margin:10px 30px">
+                                <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                <table width="100%">
+                                    <tr style="border-bottom:1px solid #ddd;"
+                                        *ngFor="let data of pricingList;let i = index">
+                                        <td style="width: 50%;">
+                                            <img style="width:100px; height: 60px;" src="{{data.image}}">
+                                        </td>
+                                        <td style="text-align:left;width:40%" href=""
+                                            (click)="viewImageIndex1(data, i)">
+                                            <p><em class="fa fa-file" style="margin-right: 5px"></em>{{data.name}}</p>
+                                        </td>
+
+                                        <td style="width: 10%;">
+                                            <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color:#f8f8f8">
+                    <div class="row" style="margin-left: 25px;">
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" class="logisticsBtn"
+                                (click)="prepricingAttached(pricingList)"><em class="fa fa-save icon"></em>Save</button>
+                        </div>
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn"><em class="fa fa-close icon"></em>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="prepricingpictureUploaded-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+
+        <!-- Modal content-->
+        <div class="modal-content" *ngIf="!picShowFlag">
+            <div class="modal-header">
+                <em class="close" data-dismiss="modal"
+                    style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                <h4 class="modal-title" style="color: #ffffff">View Attached Pictures</h4>
+            </div>
+            <form [formGroup]="customerForm">
+                <div class="modal-header" style="background-color:#f8f8f8">
+                    <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                                    (click)="picturesAttachedCancel()">&times;</button> -->
+                    <h4 class="modal-title">Attached Pictures</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="legend-body">
+
+                        <div class="row" style="margin:30px 0px">
+                            <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">
+                            <!-- <div class="text-center" style="margin:15px 0px">
+                                            <div class="upload-btn-wrapper">
+                                                <button class="btn">Browse Files</button>
+                                                <input type="file" accept='image/*' name="myImage" (change)="fileChanged($event)"
+                                                    multiple />
+                                            </div>
+                                        </div> -->
+                            <div class="text-center gallery" style="margin:10px 30px">
+                                <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                <table width="100%">
+                                    <tr style="border-bottom:1px solid #ddd;"
+                                        *ngFor="let data of uploadedPricingPictures;let i = index">
+
+                                        <td style="width: 50%;">
+                                            <img style="width:100px; height: 60px;" src="{{data.image}}"
+                                                (click)="imageClick(data)">
+                                        </td>
+                                        <td style="text-align:left;width:40%" href=""
+                                            (click)="viewImageIndex1(data, i)">
+                                            <p><em class="fa fa-sfile" style="margin-right: 5px"></em>{{data.name}}</p>
+                                        </td>
+                                        <td style="width: 10%;">
+                                            <button class="btn"
+                                                (click)="deleteImage(data.name, 'prePricingPictures', i)"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-content" id="picContent" *ngIf="picShowFlag">
+            <div (click)="hidePic()"><em class="fa fa-arrow-left" aria-hidden="true" style="margin-top: 10px;
+                        margin-left: 10px; font-size: 18px;"></em></div>
+            <div><em class="close" data-dismiss="modal" style="font-size: 35px; margin-top: -25px;
+                        margin-right: 10px;">&times; </em></div>
+            <img class="content" src="{{imageData.image}}"
+                style="display:block; margin-left:auto; margin-right:auto; width: 595px; height: auto;"
+                (click)="downloadImage(imageData)">
+            <div id="caption" style="text-align: center">{{imageData.name}}</div>
+        </div>
+    </div>
+</div>
+
+
+<div id="contractList-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <em class="close" data-dismiss="modal"
+                    style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                <h4 class="modal-title" style="color: #ffffff">{{this.companyInformation?.companyName}}</h4>
+            </div>
+            <!-- <form [formGroup]="customerForm"> -->
+
+
+            <div class="modal-body">
+                <div class="legend-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="text-center">FTL Contract</h3>
+                            <table width="100%" class="table legend-table">
+                                <tr *ngFor="let data of contractListFTL;let i = index">
+                                    <td>
+                                        {{data.contractName}}
+                                    </td>
+                                    <!-- <td (click)="editFTLContract(data)">Edit</td> -->
+                                    <td (click)="viewFTLContract(data)">View</td>
+
+
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-12">
+                            <h3 class="text-center">LTL Contract</h3>
+
+                            <table width="100%" class="table legend-table">
+                                <tr *ngFor="let data of contractListLTL;let j = index">
+                                    <td>
+                                        {{data.contractName}}
+                                    </td>
+                                    <!-- <td (click)="editLTLContract(data)">Edit</td> -->
+                                    <td (click)="viewLTLContract(data)">View</td>
+
+
+
+                                </tr>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="modal-footer" style="background-color:#f8f8f8">
+                    <div class="row" style="margin-left: 25px;">
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" class="logisticsBtn" (click)="picturesAttached(filenames)"><em class="fa fa-save icon"></em>Save</button>
+                        </div>
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn"><em class="fa fa-close icon"></em>Cancel</button>
+                        </div>
+                    </div>
+                </div> -->
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+
+<div id="ContractModalNew" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height:auto;background: #e2e6e6;width:1000px;margin-left:-12em;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    style="font-size: 35px;color: #ffffff">&times;</button>
+                <em class="fa fa-download" aria-hidden="true"
+                    style="float: right;margin-right: 27px;font-size: 26px; margin-top: 8px;"
+                    (click)="exportContract()"></em>
+
+                <h4 class="modal-title" style="color: #ffffff!important">&nbsp;Contract Preview</h4>
+            </div>
+            <div class="modal-body" style="background: #e2e6e6;">
+                <div id="section3">
+
+                    <html>
+
+                    <head>
+                        <style type="text/css">
+                            /* .th_style1
+{
+  border:2px solid #5b6f6b;
+  font-size: bold;
+  font-family: 'Open Sans', sans-serif!important;
+} */
+                            .row1 {
+                                /* margin-right: -6px;
+    margin-left: -3px; */
+                                display: flex;
+                                -ms-flex-wrap: wrap;
+                                flex-wrap: wrap;
+                                margin-right: -15px;
+                                margin-left: -15px;
+                            }
+
+                            table>thead>tr>th {
+                                border: 1px solid #5b6f6b;
+                                background: #87a49f;
+                                ;
+                                font-size: bold;
+                                color: #f8f8f8;
+                            }
+
+                            table>tbody>tr>td {
+                                border: 1px solid #5b6f6b;
+                                background: #fbfbfb;
+                                font-size: bold;
+                                color: black;
+                            }
+
+                            table>thead>tr,
+                            table>tbody>tr {
+                                border: none;
+                            }
+
+                            table {
+                                border: none;
+                                width: 100%;
+                                font-size: 12px;
+                            }
+
+                            #bolContainerNew {
+                                width: 100%;
+                                font-size: 15px;
+                                font-family: 'Open Sans', sans-serif !important;
+                                padding: 40px;
+                                display: block;
+
+                            }
+
+                            .container {
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                                margin-right: auto;
+                                margin-left: auto;
+                            }
+
+                            .col-sm-12 {
+                                position: relative;
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            .col-sm-4 {
+                                position: relative;
+                                width: 33.33333%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            /* .th_style
+{
+  border:2px solid #5b6f6b;
+  background:#87a49f;;
+  font-size: bold;
+  color: #f8f8f8;
+  font-family: 'Open Sans', sans-serif!important;
+} */
+                            /* .div-group{
+        border: 2px solid #d7e4e2!important;
+        padding: 0px 6px;
+      } */
+                            /* .td_style
+{
+  border:2px solid #5b6f6b;
+  background:#ced9cf;
+  font-size: bold;
+  color: black;
+  font-family: 'Open Sans', sans-serif!important;
+} */
+
+                            /* .table_style
+{
+  border:2px solid #5b6f6b;
+  text-align: center;
+  font-family: 'Open Sans', sans-serif!important;
+} */
+                            /* .table-bordered{
+        font-size: 12px;
+      }
+      .table-bordered> thead> tr> th {
+        border: 1px solid #525252;
+        text-align: -webkit-center;
+        background-color: #81a19c;
+        color: #fff;
+        vertical-align: middle;
+      } */
+                        </style>
+
+                    </head>
+
+                    <body>
+                        <div id="bolContainerNew">
+                            <div class="container"
+                                style="width:800px;height:1250px;border:1px solid black;margin-top: 10px;">
+                                <div class="row" style="text-align: center;margin-top: 10px;">
+                                    <div class="col-md-12" style="font-weight: bold;">
+                                        FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                                    </div>
+                                    <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                                        SERVICE AGREEMENT
+                                    </div>
+
+                                </div>
+                                <div class="row" style="text-align:justify;margin-top:10px;">
+                                    <div class="col-md-12">
+                                        <p><span style="font-weight: bold;">Forté Transportation Logistics Corporation,
+                                            </span>hereinafter referred to as
+                                            the “Company”, agrees to extend to the below named company, hereinafter
+                                            referred to as the “Client”, a program
+                                            that provides discounts from listed carrier's published LTL Rate Tariffs
+                                            (Schedule “A”) for early payment. </p>
+                                    </div>
+                                </div>
+                                <div class="row" style="text-align: center;">
+
+                                    <div class="col-md-12" style="text-align: center;
+                          margin-left: 36px;">
+                                        <p style="font-weight: bold; margin-left:-50px;color:black">
+                                            {{companyInformation?.companyName}}</p>
+                                        <p style="margin-top:-10px;margin-left:-50px;color:black">
+                                            {{companyInformation?.companyShippingAddress}}</p>
+                                        <p style="margin-top:-10px;margin-left:-50px;color:black">
+                                            {{companyInformation?.companyCity}}, {{companyInformation?.companyState}}
+                                            {{companyInformation?.companyZip}}</p>
+                                    </div>
+
+                                    <div class="row" style="margin-left: 30px;
+                      margin-right: 30px;
+                      text-align: justify;
+                      ">
+                                        <div class="col-md-12">
+                                            <p>
+                                                <span style="font-weight: bold;"> 1. Terms of Agreement: </span>Forté
+                                                will arrange transport by motor vehicle
+                                                of commodities for Client in LTL shipments at the rates specified in the
+                                                published tariffs of the carriers
+                                                listed in Schedule “A”, subject to the discounts for early payment as
+                                                provided in Schedule “A”. Discounts to
+                                                be applied in accordance with carriers’ rules and regulations governing
+                                                said tariffs up to and including the
+                                                10M line of rates. Charges not subject to discount for early payment
+                                                include (but are not limited to) Single
+                                                Shipment, Notify, Home Pickup or Delivery, Inside Delivery, Redelivery,
+                                                Fuel Surcharge, and other duly, DOT
+                                                authorized accessorial charges as listed in the carriers’ applicable
+                                                rules tariffs.
+
+                                            </p>
+                                            <p>
+                                                The Company proposes, subject to the terms in this Agreement, to pay all
+                                                charges incurred by Client in the
+                                                movement of general LTL commodities with carriers listed in Schedule
+                                                “A”. Client agrees not to negotiate with
+                                                any carriers that the Company provides for client’s shipments.
+
+                                            </p>
+                                            <p>
+                                                In order for the scope and terms of this agreement to be applicable,
+                                                Client <span style="font-weight: bold;"><u> must</u></span> note the
+                                                Company as the invoice<span style="font-weight: bold;">/third-party
+                                                    prepaid</span> payor of the freight charges (see example below) on
+                                                all original Bills of Lading issued to listed carriers that the Client
+                                                intends the Company to pay for on
+                                                behalf of the Client and in turn be invoiced for by the Company. Such
+                                                notice on the Bill of Lading<span style="font-weight: bold;"> <u>
+                                                        must</u></span> include along with the name of the Company, the
+                                                complete and
+                                                correct address for the Company to insure accurate billing.
+
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-left: 30px;
+                      margin-right: 30px; display:flex;">
+                                        <div class="col-md-6 col-md-push-3" *ngIf="showFirstAddress">
+                                            <div style="text-align: left;">
+                                                <div class="col-sm-12">
+                                                    <input type="text" id="billadd1" style="font-weight: bold;border:none !important;width:350px!important"
+                                                      [(ngModel)]="billadd1" readonly >
+                                                  </div>
+                                                  <div class="col-sm-12">
+                                                    <input type="text" id="billadd2" style="font-weight: bold;border:none !important;width:350px!important"
+                                                      [(ngModel)]="billadd2" readonly>
+                                                  </div>
+                                                  <div class="col-sm-12">
+                                                    <input type="text" id="billadd3" style="font-weight: bold;border:none !important;width:300px!important"
+                                                      [(ngModel)]="billadd3" readonly>
+                                                  </div>
+                                                  <div class="col-sm-12">
+                                                    <input type="text" id="billadd4" style="font-weight: bold;border:none !important;width:300px!important"
+                                                      [(ngModel)]="billadd4" readonly >
+                                                  </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6 col-md-push-3" *ngIf="showSecondAddress">
+                                            <div style="text-align: left;">
+                                                <div class="col-sm-12">
+                                                    <input type="text" id="billadd1" style="font-weight: bold;border:none !important;width:350px!important"
+                                                      [(ngModel)]="billadd1" readonly >
+                                                  </div>
+                                                  <div class="col-sm-12">
+                                                    <input type="text" id="billadd2" style="font-weight: bold;border:none !important;width:350px!important"
+                                                      [(ngModel)]="billadd2" readonly >
+                                                  </div>
+                                                  <div class="col-sm-12">
+                                                    <input type="text" id="billadd3" style="font-weight: bold;border:none !important;width:300px!important"
+                                                      [(ngModel)]="billadd3" readonly >
+                                                  </div>
+                                                  <div class="col-sm-12">
+                                                    <input type="text" id="billadd4" style="font-weight: bold;border:none !important;width:300px!important"
+                                                      [(ngModel)]="billadd4" readonly >
+                                                  </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-left: 30px;
+                      margin-right: 30px;
+                      text-align: justify;
+                      ">
+                                        <div class="col-md-12">
+                                            <p>
+                                                Client agrees to pay the company all charges covered by this agreement
+                                                within 45 days of the invoice date,
+                                                however, if Client pays Fortés’ invoice in full within <span
+                                                    style="color:black"><u>{{companyInformation?.paymentTerms}}</u></span>
+                                                days of the date of the invoice, Client shall be
+                                                entitled to the discounts from the carrier’ published tariffs as
+                                                provided in Schedule “A” and payment of those
+                                                discounted amounts within <span
+                                                    style="color:black"><u>{{companyInformation?.paymentTerms}}</u></span>
+                                                days of the date of the invoice shall be treated as payment in full.
+                                                Client
+                                                further agrees to notify the Company of any perceived billing errors
+                                                within three (3) business days of receipt
+                                                of the Forté invoice to insure that the Company does not pay, on behalf
+                                                of the client, contested freight
+                                                charges.
+
+                                            </p>
+                                            <p>
+                                                <span style="font-weight: bold;"> 2. Duration of Agreement: </span> This
+                                                agreement shall become effective 7
+                                                days from receipt by Company of signed agreement and will remain in
+                                                effect thereafter for a period of 30 days
+                                                with automatic 30 day renewals until terminated. Agreement may be
+                                                terminated by written notice, given by
+                                                either party, effective one week from the date the notice is issued.
+                                                Further, the agreement may terminate
+                                                without notice or penalty if the Client chooses not to use the Company’s
+                                                services during any 30 day period.
+
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                    <div class="row"
+                                        style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                        <div class="col-md-4" id="bruse" style="width:230px;">
+                                            x __________________________
+                                        </div>
+                                        <div class="col-md-2" id="date" style="width: 140px;">
+                                            <!-- <input type="text" id="firsteditdate"
+                                                style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                                [(ngModel)]="firstDate"
+                                                (keydown)="checkcontractKey($event,'firstdate')" readonly> -->
+                                                <p style="font-weight: bold;">Date
+                                                </p>
+                                        </div>
+                                        <div class="col-md-4" id="manager" style="width:230px;">
+                                            x __________________________
+                                        </div>
+                                        <div class="col-md-2" id="date" style="width: 140px;">
+                                            <p style="font-weight: bold;">Date
+                                            </p>
+                                            <!-- <input type="text" id="secondeditdate"
+                                                style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                                [(ngModel)]="secondDate"
+                                                (keydown)="checkcontractKey($event,'secondDate')"readonly> -->
+                                        </div>
+                                    </div>
+                                    <div class="row"
+                                        style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+
+                                        <div class="col-md-4" style="width:230px;">
+                                            <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                                            <p style="margin-top: -10px;">President</p>
+                                            <p style="margin-top: -10px;">Forté Transportation Logistics Corp.</p>
+
+                                        </div>
+                                        <div class="col-md-2" style="width:140px;">
+                                            <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                            </p> -->
+                                            <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate()" style="color:#0079FE"></em> -->
+
+                                        </div>
+                                        <div class="col-md-4" style="width:230px;">
+                                            <!-- <p style="font-weight: bold;margin-top: -10px;color:black">{{companyInformation?.contactPersonName}}</p> -->
+                                            <input type="text" id="shippingmanager1"
+                                                style="font-weight: bold;color:black;border:none !important"
+                                                [(ngModel)]="shippingManagerName"
+                                                 readonly>
+                                            <input type="text" id="shippingmanager2"
+                                                style="font-weight: bold;color:black;border:none !important"
+                                                [(ngModel)]="shippingManagerPost"
+                                               readonly>
+                                            <input type="text" id="shippingAddress"
+                                                style="font-weight: bold;color:black;border:none !important"
+                                                [(ngModel)]="contractAddrss"
+                                                 readonly>
+
+                                            <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItem()" style="color:#0079FE"></em> -->
+                                            <!-- <p style="margin-top: 0px;color:black">Shipping Manager</p> -->
+                                            <!-- <p style="color:black">{{contractAddrss}}</p> -->
+                                        </div>
+                                        <div class="col-md-2" style="width:140px;">
+                                            <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                            </p> -->
+                                            <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate1()" style="color:#0079FE"></em> -->
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" style="text-align:center;">
+                                            <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce
+                                                Buchanan</p>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <!-- </br> -->
+                                <!-- <div class="container" style="width:750px;height:auto;border:1px solid black;"> -->
+                            </div>
+                            <div class="container"
+                                style="width:800px;height:auto;border:1px solid black;margin-top: 60px;">
+
+                                <div class="row" style="text-align: center;font-weight: bold;">
+                                    <div class="col-md-12">
+                                        FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                                    </div>
+                                    <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                                        SERVICE AGREEMENT
+                                    </div>
+                                    <div class="col-md-12" style="font-weight: bold;font-size: 18px;">
+                                        SCHEDULE A
+
+                                    </div>
+
+                                </div>
+                                <div class="row" style="margin-left: 30px;margin-top:10px;
+                      margin-right: 30px;
+                      text-align: justify;
+                      ">
+                                    <div class="col-md-12">
+                                        <p>1. Provisions listed herein are an integral component of the Service
+                                            Agreement entered into between <span
+                                                style="font-weight: bold;">Transportation Logistics Corporation </span>
+                                            and the <span style="font-weight: bold;"> “Client”</span> as signed below.
+                                            Application of these provisions is
+                                            understood by both parties to be governed by the rules and responsibilities
+                                            outlined in the Service Agreement
+                                            and carrier’s current published tariffs.
+                                        </p>
+                                        <p>
+                                            2. Discounts to apply on Minimum Charge thru 10,000 lb. Class rate weight
+                                            scale.
+
+                                        </p>
+                                        <p>
+                                            3. Discounts to apply only on direct points as listed in the carriers’
+                                            applicable tariffs.
+
+                                        </p>
+                                        <p>
+                                            4. Quotes and published rates on modes other than LTL reflect a 60% discount
+                                            of FTLC 799 tariff rates.
+
+                                        </p>
+                                        <p>
+                                            5. Pricing will be applied according to the following Territorial
+                                            Application unless otherwise noted.
+
+                                        </p>
+                                        <p>
+                                            6. Discounts to apply only to customer location(s) listed herein.
+
+                                        </p>
+                                        <p>
+                                            7. This Service Agreement supercedes all prior agreements.
+
+                                        </p>
+                                    </div>
+
+                                </div>
+                                <div style="margin-left:43px;
+                      margin-right: 43px;" *ngIf="territoryArray.length > 0">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td id="empty" style="border-top: 1px solid white;
+                          border-left: 1px solid white;"></td>
+                                            <th colspan="1">Territory</th>
+                                            <th colspan="5">Pricing Provisions:
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Carrier:
+                                            </th>
+                                            <td>
+                                            </td>
+                                            <!-- <td id="space" style="padding:0px !important;border-left:none">
+                </td> -->
+                                            <td id="space" style="padding:0px !important;">Disc %
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">Amc $
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">IntraState Territory
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">Disc %
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">Amc $
+                                            </td>
+                                        </tr>
+                                        <tr style="color:black" *ngFor="let data of territoryArray"
+                                            [class.pink-tr]="data.ruleExist === false">
+                                            <td id="space" style="padding:0px !important;">{{data.carrier}}</td>
+                                            <!-- <td id="space" style="padding:0px !important;">W-1</td> -->
+                                            <td id="space" style="padding:0px !important;">{{data?.rulesName}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data.discount}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data.amc}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data?.zipstate}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data?.discount}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data?.amc}}</td>
+                                        </tr>
+   
+                                    </table>
+                                </div>
+                  
+                                <div class="row"
+                                    *ngIf="additionalPricingArray.length > 0 || contractAccessorialsArray.length> 0"
+                                    style="margin-left:43px;
+                      margin-right: 30px; text-align: left;">
+                                    <p>Additional Pricing Provisions:
+                                    </p>
+                                </div>
+                                <div class="row"
+                                    *ngIf="additionalPricingArray.length > 0 || contractAccessorialsArray.length > 0"
+                                    style="margin-left:43px;
+                      margin-right: 30px;width:821px;">
+                                    <div class="col-md-10" style="border:1px solid black;">
+
+                                        <div class="row" style="text-align: center;"
+                                            *ngFor="let data1 of additionalPricingArray">
+                                            <p style="color:black">{{data1.carrier}} {{data1.rulesName}}
+                                                {{data1.zipstate}} {{data1.discount}}% ${{data1.amc}} AMC</p>
+            
+
+
+
+                                        </div>
+                                        <div class="row" style="text-align: center;border-top:1px solid #000000"
+                                            *ngFor="let assess of contractAccessorialsArray;let index1 = index">
+                                            <h6 style="font-weight: 600;color:black"
+                                                *ngIf="assess.accessorials.length>0">{{assess?.carrier}}
+                                                {{assess?.rulesName}} <span *ngIf="assess?.zipstate !== undefined"
+                                                    style="color:black">[{{assess?.zipstate}}]</span> ACCESSSORIALS :
+                                            </h6>
+                                            <p style="font-size: 13px!important;color:black"><span
+                                                    *ngFor="let valueO of assess.accessorials; let i=index;">{{valueO?.name}}
+                                                    / $ {{valueO?.charge}}
+                                                    <span style="color:black"
+                                                        *ngIf="i !== assess.accessorials.length -1">,</span></span></p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4"></div>
+                                </div>
+                                <div class="row"
+                                    style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                    <div class="col-md-4" id="bruse" style="width:230px;">
+                                        x __________________________
+                                    </div>
+                                    <div class="col-md-2" id="date" style="width: 140px;">
+                                        <p style="font-weight: bold;">Date
+                                        </p>
+                                        <!-- <input type="text" id="firsteditdate1"
+                                            style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                            [(ngModel)]="firstDate" readonly> -->
+                                    </div>
+                                    <div class="col-md-4" id="manager" style="width:230px;">
+                                        x __________________________
+                                    </div>
+                                    <div class="col-md-2" id="date" style="width: 140px;">
+                                        <p style="font-weight: bold;">Date
+                                        </p>
+                                        <!-- <input type="text" id="secondeditdate1"
+                                            style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                            [(ngModel)]="secondDate" readonly> -->
+                                    </div>
+                                </div>
+                                <div class="row"
+                                    style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+
+                                    <div class="col-md-4" style="width:230px;">
+                                        <p style="font-weight: bold;">Bruce G. Buchanan</p>
+                                        <p>President</p>
+                                        <p>Forté Transportation Logistics Corp.</p>
+
+                                    </div>
+                                    <div class="col-md-2" style="width:140px;">
+                                        <!-- <p style="font-weight: bold;">Date
+                                        </p> -->
+                                        <!-- <input type="text" id="firsteditdate" style="font-weight: bold;margin-top: -10px;color:black;border:none !important;width=90px!important" [(ngModel)]="firstDate" > -->
+                                    </div>
+                                    <div class="col-md-4" style="width:230px;">
+                                        <!-- <p style="font-weight: bold;color:black">{{companyInformation?.contactPersonName}}</p> -->
+
+                                        <!-- <textarea> -->
+                                        <input type="text" id="shippingmanager1"
+                                            style="font-weight: bold;color:black;border:none !important"
+                                            [(ngModel)]="shippingManagerName" readonly>
+                                        <input type="text" id="shippingmanager2"
+                                            style="font-weight: bold;color:black;border:none !important"
+                                            [(ngModel)]="shippingManagerPost" readonly>
+                                        <input type="text" id="shippingAddress"
+                                            style="font-weight: bold;color:black;border:none !important"
+                                            [(ngModel)]="contractAddrss" data-toggle="tooltip"
+                                            title="{{contractAddrss}}" readonly>
+
+                                        <!-- <p style="color:black">Shipping Manager</p> -->
+                                        <!-- <p style="color:black">{{contractAddrss}}</p> -->
+                                        <!-- </textarea> -->
+                                    </div>
+                                    <div class="col-md-2" style="width:140px;">
+                                        <!-- <p style="font-weight: bold;">Date
+                                        </p> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+               
+
+
+                    </body>
+
+                    </html>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ContractModalNew1" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height:auto;background: #e2e6e6;width:1000px;margin-left:-12em;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    style="font-size: 35px;color: #ffffff">&times;</button>
+                <em class="fa fa-download" aria-hidden="true"
+                    style="float: right;margin-right: 27px;font-size: 26px; margin-top: 8px;"
+                    (click)="exportContract()"></em>
+
+                <h4 class="modal-title" style="color: #ffffff!important">&nbsp;Contract Preview</h4>
+            </div>
+            <div class="modal-body" style="background: #e2e6e6;">
+                <div id="section3">
+
+                    <html>
+
+                    <head>
+                        <style type="text/css">
+                            /* .th_style1
+    {
+      border:2px solid #5b6f6b;
+      font-size: bold;
+      font-family: 'Open Sans', sans-serif!important;
+    } */
+                            .row1 {
+                                /* margin-right: -6px;
+        margin-left: -3px; */
+                                display: flex;
+                                -ms-flex-wrap: wrap;
+                                flex-wrap: wrap;
+                                margin-right: -15px;
+                                margin-left: -15px;
+                            }
+
+                            table>thead>tr>th {
+                                border: 1px solid #5b6f6b;
+                                background: #87a49f;
+                                ;
+                                font-size: bold;
+                                color: #f8f8f8;
+                            }
+
+                            table>tbody>tr>td {
+                                border: 1px solid #5b6f6b;
+                                background: #fbfbfb;
+                                font-size: bold;
+                                color: black;
+                            }
+
+                            table>thead>tr,
+                            table>tbody>tr {
+                                border: none;
+                            }
+
+                            table {
+                                border: none;
+                                width: 100%;
+                                font-size: 12px;
+                            }
+
+                            #bolContainerNew {
+                                width: 100%;
+                                font-size: 15px;
+                                font-family: 'Open Sans', sans-serif !important;
+                                padding: 40px;
+                                display: block;
+
+                            }
+
+                            .container {
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                                margin-right: auto;
+                                margin-left: auto;
+                            }
+
+                            .col-sm-12 {
+                                position: relative;
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            .col-sm-4 {
+                                position: relative;
+                                width: 33.33333%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            /* .th_style
+    {
+      border:2px solid #5b6f6b;
+      background:#87a49f;;
+      font-size: bold;
+      color: #f8f8f8;
+      font-family: 'Open Sans', sans-serif!important;
+    } */
+                            /* .div-group{
+            border: 2px solid #d7e4e2!important;
+            padding: 0px 6px;
+          } */
+                            /* .td_style
+    {
+      border:2px solid #5b6f6b;
+      background:#ced9cf;
+      font-size: bold;
+      color: black;
+      font-family: 'Open Sans', sans-serif!important;
+    } */
+
+                            /* .table_style
+    {
+      border:2px solid #5b6f6b;
+      text-align: center;
+      font-family: 'Open Sans', sans-serif!important;
+    } */
+                            /* .table-bordered{
+            font-size: 12px;
+          }
+          .table-bordered> thead> tr> th {
+            border: 1px solid #525252;
+            text-align: -webkit-center;
+            background-color: #81a19c;
+            color: #fff;
+            vertical-align: middle;
+          } */
+                        </style>
+
+                    </head>
+
+                    <body>
+                        <div id="bolContainerNew">
+                            <div class="container"
+                                style="width:800px;height:1250px;border:1px solid black;margin-top: 10px;">
+                                <div class="row" style="text-align: center;margin-top: 10px;">
+                                    <div class="col-md-12" style="font-weight: bold;">
+                                        FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                                    </div>
+                                    <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                                        SERVICE AGREEMENT
+                                    </div>
+
+                                </div>
+                                <div class="row" style="text-align:justify;margin-top:10px;">
+                                    <div class="col-md-12">
+                                        <p><span style="font-weight: bold;">Forté Transportation Logistics Corporation,
+                                            </span>hereinafter referred to as
+                                            the “Company”, agrees to extend to the below named company, hereinafter
+                                            referred to as the “Client”, a program
+                                            that provides discounts from listed carrier's published LTL Rate Tariffs
+                                            (Schedule “A”) for early payment. </p>
+                                    </div>
+                                </div>
+                                <div class="row" style="text-align: center;">
+
+                                    <div class="col-md-12" style="text-align: center;
+                              margin-left: 36px;">
+                                        <p style="font-weight: bold; margin-left:-50px;color:black">
+                                            {{companyInformation?.companyName}}</p>
+                                        <p style="margin-top:-10px;margin-left:-50px;color:black">
+                                            {{companyInformation?.companyShippingAddress}}</p>
+                                        <p style="margin-top:-10px;margin-left:-50px;color:black">
+                                            {{companyInformation?.companyCity}}, {{companyInformation?.companyState}}
+                                            {{companyInformation?.companyZip}}</p>
+                                    </div>
+
+                                    <div class="row" style="margin-left: 30px;
+                          margin-right: 30px;
+                          text-align: justify;
+                          ">
+                                        <div class="col-md-12">
+                                            <p>
+                                                <span style="font-weight: bold;"> 1. Terms of Agreement: </span>Forté
+                                                will arrange transport by motor vehicle
+                                                of commodities for Client in LTL shipments at the rates specified in the
+                                                published tariffs of the carriers
+                                                listed in Schedule “A”, subject to the discounts for early payment as
+                                                provided in Schedule “A”. Discounts to
+                                                be applied in accordance with carriers’ rules and regulations governing
+                                                said tariffs up to and including the
+                                                10M line of rates. Charges not subject to discount for early payment
+                                                include (but are not limited to) Single
+                                                Shipment, Notify, Home Pickup or Delivery, Inside Delivery, Redelivery,
+                                                Fuel Surcharge, and other duly, DOT
+                                                authorized accessorial charges as listed in the carriers’ applicable
+                                                rules tariffs.
+
+                                            </p>
+                                            <p>
+                                                The Company proposes, subject to the terms in this Agreement, to pay all
+                                                charges incurred by Client in the
+                                                movement of general LTL commodities with carriers listed in Schedule
+                                                “A”. Client agrees not to negotiate with
+                                                any carriers that the Company provides for client’s shipments.
+
+                                            </p>
+                                            <p>
+                                                In order for the scope and terms of this agreement to be applicable,
+                                                Client <span style="font-weight: bold;"><u> must</u></span> note the
+                                                Company as the invoice<span style="font-weight: bold;">/third-party
+                                                    prepaid</span> payor of the freight charges (see example below) on
+                                                all original Bills of Lading issued to listed carriers that the Client
+                                                intends the Company to pay for on
+                                                behalf of the Client and in turn be invoiced for by the Company. Such
+                                                notice on the Bill of Lading<span style="font-weight: bold;"> <u>
+                                                        must</u></span> include along with the name of the Company, the
+                                                complete and
+                                                correct address for the Company to insure accurate billing.
+
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-left: 30px;
+                          margin-right: 30px; display:flex;">
+                                        <div class="col-md-6 col-md-push-3" *ngIf="showFirstAddress">
+                                            <div style="text-align: left;">
+                                                <p style="margin-top: -10px;" style="font-weight: bold;">
+                                                    {{displayShipmentName}} shpts must Bill "Third Party Prepaid"to:</p>
+                                                <p style="margin-top: -10px;color:black">
+                                                    {{companyInformation?.companyName}}</p>
+                                                <p style="margin-top: -10px;">C/O Forte</p>
+                                                <p style="margin-top: -10px;">301 54th Ave East, Suite 200</p>
+                                                <p style="margin-top: -10px;">Fife, WA 98424</p>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6 col-md-push-3" *ngIf="showSecondAddress">
+                                            <div style="text-align: left;">
+                                                <p style="font-weight: bold;">Bill "Third Party Prepaid"to:</p>
+                                                <p style="margin-top: -10px;">Forté
+                                                </p>
+                                                <p style="margin-top: -10px;">301 54th Ave East, Suite 200</p>
+                                                <p style="margin-top: -10px;">Fife, WA 98424</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-left: 30px;
+                          margin-right: 30px;
+                          text-align: justify;
+                          ">
+                                        <div class="col-md-12">
+                                            <p>
+                                                Client agrees to pay the company all charges covered by this agreement
+                                                within 45 days of the invoice date,
+                                                however, if Client pays Fortés’ invoice in full within <span
+                                                    style="color:black"><u>{{companyInformation?.paymentTerms}}</u></span>
+                                                days of the date of the invoice, Client shall be
+                                                entitled to the discounts from the carrier’ published tariffs as
+                                                provided in Schedule “A” and payment of those
+                                                discounted amounts within <span
+                                                    style="color:black"><u>{{companyInformation?.paymentTerms}}</u></span>
+                                                days of the date of the invoice shall be treated as payment in full.
+                                                Client
+                                                further agrees to notify the Company of any perceived billing errors
+                                                within three (3) business days of receipt
+                                                of the Forté invoice to insure that the Company does not pay, on behalf
+                                                of the client, contested freight
+                                                charges.
+
+                                            </p>
+                                            <p>
+                                                <span style="font-weight: bold;"> 2. Duration of Agreement: </span> This
+                                                agreement shall become effective 7
+                                                days from receipt by Company of signed agreement and will remain in
+                                                effect thereafter for a period of 30 days
+                                                with automatic 30 day renewals until terminated. Agreement may be
+                                                terminated by written notice, given by
+                                                either party, effective one week from the date the notice is issued.
+                                                Further, the agreement may terminate
+                                                without notice or penalty if the Client chooses not to use the Company’s
+                                                services during any 30 day period.
+
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                    <div class="row"
+                                        style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                        <div class="col-md-4" id="bruse" style="width:230px;">
+                                            x ____________________
+                                        </div>
+                                        <div class="col-md-2" id="date" style="width: 140px;"
+                                        >
+                                        <p style="font-weight: bold;">Date
+                                        </p>
+                                            <!-- <input type="text" id="firsteditdate"
+                                                style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                                [(ngModel)]="firstDate"
+                                                (keydown)="checkcontractKey($event,'firstdate')" > -->
+
+                                        </div>
+                                        <div class="col-md-4" id="manager" style="width:230px;">
+                                            x ____________________
+                                        </div>
+                                        <div class="col-md-2" id="date" style="width: 140px;">
+                                            <p style="font-weight: bold;">Date
+                                            </p>
+                                            <!-- <input type="text" id="secondeditdate"
+                                                style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                                [(ngModel)]="secondDate"
+                                                (keydown)="checkcontractKey($event,'secondDate')" > -->
+                                        </div>
+                                    </div>
+                                    <div class="row"
+                                        style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+
+                                        <div class="col-md-4" style="width:230px;">
+                                            <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                                            <p style="margin-top: -10px;">President</p>
+                                            <p style="margin-top: -10px;">Forté Transportation Logistics Corp.</p>
+
+                                        </div>
+                                        <div class="col-md-2" style="width:140px;">
+                                            <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                            </p> -->
+                                            <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate()" style="color:#0079FE"></em> -->
+
+                                        </div>
+                                        <div class="col-md-4" style="width:230px;">
+                                            <!-- <p style="font-weight: bold;margin-top: -10px;color:black">{{companyInformation?.contactPersonName}}</p> -->
+                                            <input type="text" id="shippingmanager1"
+                                                style="font-weight: bold;color:black;border:none !important"
+                                                [(ngModel)]="shippingManagerName" readonly
+                                               >
+                                            <input type="text" id="shippingmanager2"
+                                                style="font-weight: bold;color:black;border:none !important"
+                                                [(ngModel)]="shippingManagerPost"
+                                                readonly>
+                                            <input type="text" id="shippingAddress"
+                                                style="font-weight: bold;color:black;border:none !important"
+                                                [(ngModel)]="contractAddrss"
+                                                readonly>
+
+                                            <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItem()" style="color:#0079FE"></em> -->
+                                            <!-- <p style="margin-top: 0px;color:black">Shipping Manager</p> -->
+                                            <!-- <p style="color:black">{{contractAddrss}}</p> -->
+                                        </div>
+                                        <div class="col-md-2" style="width:140px;">
+                                            <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                            </p> -->
+                                            <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate1()" style="color:#0079FE"></em> -->
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" style="text-align:center;">
+                                            <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce
+                                                Buchanan</p>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <!-- </br> -->
+                                <!-- <div class="container" style="width:750px;height:auto;border:1px solid black;"> -->
+                            </div>
+                            <div class="container"
+                                style="width:800px;height:auto;border:1px solid black;margin-top: 60px;">
+
+                                <div class="row" style="text-align: center;font-weight: bold;">
+                                    <div class="col-md-12">
+                                        FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                                    </div>
+                                    <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                                        SERVICE AGREEMENT
+                                    </div>
+                                    <div class="col-md-12" style="font-weight: bold;font-size: 18px;">
+                                        SCHEDULE A
+
+                                    </div>
+
+                                </div>
+                                <div class="row" style="margin-left: 30px;margin-top:10px;
+                          margin-right: 30px;
+                          text-align: justify;
+                          ">
+                                    <div class="col-md-12">
+                                        <p>1. Provisions listed herein are an integral component of the Service
+                                            Agreement entered into between <span
+                                                style="font-weight: bold;">Transportation Logistics Corporation </span>
+                                            and the <span style="font-weight: bold;"> “Client”</span> as signed below.
+                                            Application of these provisions is
+                                            understood by both parties to be governed by the rules and responsibilities
+                                            outlined in the Service Agreement
+                                            and carrier’s current published tariffs.
+                                        </p>
+                                        <p>
+                                            2. Discounts to apply on Minimum Charge thru 10,000 lb. Class rate weight
+                                            scale.
+
+                                        </p>
+                                        <p>
+                                            3. Discounts to apply only on direct points as listed in the carriers’
+                                            applicable tariffs.
+
+                                        </p>
+                                        <p>
+                                            4. Quotes and published rates on modes other than LTL reflect a 60% discount
+                                            of FTLC 799 tariff rates.
+
+                                        </p>
+                                        <p>
+                                            5. Pricing will be applied according to the following Territorial
+                                            Application unless otherwise noted.
+
+                                        </p>
+                                        <p>
+                                            6. Discounts to apply only to customer location(s) listed herein.
+
+                                        </p>
+                                        <p>
+                                            7. This Service Agreement supercedes all prior agreements.
+
+                                        </p>
+                                    </div>
+
+                                </div>
+                                <div style="margin-left:43px;
+                          margin-right: 43px;" *ngIf="territoryArray.length > 0">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td id="empty" style="border-top: 1px solid white;
+                              border-left: 1px solid white;"></td>
+                                            <th colspan="1">Territory</th>
+                                            <th colspan="5">Pricing Provisions:
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Carrier:
+                                            </th>
+                                            <td>
+                                            </td>
+                                            <!-- <td id="space" style="padding:0px !important;border-left:none">
+                    </td> -->
+                                            <td id="space" style="padding:0px !important;">Disc %
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">Amc $
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">IntraState Territory
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">Disc %
+                                            </td>
+                                            <td id="space" style="padding:0px !important;">Amc $
+                                            </td>
+                                        </tr>
+                                        <tr style="color:black" *ngFor="let data of territoryArray"
+                                            [class.pink-tr]="data.ruleExist === false">
+                                            <td id="space" style="padding:0px !important;">{{data.carrier}}</td>
+                                            <!-- <td id="space" style="padding:0px !important;">W-1</td> -->
+                                            <td id="space" style="padding:0px !important;">{{data?.rulesName}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data.discount}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data.amc}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data?.zipstate}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data?.discount}}</td>
+                                            <td id="space" style="padding:0px !important;">{{data?.amc}}</td>
+                                        </tr>
+                                        <!-- <tr>
+                    <td id="space" style="padding:0px !important;">FXF Priority</td>
+                    <td id="space" style="padding:0px !important;">E-1</td>
+                    <td id="space" style="padding:0px !important;">E-1</td>
+                    <td id="space" style="padding:0px !important;">80</td>
+                    <td id="space" style="padding:0px !important;">84.00</td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                  </tr>
+                  <tr>
+                    <td id="space" style="padding:0px !important;">FXF Priority</td>
+                    <td id="space" style="padding:0px !important;">W-1</td>
+                    <td id="space" style="padding:0px !important;">Canada</td>
+                    <td id="space" style="padding:0px !important;">75</td>
+                    <td id="space" style="padding:0px !important;">147.00</td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                  </tr>
+                  <tr>
+                    <td id="space" style="padding:0px !important;">***See Below***</td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                    <td id="space" style="padding:0px !important;"></td>
+                  </tr> -->
+                                        <!-- <tr style="height:21px;">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr> -->
+                                    </table>
+                                </div>
+                                <!-- <div class="row" style="margin-left: 30px;
+                          margin-right: 30px;">
+            
+                <div class="col-md-12">
+                  <p><span style="font-weight: bold;">E1 – To/From These States: </span> AL, AR, CT, DC, DE, FL, GA, IA, IL, IN, KY,
+                    KS, LA, MA, MD, ME, MI, MN, MO, MS, NC, ND, NE, NH, NJ, NY, OH, OK, PA, RI, SC, SD, TN, TX, VA, VT, WI, WV
+                  </p>
+                  <p style="margin-top: -10px;">
+                    <span style="font-weight: bold;"> W1 – To/From These States: </span> AZ, CA, CO, ID, MT, NV, OR, UT, WA, WY
+            
+                  </p>
+                </div>
+              </div> -->
+                                <div class="row"
+                                    *ngIf="additionalPricingArray.length > 0 || contractAccessorialsArray.length> 0"
+                                    style="margin-left:43px;
+                          margin-right: 30px; text-align: left;">
+                                    <p>Additional Pricing Provisions:
+                                    </p>
+                                </div>
+                                <div class="row"
+                                    *ngIf="additionalPricingArray.length > 0 || contractAccessorialsArray.length > 0"
+                                    style="margin-left:43px;
+                          margin-right: 30px;width:821px;">
+                                    <div class="col-md-10" style="border:1px solid black;">
+
+                                        <div class="row" style="text-align: center;"
+                                            *ngFor="let data1 of additionalPricingArray">
+                                            <p style="color:black">{{data1.carrier}} {{data1.rulesName}}
+                                                {{data1.zipstate}} {{data1.discount}}% ${{data1.amc}} AMC</p>
+                                            <!-- <table class="table table-bordered">
+                      <tr style="border:none!important" *ngFor="let data1 of additionalPricingArray">
+                          <p style="font-size: 13px!important;">{{data1.carrier}}  {{data1.rulesName}} {{data1.zipstate}} {{data1.discount}}% ${{data1.amc}} AMC</p>
+                      </tr>
+                      <p *ngIf="contractAccessorialsArray.length >0">FEDEX ECONOMY REGIONAL ACCESSSORIALS : </p>
+    
+                      <tr  style="border:none!important" *ngFor="let valueO of contractAccessorialsArray">
+                          <p style="font-size: 13px!important;">{{valueO?.name}} / $ {{valueO?.charge}}</p>
+                          
+                      </tr>
+    </table> -->
+
+
+
+                                        </div>
+                                        <div class="row" style="text-align: center;border-top:1px solid #000000"
+                                            *ngFor="let assess of contractAccessorialsArray;let index1 = index">
+                                            <h6 style="font-weight: 600;color:black"
+                                                *ngIf="assess.accessorials.length>0">{{assess?.carrier}}
+                                                {{assess?.rulesName}} <span *ngIf="assess?.zipstate !== undefined"
+                                                    style="color:black">[{{assess?.zipstate}}]</span> ACCESSSORIALS :
+                                            </h6>
+                                            <p style="font-size: 13px!important;color:black"><span
+                                                    *ngFor="let valueO of assess.accessorials; let i=index;">{{valueO?.name}}
+                                                    / $ {{valueO?.charge}}
+                                                    <span style="color:black"
+                                                        *ngIf="i !== assess.accessorials.length -1">,</span></span></p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4"></div>
+                                </div>
+                                <div class="row"
+                                    style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                    <div class="col-md-4" id="bruse" style="width:230px;">
+                                        x __________________________
+                                    </div>
+                                    <div class="col-md-2" id="date" style="width: 140px;">
+                                        <p style="font-weight: bold;">Date
+                                        </p>
+                                        <!-- <input type="text" id="firsteditdate1"
+                                            style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                            [(ngModel)]="firstDate"> -->
+                                    </div>
+                                    <div class="col-md-4" id="manager" style="width:230px;">
+                                        x __________________________
+                                    </div>
+                                    <div class="col-md-2" id="date" style="width: 140px;">
+                                        <p style="font-weight: bold;">Date
+                                        </p>
+                                        <!-- <input type="text" id="secondeditdate1"
+                                            style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                            [(ngModel)]="secondDate"> -->
+                                    </div>
+                                </div>
+                                <div class="row"
+                                    style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+
+                                    <div class="col-md-4" style="width:230px;">
+                                        <p style="font-weight: bold;">Bruce G. Buchanan</p>
+                                        <p>President</p>
+                                        <p>Forté Transportation Logistics Corp.</p>
+
+                                    </div>
+                                    <div class="col-md-2" style="width:140px;">
+                                        <!-- <p style="font-weight: bold;">Date
+                                        </p> -->
+                                        <!-- <input type="text" id="firsteditdate" style="font-weight: bold;margin-top: -10px;color:black;border:none !important;width=90px!important" [(ngModel)]="firstDate" > -->
+                                    </div>
+                                    <div class="col-md-4" style="width:230px;">
+                                        <!-- <p style="font-weight: bold;color:black">{{companyInformation?.contactPersonName}}</p> -->
+
+                                        <!-- <textarea> -->
+                                        <input type="text" id="shippingmanager1"
+                                            style="font-weight: bold;color:black;border:none !important"
+                                            [(ngModel)]="shippingManagerName">
+                                        <input type="text" id="shippingmanager2"
+                                            style="font-weight: bold;color:black;border:none !important"
+                                            [(ngModel)]="shippingManagerPost">
+                                        <input type="text" id="shippingAddress"
+                                            style="font-weight: bold;color:black;border:none !important"
+                                            [(ngModel)]="contractAddrss" data-toggle="tooltip"
+                                            title="{{contractAddrss}}">
+
+                                        <!-- <p style="color:black">Shipping Manager</p> -->
+                                        <!-- <p style="color:black">{{contractAddrss}}</p> -->
+                                        <!-- </textarea> -->
+                                    </div>
+                                    <div class="col-md-2" style="width:140px;">
+                                        <!-- <p style="font-weight: bold;">Date
+                                        </p> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2 col-md-push-4">
+                                <!-- <button class="btn btn-danger"><em class="fa fa-save" aria-hidden="true" style="font-size: 20px; vertical-align: middle"></em>Save Data</button> -->
+                                <button class="logisticsBtn" style="width: 265px" id="createContractrulesBtn"
+                                    (click)="createContractrules()">
+                                    <em class="fa fa-file" aria-hidden="true"
+                                        style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>
+                                    Save LTL Contract</button>
+
+                            </div>
+                            <!-- <div class="row"> -->
+                            <!-- <div class="col-md-2 col-md-push-4">
+                                <button class="btn btn-danger"><em class="fa fa-save" aria-hidden="true" style="font-size: 20px; vertical-align: middle"></em>Save Data</button> 
+                                <button class="logisticsBtn" style="width: 265px" id="exportContract1Btn"
+                                    (click)="exportContract()">
+                                    <em class="fa fa-file" aria-hidden="true"
+                                        style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>
+                                    Download Contract</button>
+
+                            </div> -->
+                            <!-- </div> -->
+                        </div>
+
+
+                    </body>
+
+                    </html>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ContractModalNew2" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height:auto;background: #e2e6e6;width:1000px;margin-left:-12em;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    style="font-size: 35px;color: #ffffff">&times;</button>
+                <em class="fa fa-download" aria-hidden="true"
+                    style="float: right;margin-right: 27px;font-size: 26px; margin-top: 8px;"
+                    (click) ="exportContract()"></em>
+
+                <h4 class="modal-title" style="color: #ffffff!important">&nbsp;Contract Preview</h4>
+            </div>
+            <div class="modal-body" style="background: #e2e6e6;">
+                <div id="section3">
+
+                    <html>
+
+                    <head>
+                        <style type="text/css">
+                            /* .th_style1
+        {
+          border:2px solid #5b6f6b;
+          font-size: bold;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+                            .row1 {
+                                /* margin-right: -6px;
+            margin-left: -3px; */
+                                display: flex;
+                                -ms-flex-wrap: wrap;
+                                flex-wrap: wrap;
+                                margin-right: -15px;
+                                margin-left: -15px;
+                            }
+
+                            table>thead>tr>th {
+                                border: 1px solid #5b6f6b;
+                                background: #87a49f;
+                                ;
+                                font-size: bold;
+                                color: #f8f8f8;
+                            }
+
+                            table>tbody>tr>td {
+                                border: 1px solid #5b6f6b;
+                                background: #fbfbfb;
+                                font-size: bold;
+                                color: black;
+                            }
+
+                            table>thead>tr,
+                            table>tbody>tr {
+                                border: none;
+                            }
+
+                            table {
+                                border: none;
+                                width: 100%;
+                                font-size: 12px;
+                            }
+
+                            #bolContainerNew {
+                                width: 100%;
+                                font-size: 15px;
+                                font-family: 'Open Sans', sans-serif !important;
+                                padding: 40px;
+                                display: block;
+
+                            }
+
+                            .container {
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                                margin-right: auto;
+                                margin-left: auto;
+                            }
+
+                            .col-sm-12 {
+                                position: relative;
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            .col-sm-4 {
+                                position: relative;
+                                width: 33.33333%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            /* .th_style
+        {
+          border:2px solid #5b6f6b;
+          background:#87a49f;;
+          font-size: bold;
+          color: #f8f8f8;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+                            /* .div-group{
+                border: 2px solid #d7e4e2!important;
+                padding: 0px 6px;
+              } */
+                            /* .td_style
+        {
+          border:2px solid #5b6f6b;
+          background:#ced9cf;
+          font-size: bold;
+          color: black;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+
+                            /* .table_style
+        {
+          border:2px solid #5b6f6b;
+          text-align: center;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+                            /* .table-bordered{
+                font-size: 12px;
+              }
+              .table-bordered> thead> tr> th {
+                border: 1px solid #525252;
+                text-align: -webkit-center;
+                background-color: #81a19c;
+                color: #fff;
+                vertical-align: middle;
+              } */
+                        </style>
+
+                    </head>
+
+                    <body>
+                        <div id="bolContainerNew">
+                            <div class="container"  style="width:850px;height:1020px;border:1px solid black;margin-top: 10px;">
+                                <div class="row" style="text-align: center;margin-top: 10px;">
+                                  <div class="col-md-12" style="font-weight: bold;">
+                                    FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                                  </div>
+                                  <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                                     TRANSPORTATION SERVICE AGREEMENT
+                                  </div>
+                              
+                                </div>
+                                <div class="row" style="text-align:justify;margin-top:10px;">
+                                  <!-- <div class="col-md-12">
+                                    <p><span style="font-weight: bold;">Forté Transportation Logistics Corporation, </span>hereinafter referred to as
+                                      the “Company”, agrees to extend to the below named company, hereinafter referred to as the “Client”, a program
+                                      that provides discounts from listed carrier's published LTL Rate Tariffs (Schedule “A”) for early payment. </p>
+                                  </div> -->
+                                </div>
+                                <div class="row" style="text-align: center;">
+                  <!--             
+                                  <div class="col-md-12" style="text-align: center;
+                                                margin-left: 36px;">
+                                    <p style="font-weight: bold; margin-left:-50px;color:black">{{companyDetails?.companyName}}</p>
+                                      <p style="margin-top:-10px;margin-left:-50px;color:black">{{companyDetails?.companyShippingAddress}}</p>
+                                        <p style="margin-top:-10px;margin-left:-50px;color:black">{{companyDetails?.companyCity}}, {{companyDetails?.companyState}} {{companyDetails?.companyZip}}</p>
+                                  </div>
+                               -->
+                                  <div class="row" style="margin-left: 30px;
+                                            margin-right: 30px;
+                                            text-align: justify;
+                                            ">
+                                    <div class="col-md-12">
+                                      <div class="col-md-12" style="text-align: center;
+                                     margin-left: 36px;"> 
+                              <p style="font-weight: bold; margin-left:-50px;">{{companyInformation?.companyName}}</p>
+                              <p style="margin-left:-50px;">{{companyInformation?.companyShippingAddress}}</p>
+                              <p style="margin-left:-50px;">{{companyInformation?.companyCity}}, {{companyInformation?.companyState}} {{companyInformation?.companyZip}}</p>
+                              </div>
+                                      <p>
+                                        <span style="font-weight: bold;"> 1. Scope and Terms of Agreement: </span>Forté Transportation Logistics Corporation, hereinafter referred to as
+                                        the “Company”, agrees to extend to the above named company, hereinafter referred to as the “Client”, a 60% discount of Company's TL Tariff FTLC 799. Discount to be applied  in accordance
+                                        with Company's rules and regulations governing said tariff. Charges not covered by this service agreement include  (but are not limited to) Stop Enroute, Driver Load or Unload, Circuitous Miles,
+                                        Driver Count, Driver Delay, Load Bracing or Load Tie-down, Fuel Surcharge, and other duly, DOT authorized accessorial charges as listed in the underlying carrier's applicable rules tariff.
+                                      </p>
+                                      <p>
+                                        The Company proposes, within the scope and terms in this agreement, to pay all charges incurred by Client in the
+                                        movement of general TL commodities (not to exceed $100 Thousand total value). Client agrees not to negotiate with
+                                        any carriers that the Company provides for a period of 90 days from the expiration of this agreement.In order for the scope and terms of this agreement to be applicable, Client <span
+                                          style="font-weight: bold;"><u> must</u></span> note the Company as the invoice<span
+                                          style="font-weight: bold;">/third-party prepaid</span> payor of the freight charges (see example below) on
+                                        all original Bills of Lading issued to listed carriers. Such notice on the Bill of Lading<span
+                                          style="font-weight: bold;"> <u> must</u></span> include along with the name of the Company, the complete and
+                                        correct address for the Company to insure accurate billing.
+                              
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="row"  class="col-md-12 col-md-push-3" style="text-align: center;
+                                     margin-left: 36px;">
+                                    <!-- <div class="col-md-6" > -->
+                                      <!-- <div style="text-align: left;">
+                                        <p style="margin-top: -10px;" style="font-weight: bold;">Carrier shpts must Bill "Third Party Prepaid"to:</p>
+                                        <p style="margin-top: -10px;color:black">Test CopanyName</p>
+                                        <p style="margin-top: -10px;">C/O Fortee</p>
+                                        <p style="margin-top: -10px;">301 54th Ave East, Suite 200</p>
+                                        <p style="margin-top: -10px;">Fife, WA 98424</p>
+                              
+                                      </div> -->
+                              
+                                    <!-- </div> -->
+                                    <!-- <div class="col-md-6" > -->
+                                      <div style="text-align: left;">
+                                        <p style="font-weight: bold;">Bill "Third Party Prepaid"to:</p>
+                                        <p >Forté
+                                        </p>
+                                        <p >301 54th Ave East, Suite 200</p>
+                                        <p >Fife, WA 98424</p>
+                                      </div>
+                                    <!-- </div> -->
+                                  </div>
+                                  <div class="row" style="margin-left: 30px;
+                                            margin-right: 30px;
+                                            text-align: justify;
+                                            ">
+                                    <div class="col-md-12">
+                                      <p>
+                                        Client agrees to pay the company all charges covered by this agreement within 45 days of the invoice date,
+                                        however, if Client pays Fortés’ invoice in full within <span ><u>{{companyInformation?.paymentTerms}}</u></span> days of the date of the invoice, Client shall be
+                                        entitled to the discounts from the carrier’ published tariffs as provided in TL Tariff FTLC 799, and payment of those
+                                        discounted amounts within <span ><u>{{companyInformation?.paymentTerms}}</u></span> days of the date of the invoice shall be treated as payment in full. Client
+                                        further agrees to notify the Company of any perceived billing errors within three (3) business days of receipt
+                                        of the Forté invoice to insure that the Company does not pay, on behalf of the client, contested freight
+                                        charges.
+                              
+                                      </p>
+                                      <p>
+                                        <span style="font-weight: bold;"> 2. Duration of Agreement: </span> This agreement shall become effective 7
+                                        days from receipt by Company of signed agreement and will remain in effect thereafter for a period of 30 days
+                                        with automatic 30 day renewals until terminated. Agreement may be terminated by written notice, given by
+                                        either party, effective one week from the date the notice is issued. Further, the agreement may terminate
+                                        without notice or penalty if the Client chooses not to use the Company’s services during any 30 day period.
+                              
+                                      </p>
+                              
+                                    </div>
+                                  </div>
+                                  <!-- <div class="row"
+                                  style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                  <div class="col-md-4" id="bruse" style="width:230px;">
+                                    x ___________
+                                  </div>
+                                  <div class="col-md-2" id="date" style="width: 140px;">
+                                    <input type="text" id="firsteditdate" class="textBoxcustom" [(ngModel)]="firstDate"  (keydown)="checkcontractKey($event,'firstdate')">
+                  
+                                  </div>
+                                  <div class="col-md-4" id="manager" style="width:230px;">
+                                    x ___________
+                                  </div>
+                                  <div class="col-md-2" id="date" style="width: 140px;">
+                                    <input type="text" id="secondeditdate"  class="textBoxcustom"  [(ngModel)]="secondDate" (keydown)="checkcontractKey($event,'secondDate')">
+                                  </div>
+                                </div> -->
+                               <!-- <div class="row"
+                                  style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                            
+                                  <div class="col-md-4" style="width:230px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                                    <p style="">President</p>
+                                    <p style="">Forté Transportation Logistics Corp.</p>
+                            
+                                  </div>
+                                  <div class="col-md-2" style="width:140px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p>
+                  
+                                  </div>
+                                  <div class="col-md-4" style="width:230px;margin-top: -15px">
+                                    <input type="text" id="shippingmanager1" class="textBoxcustom" [(ngModel)]="shippingManagerName" (keydown)="checkcontractKey($event,'name')" >
+                                    <input type="text" id="shippingmanager2" class="textBoxcustom" [(ngModel)]="shippingManagerPost" (keydown)="checkcontractKey($event,'post')">
+                                    <input type="text" id="shippingAddress" class="textBoxcustom" [(ngModel)]="contractAddrss" (keydown)="checkcontractKey($event,'address')" data-toggle="tooltip" title="{{contractAddrss}}">
+                  
+                                    
+                                  </div>
+                                  <div class="col-md-2" style="width:140px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p>
+                  
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12" style="text-align:center;">
+                                    <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce Buchanan</p>
+                                  </div>
+                                </div>  -->
+                              
+                                <div class="row"
+                                style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                <div class="col-md-4" id="bruse" style="width:230px;">
+                                    x ____________________________
+                                </div>
+                                <div class="col-md-2" id="date" style="width: 140px;">
+                                    <p style="font-weight: bold;">Date
+                                    </p>
+                                    <!-- <input type="text" id="firsteditdate"
+                                        style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                        [(ngModel)]="firstDate"
+                                        (keydown)="checkcontractKey($event,'firstdate')" readonly> -->
+
+                                </div>
+                                <div class="col-md-4" id="manager" style="width:230px;">
+                                    x __________________________
+                                </div>
+                                <div class="col-md-2" id="date" style="width: 140px;">
+                                    <p style="font-weight: bold;">Date
+                                    </p>
+                                    <!-- <input type="text" id="secondeditdate"
+                                        style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                        [(ngModel)]="secondDate"
+                                        (keydown)="checkcontractKey($event,'secondDate')"readonly> -->
+                                </div>
+                            </div>
+                            <div class="row"
+                                style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+
+                                <div class="col-md-4" style="width:230px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                                    <p style="margin-top: -10px;">President</p>
+                                    <p style="margin-top: -10px;">Forté Transportation Logistics Corp.</p>
+
+                                </div>
+                                <div class="col-md-2" style="width:140px;">
+                                    <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p> -->
+                                    <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate()" style="color:#0079FE"></em> -->
+
+                                </div>
+                                <div class="col-md-4" style="width:230px;">
+                                    <!-- <p style="font-weight: bold;margin-top: -10px;color:black">{{companyInformation?.contactPersonName}}</p> -->
+                                    <input type="text" id="shippingmanager1"
+                                        style="font-weight: bold;color:black;border:none !important"
+                                        [(ngModel)]="shippingManagerName"
+                                         readonly>
+                                    <input type="text" id="shippingmanager2"
+                                        style="font-weight: bold;color:black;border:none !important"
+                                        [(ngModel)]="shippingManagerPost"
+                                         readonly>
+                                    <input type="text" id="shippingAddress"
+                                        style="font-weight: bold;color:black;border:none !important"
+                                        [(ngModel)]="contractAddrss"
+                                        readonly>
+
+                                    <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItem()" style="color:#0079FE"></em> -->
+                                    <!-- <p style="margin-top: 0px;color:black">Shipping Manager</p> -->
+                                    <!-- <p style="color:black">{{contractAddrss}}</p> -->
+                                </div>
+                                <div class="col-md-2" style="width:140px;">
+                                    <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p> -->
+                                    <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate1()" style="color:#0079FE"></em> -->
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce
+                                        Buchanan</p>
+                                </div>
+                            </div>
+                                </div>
+                                <!-- </br> -->
+                                <!-- <div class="container" style="width:750px;height:auto;border:1px solid black;"> -->
+                                </div>
+                        </div>
+
+                       
+
+
+                    </body>
+
+                    </html>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ContractModalNew3" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height:auto;background: #e2e6e6;width:1000px;margin-left:-12em;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    style="font-size: 35px;color: #ffffff">&times;</button>
+                <em class="fa fa-download" aria-hidden="true"
+                    style="float: right;margin-right: 27px;font-size: 26px; margin-top: 8px;"
+                   (click)="exportContract()"></em>
+
+                <h4 class="modal-title" style="color: #ffffff!important">&nbsp;Contract Preview</h4>
+            </div>
+            <div class="modal-body" style="background: #e2e6e6;">
+                <div id="section3">
+
+                    <html>
+
+                    <head>
+                        <style type="text/css">
+                            /* .th_style1
+        {
+          border:2px solid #5b6f6b;
+          font-size: bold;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+                            .row1 {
+                                /* margin-right: -6px;
+            margin-left: -3px; */
+                                display: flex;
+                                -ms-flex-wrap: wrap;
+                                flex-wrap: wrap;
+                                margin-right: -15px;
+                                margin-left: -15px;
+                            }
+
+                            table>thead>tr>th {
+                                border: 1px solid #5b6f6b;
+                                background: #87a49f;
+                                ;
+                                font-size: bold;
+                                color: #f8f8f8;
+                            }
+
+                            table>tbody>tr>td {
+                                border: 1px solid #5b6f6b;
+                                background: #fbfbfb;
+                                font-size: bold;
+                                color: black;
+                            }
+
+                            table>thead>tr,
+                            table>tbody>tr {
+                                border: none;
+                            }
+
+                            table {
+                                border: none;
+                                width: 100%;
+                                font-size: 12px;
+                            }
+
+                            #bolContainerNew {
+                                width: 100%;
+                                font-size: 15px;
+                                font-family: 'Open Sans', sans-serif !important;
+                                padding: 40px;
+                                display: block;
+
+                            }
+
+                            .container {
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                                margin-right: auto;
+                                margin-left: auto;
+                            }
+
+                            .col-sm-12 {
+                                position: relative;
+                                width: 100%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            .col-sm-4 {
+                                position: relative;
+                                width: 33.33333%;
+                                padding-right: 15px;
+                                padding-left: 15px;
+                            }
+
+                            /* .th_style
+        {
+          border:2px solid #5b6f6b;
+          background:#87a49f;;
+          font-size: bold;
+          color: #f8f8f8;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+                            /* .div-group{
+                border: 2px solid #d7e4e2!important;
+                padding: 0px 6px;
+              } */
+                            /* .td_style
+        {
+          border:2px solid #5b6f6b;
+          background:#ced9cf;
+          font-size: bold;
+          color: black;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+
+                            /* .table_style
+        {
+          border:2px solid #5b6f6b;
+          text-align: center;
+          font-family: 'Open Sans', sans-serif!important;
+        } */
+                            /* .table-bordered{
+                font-size: 12px;
+              }
+              .table-bordered> thead> tr> th {
+                border: 1px solid #525252;
+                text-align: -webkit-center;
+                background-color: #81a19c;
+                color: #fff;
+                vertical-align: middle;
+              } */
+                        </style>
+
+                    </head>
+
+                    <body>
+                        <div id="bolContainerNew">
+                            <div class="container"  style="width:850px;height:1020px;border:1px solid black;margin-top: 10px;">
+                                <div class="row" style="text-align: center;margin-top: 10px;">
+                                  <div class="col-md-12" style="font-weight: bold;">
+                                    FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                                  </div>
+                                  <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                                     TRANSPORTATION SERVICE AGREEMENT
+                                  </div>
+                              
+                                </div>
+                                <div class="row" style="text-align:justify;margin-top:10px;">
+                                  <!-- <div class="col-md-12">
+                                    <p><span style="font-weight: bold;">Forté Transportation Logistics Corporation, </span>hereinafter referred to as
+                                      the “Company”, agrees to extend to the below named company, hereinafter referred to as the “Client”, a program
+                                      that provides discounts from listed carrier's published LTL Rate Tariffs (Schedule “A”) for early payment. </p>
+                                  </div> -->
+                                </div>
+                                <div class="row" style="text-align: center;">
+                  <!--             
+                                  <div class="col-md-12" style="text-align: center;
+                                                margin-left: 36px;">
+                                    <p style="font-weight: bold; margin-left:-50px;color:black">{{companyDetails?.companyName}}</p>
+                                      <p style="margin-top:-10px;margin-left:-50px;color:black">{{companyDetails?.companyShippingAddress}}</p>
+                                        <p style="margin-top:-10px;margin-left:-50px;color:black">{{companyDetails?.companyCity}}, {{companyDetails?.companyState}} {{companyDetails?.companyZip}}</p>
+                                  </div>
+                               -->
+                                  <div class="row" style="margin-left: 30px;
+                                            margin-right: 30px;
+                                            text-align: justify;
+                                            ">
+                                    <div class="col-md-12">
+                                      <div class="col-md-12" style="text-align: center;
+                                     margin-left: 36px;"> 
+                              <p style="font-weight: bold; margin-left:-50px;">{{companyInformation?.companyName}}</p>
+                              <p style="margin-left:-50px;">{{companyInformation?.companyShippingAddress}}</p>
+                              <p style="margin-left:-50px;">{{companyInformation?.companyCity}}, {{companyInformation?.companyState}} {{companyInformation?.companyZip}}</p>
+                              </div>
+                                      <p>
+                                        <span style="font-weight: bold;"> 1. Scope and Terms of Agreement: </span>Forté Transportation Logistics Corporation, hereinafter referred to as
+                                        the “Company”, agrees to extend to the above named company, hereinafter referred to as the “Client”, a 60% discount of Company's TL Tariff FTLC 799. Discount to be applied  in accordance
+                                        with Company's rules and regulations governing said tariff. Charges not covered by this service agreement include  (but are not limited to) Stop Enroute, Driver Load or Unload, Circuitous Miles,
+                                        Driver Count, Driver Delay, Load Bracing or Load Tie-down, Fuel Surcharge, and other duly, DOT authorized accessorial charges as listed in the underlying carrier's applicable rules tariff.
+                                      </p>
+                                      <p>
+                                        The Company proposes, within the scope and terms in this agreement, to pay all charges incurred by Client in the
+                                        movement of general TL commodities (not to exceed $100 Thousand total value). Client agrees not to negotiate with
+                                        any carriers that the Company provides for a period of 90 days from the expiration of this agreement.In order for the scope and terms of this agreement to be applicable, Client <span
+                                          style="font-weight: bold;"><u> must</u></span> note the Company as the invoice<span
+                                          style="font-weight: bold;">/third-party prepaid</span> payor of the freight charges (see example below) on
+                                        all original Bills of Lading issued to listed carriers. Such notice on the Bill of Lading<span
+                                          style="font-weight: bold;"> <u> must</u></span> include along with the name of the Company, the complete and
+                                        correct address for the Company to insure accurate billing.
+                              
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="row"  class="col-md-12 col-md-push-3" style="text-align: center;
+                                     margin-left: 36px;">
+                                    <!-- <div class="col-md-6" > -->
+                                      <!-- <div style="text-align: left;">
+                                        <p style="margin-top: -10px;" style="font-weight: bold;">Carrier shpts must Bill "Third Party Prepaid"to:</p>
+                                        <p style="margin-top: -10px;color:black">Test CopanyName</p>
+                                        <p style="margin-top: -10px;">C/O Fortee</p>
+                                        <p style="margin-top: -10px;">301 54th Ave East, Suite 200</p>
+                                        <p style="margin-top: -10px;">Fife, WA 98424</p>
+                              
+                                      </div> -->
+                              
+                                    <!-- </div> -->
+                                    <!-- <div class="col-md-6" > -->
+                                      <div style="text-align: left;">
+                                        <p style="font-weight: bold;">Bill "Third Party Prepaid"to:</p>
+                                        <p >Forté
+                                        </p>
+                                        <p >301 54th Ave East, Suite 200</p>
+                                        <p >Fife, WA 98424</p>
+                                      </div>
+                                    <!-- </div> -->
+                                  </div>
+                                  <div class="row" style="margin-left: 30px;
+                                            margin-right: 30px;
+                                            text-align: justify;
+                                            ">
+                                    <div class="col-md-12">
+                                      <p>
+                                        Client agrees to pay the company all charges covered by this agreement within 45 days of the invoice date,
+                                        however, if Client pays Fortés invoice in full within <span ><u>{{companyInformation?.paymentTerms}}</u></span> days of the date of the invoice, Client shall be
+                                        entitled to the discounts from the carrier published tariffs as provided in TL Tariff FTLC 799, and payment of those
+                                        discounted amounts within <span ><u>{{companyInformation?.paymentTerms}}</u></span> days of the date of the invoice shall be treated as payment in full. Client
+                                        further agrees to notify the Company of any perceived billing errors within three (3) business days of receipt
+                                        of the Forté invoice to insure that the Company does not pay, on behalf of the client, contested freight
+                                        charges.
+                              
+                                      </p>
+                                      <p>
+                                        <span style="font-weight: bold;"> 2. Duration of Agreement: </span> This agreement shall become effective 7
+                                        days from receipt by Company of signed agreement and will remain in effect thereafter for a period of 30 days
+                                        with automatic 30 day renewals until terminated. Agreement may be terminated by written notice, given by
+                                        either party, effective one week from the date the notice is issued. Further, the agreement may terminate
+                                        without notice or penalty if the Client chooses not to use the Company’s services during any 30 day period.
+                              
+                                      </p>
+                              
+                                    </div>
+                                  </div>
+                                  <!-- <div class="row"
+                                  style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                  <div class="col-md-4" id="bruse" style="width:230px;">
+                                    x ___________
+                                  </div>
+                                  <div class="col-md-2" id="date" style="width: 140px;">
+                                    <input type="text" id="firsteditdate" class="textBoxcustom" [(ngModel)]="firstDate"  (keydown)="checkcontractKey($event,'firstdate')">
+                  
+                                  </div>
+                                  <div class="col-md-4" id="manager" style="width:230px;">
+                                    x ___________
+                                  </div>
+                                  <div class="col-md-2" id="date" style="width: 140px;">
+                                    <input type="text" id="secondeditdate"  class="textBoxcustom"  [(ngModel)]="secondDate" (keydown)="checkcontractKey($event,'secondDate')">
+                                  </div>
+                                </div> -->
+                               <!-- <div class="row"
+                                  style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                            
+                                  <div class="col-md-4" style="width:230px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                                    <p style="">President</p>
+                                    <p style="">Forté Transportation Logistics Corp.</p>
+                            
+                                  </div>
+                                  <div class="col-md-2" style="width:140px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p>
+                  
+                                  </div>
+                                  <div class="col-md-4" style="width:230px;margin-top: -15px">
+                                    <input type="text" id="shippingmanager1" class="textBoxcustom" [(ngModel)]="shippingManagerName" (keydown)="checkcontractKey($event,'name')" >
+                                    <input type="text" id="shippingmanager2" class="textBoxcustom" [(ngModel)]="shippingManagerPost" (keydown)="checkcontractKey($event,'post')">
+                                    <input type="text" id="shippingAddress" class="textBoxcustom" [(ngModel)]="contractAddrss" (keydown)="checkcontractKey($event,'address')" data-toggle="tooltip" title="{{contractAddrss}}">
+                  
+                                    
+                                  </div>
+                                  <div class="col-md-2" style="width:140px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p>
+                  
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12" style="text-align:center;">
+                                    <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce Buchanan</p>
+                                  </div>
+                                </div>  -->
+                              
+                                <div class="row"
+                                style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                                <div class="col-md-4" id="bruse" style="width:230px;">
+                                    x ____________________________
+                                </div>
+                                <div class="col-md-2" id="date" style="width: 140px;">
+                                    <p style="font-weight: bold;">Date
+                                    </p>
+                                    <!-- <input type="text" id="firsteditdate"
+                                        style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                        [(ngModel)]="firstDate"
+                                        (keydown)="checkcontractKey($event,'firstdate')"> -->
+
+                                </div>
+                                <div class="col-md-4" id="manager" style="width:230px;">
+                                    x __________________________
+                                </div>
+                                <div class="col-md-2" id="date" style="width: 140px;">
+                                    <p style="font-weight: bold;">Date
+                                    </p>
+                                    <!-- <input type="text" id="secondeditdate"
+                                        style="font-weight: bold;color:black;border:none !important;width:90px!important"
+                                        [(ngModel)]="secondDate"
+                                        (keydown)="checkcontractKey($event,'secondDate')"> -->
+                                </div>
+                            </div>
+                            <div class="row"
+                                style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+
+                                <div class="col-md-4" style="width:230px;">
+                                    <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                                    <p style="margin-top: -10px;">President</p>
+                                    <p style="margin-top: -10px;">Forté Transportation Logistics Corp.</p>
+
+                                </div>
+                                <div class="col-md-2" style="width:140px;">
+                                    <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p> -->
+                                    <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate()" style="color:#0079FE"></em> -->
+
+                                </div>
+                                <div class="col-md-4" style="width:230px;">
+                                    <!-- <p style="font-weight: bold;margin-top: -10px;color:black">{{companyInformation?.contactPersonName}}</p> -->
+                                    <input type="text" id="shippingmanager1"
+                                        style="font-weight: bold;color:black;border:none !important"
+                                        [(ngModel)]="shippingManagerName"
+                                         >
+                                    <input type="text" id="shippingmanager2"
+                                        style="font-weight: bold;color:black;border:none !important"
+                                        [(ngModel)]="shippingManagerPost"
+                                         >
+                                    <input type="text" id="shippingAddress"
+                                        style="font-weight: bold;color:black;border:none !important"
+                                        [(ngModel)]="contractAddrss">
+
+                                    <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItem()" style="color:#0079FE"></em> -->
+                                    <!-- <p style="margin-top: 0px;color:black">Shipping Manager</p> -->
+                                    <!-- <p style="color:black">{{contractAddrss}}</p> -->
+                                </div>
+                                <div class="col-md-2" style="width:140px;">
+                                    <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                                    </p> -->
+                                    <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate1()" style="color:#0079FE"></em> -->
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce
+                                        Buchanan</p>
+                                </div>
+                            </div>
+                                </div>
+                                <!-- </br> -->
+                                <!-- <div class="container" style="width:750px;height:auto;border:1px solid black;"> -->
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2 col-md-push-4">
+                                        <!-- <button class="btn btn-danger"><em class="fa fa-save" aria-hidden="true" style="font-size: 20px; vertical-align: middle"></em>Save Data</button> -->
+                                        <!-- <button class="logisticsBtn" style="width: 265px" id="createContractrulesBtn"
+                                            >
+                                            <em class="fa fa-file" aria-hidden="true"
+                                                style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>
+                                            Save TL Contract</button> -->
+        
+                                    </div>
+                                    </div>
+                        </div>
+
+                       
+
+
+                    </body>
+
+                    </html>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

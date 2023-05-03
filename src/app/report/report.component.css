@@ -1,0 +1,87 @@
+/*
+.selectField
+{
+  width: 100%;
+  padding: 10px;
+  background: #182d32;
+  border: 1px solid #182d32;
+  font-zsize: 14px;
+  color: #fff;
+  opacity: 0.9;
+}
+*/
+/*.card
+{
+  background: #ff304d00;
+  padding: 20px;
+  border: 1px solid #ffffff;
+}
+.card-footer
+{
+  padding:10px;
+  border: 1px solid #ffffff;
+}*/
+
+.card
+{
+  background: #ff304d00;
+  padding: 20px;
+  border: 1px solid #ffffff;
+}
+.card-footer
+{
+  padding:10px;
+  border: 1px solid #ffffff;
+}
+.selectField{
+  width: 100%;
+  padding: 10px;
+  background: rgba(76, 122, 113, 0.61);
+  border: 2px solid #00000052;
+  /*background: rgba(29, 31, 31, 0.7);
+  border: 1px solid #182d32;*/
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.9;
+}
+.ngx-pagination a, .ngx-pagination button {
+  color: #ffffff !important;
+  display: block;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0;
+}
+/*.ngx-pagination a, .ngx-pagination button {
+  cursor: pointer;
+  color: white
+}*/
+
+.difference {
+  color: #ff0000!important;
+  text-align: left;
+}
+
+.normal {
+  color: #ffffff;
+}
+
+.table-bordered> tbody> tr>  td.blue-td {
+ 
+  color: #343351;
+  text-decoration: underline;
+}
+.table-bordered> tbody> tr>  td.green-td {
+ 
+  color: #4c7a71;
+  text-decoration: underline;
+}
+
+.blue {
+  
+  color: #5853f3;
+  text-decoration: underline;
+}
+
+.green {
+  color: #4c7a71;
+  text-decoration: underline;
+}

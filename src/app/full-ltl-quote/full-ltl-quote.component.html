@@ -1,0 +1,686 @@
+<div class="header">
+    <nav class="navbar navbar-default">
+      <app-header></app-header>
+   <div class="clearfix"></div>
+    </nav>
+  </div>
+
+<div class="container-fluid">
+    <div class="row">
+        <app-sidemenu></app-sidemenu>
+    <div class="col-md-10 main_cont">
+            <!-- <h2 class="main-head">Full Rate Quote Request<span class="legend" data-toggle="modal" data-target="#legend-modal"><em class="fa fa-info-circle"></em></span></h2> -->
+            <h2 class="main-head">Full Rate Quote Request</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 button-group">
+                            <div class="btn-group" style="width: 100%">
+                                <button *ngIf="showTruckload" class="btn btn-primary active col-md-3" (click)="fullRateQuote('truckload')"><em class="fa fa-truck" style="margin-right: 5px"></em>Truckload</button>
+                                <button *ngIf="!showTruckload"class="btn btn-primary col-md-3" (click)="fullRateQuote('truckload')"><em class="fa fa-truck" style="margin-right: 5px"></em>Truckload</button>
+                                <button *ngIf="showVolume" class="btn btn-primary active col-md-3" (click)="fullRateQuote('volume')"><em class="fa fa-cube" style="margin-right: 5px"></em>Volume</button>
+                                <button *ngIf="!showVolume" class="btn btn-primary col-md-3" (click)="fullRateQuote('volume')"><em class="fa fa-cube" style="margin-right: 5px"></em>Volume</button>
+                                <button *ngIf="showAir" class="btn btn-primary active col-md-3" (click)="fullRateQuote('air')"><em class="fa fa-plane" style="margin-right: 5px"></em>Air</button>
+                                <button *ngIf="!showAir" class="btn btn-primary col-md-3" (click)="fullRateQuote('air')"><em class="fa fa-plane" style="margin-right: 5px"></em>Air</button>
+                                <button *ngIf="showOcean" class="btn btn-primary active col-md-3" (click)="fullRateQuote('ocean')"><em class="fa fa-life-saver" style="margin-right: 5px"></em>Ocean</button>
+                                <button *ngIf="!showOcean" class="btn btn-primary col-md-3" (click)="fullRateQuote('ocean')"><em class="fa fa-life-saver" style="margin-right: 5px"></em>Ocean</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+            </div>
+               <form [formGroup]="fullRateQuoteForm" *ngIf="showForm">
+                <div class="row">
+                    <div class="col-md-10 col-md-push-1 form-group div-border">
+                        <label>Customer Contact Name</label><span style="color:#FF0000">*</span>
+                            <input type="text" class="form-control"  placeholder="Bruce Buchanan" formControlName="customerName" ngPattern="/^[a-zA-Z\s]*$/" (keydown)="eventHandler($event)"
+                       onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="30" autocomplete="nope" readonly>
+                                <app-error-message [control]="$any(fullRateQuoteForm).controls['customerName']"
+                                         style="font-size: 13px;"></app-error-message>
+                     </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 div-border">
+                            <h4 class="sub-head">Shipper Information<button class="leg" data-toggle="modal" data-target="#shipper-address-save-modal"
+                                                                            [disabled] ="!fullRateQuoteForm.controls['shipperCompanyName'].valid
+                                                                  || !fullRateQuoteForm.controls['shipperStreet1'].valid
+                                                                  || !fullRateQuoteForm.controls['shipperZip'].valid
+                                                                  || !fullRateQuoteForm.controls['shipperCity'].valid
+                                                                  || !fullRateQuoteForm.controls['shipperState'].valid">
+                              <em class="fa fa-save" style="margin-right:5px"></em>Save Template</button></h4>
+                            <div class="row">
+                            <div class="col-md-4">
+
+                              <div class="input-group">
+                              <label>Shipper</label><span style="color:#FF0000">*</span>
+                                <input type="text" class="form-control" placeholder="e.g. John Mathew" (keydown)="eventHandler($event)"
+                                       formControlName="shipperCompanyName" autocomplete="nope">
+                                    <!--<input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="e.g. ABC Company" formControlName="shipperCompanyName"  ngPattern="/^[a-zA-Z\s]*$/"-->
+                       <!--onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="30"[typeahead]="customerFeatures"-->
+                             <!--typeaheadOptionField="companyName"-->
+                             <!--[typeaheadItemTemplate]="customItemTemplate"-->
+                             <!--(typeaheadNoResults)="getData($event)">-->
+
+                              <div class="input-group-btn">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 22px" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                                <div class="dropdown-menu" style="padding: 0px">
+                                  <table class="table table-bordered" style="margin-bottom: 0px">
+                                    <div class="scrollit">
+
+                                      <thead>
+                                      <tr>
+                                        <td>Template Name</td>
+                                        <td>Company</td>
+                                        <td>Zip/Post</td>
+                                      </tr>
+                                      </thead>
+                                      <tbody>
+                                      <tr *ngFor="let addressTemplates of shipperTemplate" class="noIbar" (click)="getAddressClickValues(addressTemplates.id, 'shipperid')">
+                                        <td>{{addressTemplates?.templateName}}</td>
+                                        <td>{{addressTemplates?.companyName}}</td>
+                                        <td>{{addressTemplates?.zip}}</td>
+                                      </tr>
+                                      </tbody>
+                                      <label *ngIf="shipperTemplatesPresent">No Templates Available</label>
+
+                                    </div>
+                                  </table>
+                                </div>
+                              </div>
+                              </div>
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperCompanyName']"
+                                         style="font-size: 13px;"></app-error-message>
+                                    </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Contact Name</label>
+                                    <input type="text" class="form-control"  placeholder="e.g. John Mathew" formControlName="shipperContactName" (keydown)="eventHandler($event)" ngPattern="/^[a-zA-Z\s]*$/"
+                       onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" maxlength="30" autocomplete="nope">
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperContactName']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Phone</label><span style="color:#FF0000">*</span>
+                                    <input type="text" class="form-control"  placeholder="(###) ###-####" formControlName="shipperPhone" (keydown)="eventHandler($event)" maxlength="10" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" autocomplete="nope">
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperPhone']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    <label>Street 1</label><span style="color:#FF0000">*</span>
+                                    <input type="text" class="form-control"  placeholder="Street 1" 
+                                    formControlName="shipperStreet1" (keydown)="eventHandler($event)" autocomplete="nope">
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperStreet1']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Street 2</label>
+                                    <input type="text" class="form-control"  
+                                  placeholder="Street 2" formControlName="shipperStreet2" 
+                                  (keydown)="eventHandler($event)" autocomplete="nope">
+
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>Country</label><span style="color:#FF0000">*</span>
+                                    <select class="form-control" formControlName="shipperCountry" [disabled]="true" (keydown)="eventHandler($event)">
+                                        <option value="USA">United States</option>
+                                        <option value="USA">Canada</option>
+                                        <option value="USA">Mexico</option>
+                                    </select>
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperCountry']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    <label>Zip</label><span style="color:#FF0000">*</span>
+                                    <input type="text" class="form-control"  placeholder="Zip" formControlName="shipperZip" (keydown)="eventHandler($event)" (change)="getCityState(fullRateQuoteForm.controls['shipperZip'].value, 'origin')" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="5" autocomplete="nope">
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperZip']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>City</label><span style="color:#FF0000">*</span>
+                                    <input type="text" class="form-control"  placeholder="City" 
+                                    formControlName="shipperCity" (keydown)="eventHandler($event)">
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperCity']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>State</label><span style="color:#FF0000">*</span>
+                                    <input type="text" class="form-control"  placeholder="State" formControlName="shipperState" readonly (keydown)="eventHandler($event)">
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipperState']"
+                                         style="font-size: 13px;"></app-error-message>
+                                </div>
+                            </div>
+                        </div>
+    </div>
+       
+            <div class="row">
+                <div class="col-md-push-1 col-md-10 div-border">
+                <h4 class="sub-head">Consignee Information<button class="leg" data-toggle="modal" data-target="#address-save-modal"
+                                                                  [disabled] ="!fullRateQuoteForm.controls['consigneeCompany'].valid ||
+                                                            !fullRateQuoteForm.controls['consigneeStreet1'].valid ||
+                                                            !fullRateQuoteForm.controls['consigneeZip'].valid ||
+                                                            !fullRateQuoteForm.controls['consigneeCity'].valid ||
+                                                            !fullRateQuoteForm.controls['consigneeState'].valid">
+                  <em class="fa fa-save" style="margin-right:5px"></em>Save Template</button></h4>
+                <div class="row">
+                    <div class="col-md-4">
+                      <div class="input-group">
+
+                      <label>Consignee</label><span style="color:#FF0000">*</span>
+                            <input type="text" class="form-control" aria-label="Text input with dropdown button" 
+                            placeholder="e.g. ABC Company" maxlength="30" formControlName="consigneeCompany" 
+                            (keydown)="eventHandler($event)" autocomplete="nope">
+
+                          <div class="input-group-btn">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: 22px" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                            <div class="dropdown-menu" style="padding: 0px">
+                              <table class="table table-bordered" style="margin-bottom: 0px">
+                                <div class="scrollit">
+
+                                  <thead>
+                                  <tr>
+                                    <td>Template Name</td>
+                                    <td>Company</td>
+                                    <td>Zip/Post</td>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  <tr *ngFor="let addressTemplates of consigneeTemplate" class="noIbar" (click)="getAddressClickValues(addressTemplates.id,'consigneeid')">
+                                    <td>{{addressTemplates?.templateName}}</td>
+                                    <td>{{addressTemplates?.companyName}}</td>
+                                    <td>{{addressTemplates?.zip}}</td>
+                                  </tr>
+                                  </tbody>
+                                  <label *ngIf="consigneeTemplatesPresent">No Templates Available</label>
+                                </div>
+                              </table>
+                            </div>
+                          </div>
+                      </div>
+                            <app-error-message [control]="$any(fullRateQuoteForm).controls['consigneeCompany']"
+                                         style="font-size: 13px;"></app-error-message>
+
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Contact Name</label>
+                        <input type="text" class="form-control"  placeholder="e.g. John Mathew" formControlName="consigneeContactName" maxlength="10" (keydown)="eventHandler($event)" autocomplete="nope">
+
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Phone</label><span style="color:#FF0000">*</span>
+                        <input type="text" (keydown)="eventHandler($event)" class="form-control"  placeholder="(###) ###-####" formControlName="consigneePhone"maxlength="10" minlength="10" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" (change)="checkPhoneNumber(fullRateQuoteForm.controls['consigneePhone'].value, 'consignee')" autocomplete="nope">
+                        <!-- <app-error-message [control]="fullRateQuoteForm.controls.consigneePhone"
+                                         style="font-size: 13px;"></app-error-message> -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label>Street 1</label><span style="color:#FF0000">*</span>
+                        <input type="text" class="form-control"  placeholder="Street 1" formControlName="consigneeStreet1" (keydown)="eventHandler($event)" autocomplete="nope">
+                        <app-error-message [control]="$any(fullRateQuoteForm).controls['consigneeStreet1']"
+                                         style="font-size: 13px;"></app-error-message>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Street 2</label>
+                        <input type="text" class="form-control"  placeholder="Street 2" formControlName="consigneeStreet2" (keydown)="eventHandler($event)" autocomplete="nope">
+
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Country</label><span style="color:#FF0000">*</span>
+                        <select class="form-control" formControlName="consigneeCountry" [disabled]="true" (keydown)="eventHandler($event)">
+                            <option value="USA">United States</option>
+                            <option value="USA">Canada</option>
+                            <option value="USA">Mexico</option>
+                        </select>
+                        <app-error-message [control]="$any(fullRateQuoteForm).controls['consigneeCountry']"
+                                         style="font-size: 13px;"></app-error-message>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label>Zip</label><span style="color:#FF0000">*</span>
+                        <input type="text" class="form-control"  placeholder="Zip" formControlName="consigneeZip" (keydown)="eventHandler($event)" (change)="getCityState(fullRateQuoteForm.controls['consigneeZip'].value, 'destination')" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="5" autocomplete="nope">
+                        <app-error-message [control]="$any(fullRateQuoteForm).controls['consigneeZip']"
+                                         style="font-size: 13px;"></app-error-message>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>City</label><span style="color:#FF0000">*</span>
+                        <input type="text" class="form-control"  placeholder="City" 
+                        formControlName="consigneeCity" (keydown)="eventHandler($event)">
+                        <app-error-message [control]="$any(fullRateQuoteForm).controls['consigneeCity']"
+                                         style="font-size: 13px;"></app-error-message>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>State</label><span style="color:#FF0000">*</span>
+                        <input type="text" class="form-control"  placeholder="State" formControlName="consigneeState" readonly (keydown)="eventHandler($event)">
+                        <app-error-message [control]="$any(fullRateQuoteForm).controls['consigneeState']"
+                                         style="font-size: 13px;"></app-error-message>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12 col-sm-12"  style = "padding:10px 20px">
+              <div class= "div-border" style = "padding:10px 20px">
+                <h4 class="sub-head">Shipment Information<span style="color:#FF0000">*</span><!-- <span class="leg" data-toggle="modal" data-target="#legend-modal"><em class="fa fa-plus-circle"></em>&nbsp;Add row</span> --></h4>
+                <div class="table-quote">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <td width="1%">Hazmat</td>
+                                <td width="20%">Pieces<span style="color:#FF0000">*</span></td>
+                                <td width="16%">Weight(lbs)<span style="color:#FF0000">*</span><br><span *ngIf="showContactCallCenterMsg" style="color: #FF0000">Contact call center 800-501-9922, weight is more.</span></td>
+                                <td width="20%">Description<span style="color:#FF0000">*</span></td>
+                                <td width="11%">Class<span style="color:#FF0000">*</span></td>
+                                <td colspan="3">Dimension(L*W*H)</td>
+                              <td width="11%">NMFC# <span style="color:#FF0000">*</span>(111111s11) <span style = "color:#FF0000" *ngIf="showNmfcErrorMsg"> Format is (111111s11)</span></td>                                <td>Stackable</td>
+                                <td width="2%">Add</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td width="1%">
+                                    <input type="checkbox" class="option-input radio" value="true" name="example" style="top:0px;" (keydown)="eventHandler($event)" formControlName="hazmat"/>
+                                </td>
+                                <td width="18%">
+                                    <div style="display: flex">
+                                  <input type="text" class="form-control" style="width:50%" placeholder="Pieces" (keydown)="eventHandler($event)" formControlName="pieces" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="3" autocomplete="nope" id="pieces"
+                                                       (change)="checkForNumber(fullRateQuoteForm.controls['pieces'].value, 'pieces')" [readonly]="this.inventoryItems !== null">
+                                                       <select class="form-control" id="handlingUnitType" formControlName="handlingUnitType" (keydown)="checkEnterKey($event, 'handlingUnitType')" [disabled]="true">
+                                                        <option *ngFor="let unit of handlingUnitTypeArray" value="{{unit}}">{{unit}}</option>
+                                
+                                                      </select>
+                                                      </div>
+                                                      </td>
+                                <td style="width: 14%"><div class="input-group">
+                                    <input type="text" class="form-control" placeholder="(lbs)" name="search" (keydown)="eventHandler($event)" formControlName="weight" ngPattern="/[0-9]/" autocomplete="nope"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="5" (change)="checkForNumber(fullRateQuoteForm.controls['weight'].value, 'weight')" [readonly]="this.inventoryItems !== null">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default" (click)="changedUnit(weightUnit,fullRateQuoteForm.controls['weight'].value)">{{weightUnit}}</button>
+                                    </div>
+                                </div></td>
+                                <td ><div class="input-group">
+                                    <textarea class="form-control" rows="1" placeholder="Description" (keydown)="eventHandler($event)" (input)="checkDescription(fullRateQuoteForm.controls['description'].value)" formControlName="description" ngPattern="/^[a-zA-Z\s]*$/"
+                           onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]*$/g,'');" autocomplete="nope" [readonly]="this.inventoryItems !== null"></textarea>
+                                  <div class="input-group-btn">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><em class="fa fa-caret-down"></em></button>
+                                    <div class="dropdown-menu" style="padding: 0px">
+                                      <table class="table table-bordered" style="margin-bottom: 0px">
+                                        <div class="scrollit">
+
+                                          <thead>
+                                          <tr>
+                                            <td>Template Name</td>
+                                            <td>Description</td>
+                                            <td>class</td>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr *ngFor="let itemTemplates of itemTemplate" class="noIbar" (click)="getItemClickValues(itemTemplates.id)">
+                                            <td>{{itemTemplates?.templateName}}</td>
+                                            <td>{{itemTemplates?.description}}</td>
+                                            <td>{{itemTemplates?.class}}</td>
+                                          </tr>
+                                          </tbody>
+                                          <label *ngIf="itemTemplatesPresent">No Templates Available</label>
+                                        </div>
+                                      </table>
+                                    </div>
+                                  </div>
+                                    </div></td>
+                                <td style="width: 10%">
+                                  <select class="form-control" id="classification" formControlName="classification">
+                                    <option value="" hidden>Select</option>
+                                    <option *ngFor="let class of classArray" value="{{class}}">{{class}}</option>
+                                </select></td>
+                                <td style="width: 6.5%"><input type="text" (keydown)="eventHandler($event)" class="form-control" autocomplete="nope" placeholder="L" formControlName="length" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="2" (change)="checkForNumber(fullRateQuoteForm.controls['length'].value, 'length')"></td>
+                                <td style="width: 6.5%"><input type="text" (keydown)="eventHandler($event)" class="form-control" autocomplete="nope"  placeholder="W" formControlName="width" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="2" (change)="checkForNumber(fullRateQuoteForm.controls['width'].value, 'width')"></td>
+                                <td style="width: 6.5%"><input type="text" (keydown)="eventHandler($event)" class="form-control" autocomplete="nope"  placeholder="H" formControlName="height" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="2" (change)="checkForNumber(fullRateQuoteForm.controls['height'].value, 'height')"></td>
+                              <td width="18%"><input type="text"class="form-control" id="nmfc" name="cpf3" mask="999999S99" pattern="000000S00" ngPattern="/[0-9Ss]/" 
+                                      onkeyup="this.value=this.value.replace(/[^0-9Ss]+/g,'')" formControlName="nmfc" (change)="changedDecimal($event)" minlength="4" maxlength="9" id="cpf3" (keydown)="checkEnterKey($event, 'nmfc')" autocomplete="nope" >
+                                      </td>
+                                <td><input type="checkbox" class="option-input radio" name="example" style="top:0px;" value="true" formControlName="stackable"/></td>
+                                <td  *ngIf="showAddField"> <button class="tab-icon fa fa-plus-circle"
+                            [disabled]="fullRateQuoteForm.controls['classification'].value === '' || fullRateQuoteForm.controls['weight'].value === '' || fullRateQuoteForm.controls['pieces'].value === '' || fullRateQuoteForm.controls['description'].value === '' || fullRateQuoteForm.controls['nmfc'].value === ''"
+                            (click)="addRow(fullRateQuoteForm.value)"></button></td>
+                            <td *ngIf="!showAddField">
+                    <button class="tab-icon"
+                            [disabled]="!fullRateQuoteForm.controls['classification'].valid || !fullRateQuoteForm.controls['weight'].valid || !fullRateQuoteForm.controls['pieces'].valid || !fullRateQuoteForm.controls['description'].valid"
+                            (click)="updateRow(fullRateQuoteForm.value)"><em
+                      class="fa fa-check" aria-hidden="true"></em></button>
+                  </td>
+                    </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered" *ngIf="showAddedValue">
+                  <tr>
+                    <td>HazMat</td>
+                  <td>Pieces</td>
+                  <td>Weight</td>
+                  <td>Description</td>
+                  <td>Class</td>
+                  <td>Length</td>
+                  <td>Width</td>
+                  <td>Height</td>
+                  <td>Stackable</td>
+                  <td>Edit</td>
+                  <td>Delete</td>
+                    <td></td>
+
+                  </tr>
+                <tr *ngFor="let detail of detailArray; let i=index">
+                  <td *ngIf="detail.isHazardous === true"><em class="fa fa-check" aria-hidden="true"></em></td>
+                  <td *ngIf="detail.isHazardous === false || detail.isHazardous === ''|| detail.isHazardous === undefined">-</td>
+                  <td>{{detail.Pieces}}</td>
+                  <td>{{detail.Weight.Value}}</td>
+                  <td>{{detail.Description}}</td>
+                  <td>{{detail.FreightClass}}</td>
+                  <td *ngIf="detail.Dimensions !== undefined">{{detail.Dimensions.Length}}</td>
+                  <td *ngIf="detail.Dimensions === undefined">&nbsp;-</td>
+                  <td *ngIf="detail.Dimensions === undefined">&nbsp;-</td>
+                  <td *ngIf="detail.Dimensions !== undefined">{{detail.Dimensions.Width}}</td>
+                  <td *ngIf="detail.Dimensions === undefined">&nbsp;-</td>
+                  <td *ngIf="detail.Dimensions !== undefined">{{detail.Dimensions.Height}}</td>
+                  <td *ngIf="detail.stackable === true"><em class="fa fa-check" aria-hidden="true"></em></td>
+                  <td *ngIf="detail.stackable === false || detail.stackable === '' ||  detail.stackable === undefined">-</td>
+                  <td><span (click)="editRow(detail, i)"><em class="fa fa-pencil" aria-hidden="true"></em></span></td>
+                  <td><span (click)="deleteRow(i)"><em class="fa fa-trash-o"></em></span></td>
+                  <td *ngIf="!setFlagForExisting" style="background-color:#134c3e!important; color: #FFFFFF!important"><span (click)="itemTemplateIndex(i)" data-toggle="modal" data-target="#item-save-modal"><em class="fa fa-save"></em> Save Template</span></td>
+                  </tr>
+              </table>
+              <table class="table table-bordered">
+                            <tr>
+                                <td><span class="brown">Total Pieces:</span> <span class="green">{{totalPieces}}</span></td>
+                                <td><span class="brown">Total Weight:</span> <span class="green">{{totalWeight}} lbs</span> <span *ngIf="showContactCallCenterMsgForTotalWeight" style="color: #FF0000">The weight is more, Contact the call center 800-501-9922.</span></td>
+                                <td rowspan="3">
+                                    <label>Special Instructions</label>
+                                    <textarea class="form-control" rows="6" placeholder="Notes" (keydown)="eventHandler($event)" autocomplete="nope" formControlName="notes"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td *ngIf="showFieldForTruckloadForm">
+                                    <label>Type of Equipment</label><span style="color:#FF0000">*</span>
+                                    <select class="form-control" formControlName="typeOfEquipment">
+                                        <option value="">Select Equipment</option>
+                                        <optgroup label="Over the Road">
+                                            <option value="53 Foot Van">53 Foot Van</option>
+                                            <option value="Flatbed">Flatbed</option>
+                                        </optgroup>
+                                        <optgroup label="Rail / Intermodal">
+                                            <option value="20 Foot Container">20 Foot Container</option>
+                                            <option value="40 Foot Container">40 Foot Container</option>
+                                            <option value="53 Foot Container">53 Foot Container</option>
+                                            <option value="Trailer On Flat Car (TOFC)">Trailer On Flat Car (TOFC)</option>
+                                        </optgroup><optgroup label="--------------">
+                                        <option value="Other">Other</option>
+                                    </optgroup></select>
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['typeOfEquipment']"
+                                         style="font-size: 12px;"></app-error-message>
+                                </td>
+                                <td *ngIf="showFieldForVolumeForm">
+                                        <label>Linear Feet of Trailer</label><span style="color:#FF0000">*</span>
+                                        <div class="input-group col-md-12" >
+                                            <input type="text" class="form-control" placeholder="Linear Feet of Trailer" autocomplete="nope" (keydown)="eventHandler($event)" formControlName="linearFeetOfTrailer" ngPattern="/[0-9]/"
+                           onkeyup="this.value=this.value.replace(/[^0-9]+/g,'')" maxlength="5">
+                                            <span class="input-group-addon">Feet.</span>
+                                        </div></td>
+                                        <td *ngIf="showFieldForAirForm">
+                                        <label>Service Level</label><span style="color:#FF0000">*</span>
+                                        <select class="form-control" formControlName="serviceLevel">
+                                            <option value="Next Flight Out">Next Flight Out</option>
+                                            <option value="Priority Flight">Priority Flight</option>
+                                            <option value="Next Day Regular">Next Day Regular</option>
+                                            <option value="2 Days">2 Days</option>
+                                            <option value="3-5 Day Economy"> 3-5 Day Economy</option>
+                                        </select></td>
+                                <td *ngIf="showFieldForTruckloadForm || showFieldForVolumeForm || showFieldForAirForm">
+                                    <label>Competitive Price</label>
+                                    <div class="input-group" style = "width:100%">
+                                        <span class="input-group-addon"><em class="fa fa-dollar"></em></span>
+                                        <input type="text" class="form-control" formControlName="competitivePrice" autocomplete="nope" (keydown)="eventHandler($event)">
+                                        </div>
+
+                                </td>
+                                    <td colspan="2" *ngIf="showFieldForOceanForm">
+                                    <label>Competitive Price</label>
+                                    <div class="input-group" style = "width:100%">
+                                        <span class="input-group-addon"><em class="fa fa-dollar"></em></span>
+                                        <input type="text" class="form-control" formControlName="competitivePrice" autocomplete="nope" (keydown)="eventHandler($event)">
+                                        </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Shipment Ready Date</label><span style="color:#FF0000">*</span>
+                                    <div class="input-group" style = "width:100%">
+                                        <span class="input-group-addon">Date</span>
+                                        <input (keydown)="eventHandler($event)" class="form-control" placeholder=""  [minDate]="currentDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                                               formControlName="shipmentReadyDate" (bsValueChange)="onValueChange($event, 'shipment')">
+                                    </div>
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['shipmentReadyDate']"
+                                         style="font-size: 12px;"></app-error-message>
+                                </td>
+                                <td>
+                                    <label>Requested Delivery Date</label><span style="color:#FF0000">*</span><br>
+                                  <span *ngIf="showMessageForDatePicker" style="color:#FF0000">Delivery Date must be greater than the shipment date</span>
+                                    <div class="input-group" style = "width:100%" >
+                                        <span class="input-group-addon">Date</span>
+                                        <input (keydown)="eventHandler($event)" class="form-control" placeholder="" [minDate]="currentDate" bsDatepicker [bsConfig]="{ showWeekNumbers: false }"
+                                               formControlName="requestedDeliveryDate" (bsValueChange)="onValueChange($event, 'delivery')">
+                                   </div>
+                                    <app-error-message [control]="$any(fullRateQuoteForm).controls['requestedDeliveryDate']"
+                                    style="font-size: 12px;"></app-error-message>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class ="row">
+                <div class="col-md-4 col-md-push-4 green-button text-center">
+                    <button [disabled]="!fullRateQuoteForm.controls['shipmentReadyDate'].valid || !fullRateQuoteForm.controls['requestedDeliveryDate'].valid || detailArray.length === 0 || showMessageForDatePicker === true"
+                            (click)="submit(fullRateQuoteForm.value,'fullRateQuote')">Submit</button>
+                  <div *ngIf="showLoader">
+                    <span class="text-center" style="padding: 35px;color: #a2705c; font-size: 20px;"><em class="fa fa-spinner" aria-hidden="true"  style="color: #a2705c; font-size: 20px;"></em> &nbsp;Loading</span>
+                  </div>
+                  <div *ngIf="showQuoteErrorMsg">
+                    <span class="text-center" style="padding: 35px;color: #a2705c; font-size: 20px;">&nbsp;Quote is not created</span>
+                  </div>
+                </div>
+              </div>
+              </div>
+          </div>
+        </div>
+     </form>
+        </div>
+    </div>
+</div>
+   <app-footer></app-footer>
+<app-dialog [visible]="showAlrightPopUp">
+  <div>
+    <div class="">
+    <!-- Modal content-->
+      <div class="">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><em class="fa fa-check-circle"></em>&nbsp;Success</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p class="brown bold">Your Rate Quote Request have been submitted.</p>
+              <p>Please wait while Forte Operations either quotes or returns your request.</p>
+              <p>You can view your rate quote in your active rate quote requests list by clicking on the corresponding row.</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-4 green-button text-center">
+              <a (click)="activeRequest()"><em class="fa fa-check" aria-hidden="true" style="margin-right:5px;"></em>Alright!</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-dialog>
+
+<!-- Address Save Modal -->
+<div id="address-save-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form [formGroup]="addressTemplateNameForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF"><em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p>This will save the information in the Consignee section as a new template.</p>
+              <div class="form-group">
+                <label>Template Name</label>
+                <input type="text" formControlName="addressTempName" placeholder="Please enter a template name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" (click)="addressTemplateSave(fullRateQuoteForm.value, 'address', addressTemplateNameForm.value)" [disabled] = "addressTemplateNameForm.invalid"><em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+            </div>
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Address Save Modal -->
+
+<!-- Shipper Address Save Modal -->
+<div id="shipper-address-save-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form [formGroup]="addressTemplateNameForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF"><em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p>This will save the information in the Shipper section as a new template.</p>
+              <div class="form-group">
+                <label>Template Name</label>
+                <input type="text" formControlName="addressTempName" placeholder="Please enter a template name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" (click)="addressTemplateSave(fullRateQuoteForm.value, 'shipperAddress', addressTemplateNameForm.value)" [disabled] = "addressTemplateNameForm.invalid"><em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+            </div>
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Shipper Address Save Modal -->
+
+<!-- Item Save Modal -->
+<div id="item-save-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <form [formGroup]="itemTemplateNameForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF"><em class="fa fa-save" style="margin-right:5px;"></em>&nbsp;Save New Template</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p>This will save the information in the Items section as a new template.</p>
+              <div class="form-group">
+                <label>Template Name</label>
+                <input formControlName="itemTempName" type="text" class="form-control" placeholder="Please enter a template name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" (click)="itemTemplateSave(fullRateQuoteForm.value, 'item', itemTemplateNameForm.value)" [disabled] = "itemTemplateNameForm.invalid"><em class="fa fa-save" aria-hidden="true" style="margin-right:5px;"></em>Save</button>
+            </div>
+            <div class="col-md-4 col-md-push-2 green-button text-center">
+              <button class="green-button" data-dismiss="modal"><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Item Save Modal -->
+  <!--DescriptionModal-->
+  <div id="description-modal" class="modal" style="z-index: 9999;" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+       
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="color: #FFFFFF">DESCRIPTION</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              
+              <textarea   autofocus class="form-control" id="tasknote" rows="5" [(ngModel)]="description" (input)="checkDescription(description)" (keydown)="checkForEnterKey($event, 'descr')">{{description}}</textarea>
+              <!-- <textarea  *ngIf ="showAddedValue" autofocus class="form-control" id="tasknote" rows="5" [(ngModel)]="description" (input)="checkDescription1(description)" (keydown)="checkForEnterKey($event, 'descr')">{{description}}</textarea> -->
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <span style="font-size:17px;color:#f56557;"> Note: Please hit enter twice to go to FullRate Quote Request main screen</span>
+            <!-- <div class="col-md-4 col-md-push-4 green-button text-center">
+              <button class="green-button" id = "closeDescriptionBtn" (keydown)="checkForEnterKey($event, 'close')" ><em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>Close</button>
+            </div> -->
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <!--DescriptionModal-->

@@ -1,0 +1,845 @@
+<div class="banner-w3layouts" id="home">
+  <!--Top-Bar-->
+  <div class="header">
+    <nav class="navbar navbar-default">
+      <div class="navbar-header">
+        <a href="" [routerLink]="[('/internal')]"><img src="../../assets/images/forte_logo.png"
+            style="margin-top: 15px;margin-bottom: 6px" alt="" /></a>
+      </div>
+
+      <div class="top-nav-text pull-right" style="display:flex; width: auto!important">
+
+        <div style="display:flex;margin-right: 30px;padding-right: 5px;">
+          <label style="top: 5px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop1"> * FEDEX Peak
+            Surcharges are currently not available</label>
+          <label style="top: 5px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop1"> * FEDEX Peak
+            Surcharges are currently available</label>
+
+          <label class="switch">
+            <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop1" (change)="getValue1($event)">
+            <div class="slider round">
+              <!--ADDED HTML -->
+              <span class="on" *ngIf="emergencyStop1">ON</span>
+              <span class="off" *ngIf="!emergencyStop1">OFF</span>
+              <!--END-->
+            </div>
+
+          </label>
+
+        </div>
+        <div style="margin-right:80px;display:flex">
+          <div style="width:250px;margin-top:-15px; border-left: 2px solid #e2e6e6;padding-left:30px">
+          
+            <div style="padding:4px 0px">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [(ngModel)]="emergencyStopYRC"
+                (change)="getYRCValue($event)" checked="emergencyStopYRC">
+          
+              <!-- <label class="form-check-label" for="flexSwitchCheckDefault">YRC <span style="color:#ca2222;" *ngIf="emergencyStopYRC">(Not Available) </span> <span style="color:#2ab934;" *ngIf="!emergencyStopYRC">(Available) </span></label> -->
+              <label class="form-check-label" style="color:#2ab934;" *ngIf="!emergencyStopYRC" for="flexSwitchCheckDefault">YRC (Available)</label>
+              <label class="form-check-label" style="color:#ca2222;" *ngIf="emergencyStopYRC" for="flexSwitchCheckDefault">YRC (Not Available) </label>
+
+
+            </div>
+            <div style="padding:4px 0px">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" [(ngModel)]="emergencyStopReddaway"
+                checked="emergencyStopReddaway" (change)="getReddawayValue($event)">
+              <label class="form-check-label" for="flexSwitchCheckChecked">REDDAWAY <span style="color:#ca2222;" *ngIf="emergencyStopReddaway">(Not Available) </span> <span style="color:#2ab934;" *ngIf="!emergencyStopReddaway">(Available) </span></label>
+            </div>
+          </div>
+          <div style="width:250px;margin-top:-15px">
+            <div style="padding:4px 0px">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" [(ngModel)]="emergencyStopEconomy"
+                checked="emergencyStopEconomy" (change)="getEconomyValue($event)">
+              <label class="form-check-label" for="flexSwitchCheckDisabled">FEDEX ECONOMY <span style="color:#ca2222;" *ngIf="emergencyStopEconomy">(Not Available) </span> <span style="color:#2ab934;" *ngIf="!emergencyStopEconomy">(Available) </span></label>
+            </div>
+            <div style="padding:4px 0px">
+              <!-- </div>
+                      <div class="form-check form-switch"> -->
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled"
+                [(ngModel)]="emergencyStopPriority" checked="emergencyStopPriority" (change)="getPriorityValue($event)">
+              <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">FEDEX PRIORITY <span style="color:#ca2222;" *ngIf="emergencyStopPriority">(Not Available) </span> <span style="color:#2ab934;" *ngIf="!emergencyStopPriority">(Available) </span></label>
+            </div>
+          
+          </div>
+          <div style="display:flex;margin-left:40px">
+            
+  <!-- Default radio -->
+<!-- <div class="form-check" style="margin-right:15px">
+  <input
+    class="form-check-input"
+    type="radio"
+    name="flexRadioDefault"
+    id="flexRadioDefault1" (change)="startService()"
+  />
+  <label class="form-check-label" for="flexRadioDefault1"> ON </label>
+</div> -->
+
+<!-- Default checked radio -->
+<!-- <div class="form-check">
+  <input
+    class="form-check-input"
+    type="radio"
+    name="flexRadioDefault"
+    id="flexRadioDefault2" (change)="stopService()"
+  />
+  <label class="form-check-label" for="flexRadioDefault2"> OFF </label>
+</div> -->
+            <!-- <label class="switch">
+              <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop" (change)="getValue1($event)">
+              <div class="slider round">
+                <span class="on" *ngIf="emergencyStop">ON</span>
+                <span class="off" *ngIf="!emergencyStop">OFF</span>
+              </div>
+  
+            </label> -->
+            <!-- <label style="top: 5px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop1"> * Some carrier rates  are currently not available</label>
+            <label style="top: 5px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop1"> * FEDEX Peak
+              Surcharges are currently available</label> -->
+  
+          </div>
+
+        </div>
+
+        <a class="page-scroll pull-right" style="height:50px!important" href="javascript:void(0)" id="logoutButton" (click)="internalPage()">Return to
+          Main</a>
+
+
+      </div>
+    </nav>
+  </div>
+  <div class="clearfix">&nbsp;</div>
+  <!-- </nav>-->
+  <!--AP and AR-->
+  <!-- <div class="container" style="padding: 20px 40px;  border: 2px solid #a5bbb7;  background-color: #f9f9f9;"> -->
+    <!-- <div class="row">
+      <div class="col-md-10 col-md-push-1">
+        <label style="top: 5px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop"> * Customer Rates are
+          currently not available</label>
+        <label style="top: 5px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop"> * Customer Rates are
+          currently available</label> -->
+    <!-- <div style="display: flex;
+        justify-content: space-between;">
+        <div class="form-check form-switch" > 
+          <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [(ngModel)]="emergencyStopYRC" (change)="getYRCValue($event)" checked ="emergencyStopYRC" > 
+          <label class="form-check-label" for="flexSwitchCheckDefault">YRC</label> </div>
+           <div class="form-check form-switch"> 
+             <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" [(ngModel)]="emergencyStopReddaway" checked ="emergencyStopReddaway" (change)="getReddawayValue($event)"> 
+             <label class="form-check-label" for="flexSwitchCheckChecked">REDDAWAY</label>
+             </div>
+              <div class="form-check form-switch"> 
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" [(ngModel)]="emergencyStopEconomy" checked ="emergencyStopEconomy" (change)="getEconomyValue($event)"> 
+                <label class="form-check-label" for="flexSwitchCheckDisabled">FEDEX ECONOMY</label> 
+              </div> 
+              <div class="form-check form-switch"> 
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" [(ngModel)]="emergencyStopPriority" checked ="emergencyStopPriority" (change)="getPriorityValue($event)">
+                 <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">FEDEX PRIORITY</label> 
+                </div>
+                <div class="form-check form-switch"> 
+                  <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled">
+                   <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">ALL</label> 
+                  </div>
+        <button type="button" class="btn btn-success" (click)="startService()">START</button>
+        <button type="button" class="btn btn-danger" (click)="stopService()">STOP</button>
+        </div> -->
+    <!-- <div class="col-md-2">
+          <label style="top: -10px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop"> ALL</label>
+          <label style="top: -10px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop">ALL</label>
+          <label class="switch">
+            <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop" (change)="getValue($event)">
+           
+      
+          </label>
+        </div>
+        <div class="col-md-2">
+          <label style="top: -10px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop"> YRC</label>
+          <label style="top: -10px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop">YRC</label>
+          <label class="switch">
+            <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop" (change)="getValue($event)">
+           
+      
+          </label>
+        </div>
+        <div class="col-md-2">
+          <label style="top: -10px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop"> REDDAWAY</label>
+          <label style="top: -10px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop">REDDAWAY</label>
+          <label class="switch">
+            <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop" (change)="getValue($event)">
+      
+          </label>
+        </div>
+        <div class="col-md-3">
+          <label style="top: -10px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop"> FEDEX ECONOMY</label>
+          <label style="top: -10px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop">FEDEX ECONOMY</label>
+          <label class="switch">
+            <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop" (change)="getValue($event)">
+      
+          </label>
+        </div>
+        <div class="col-md-3">
+          <label style="top: -10px;right: 5px; position: relative;color:#ca2222;" *ngIf="emergencyStop"> FEDEX PRIORITY</label>
+          <label style="top: -10px;right: 5px; position: relative;color:#2ab934;" *ngIf="!emergencyStop">FEDEX PRIORITY</label>
+          <label class="switch">
+            <input type="checkbox" id="togBtn" [(ngModel)]="emergencyStop" (change)="getValue($event)">
+
+      
+          </label>
+        </div> -->
+    <!-- </div>
+    </div> -->
+
+    <!-- <div class="row">
+      <div class="col-md-10 col-md-push-1">
+        <p class="serviceAvailablePtag">
+          <span>
+            <b *ngIf="!emergencyStopYRC">YRC, </b><b *ngIf="!emergencyStopEconomy"> FEDEX ECONOMY, </b> <b
+              *ngIf="!emergencyStopPriority">FEDEX PRIORITY, </b> <b *ngIf="!emergencyStopReddaway">REDDAWAY</b>
+            Services are available.
+          </span>
+          <span>
+
+          </span>
+          <b *ngIf="emergencyStopYRC">YRC, </b><b *ngIf="emergencyStopEconomy"> FEDEX ECONOMY, </b> <b
+            *ngIf="emergencyStopPriority">FEDEX PRIORITY, </b> <b *ngIf="emergencyStopReddaway">REDDAWAY</b>
+          Services are not available.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="clearfix">&nbsp;</div> -->
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-md-6" *ngIf="showDetailApTable">
+          <h4 class="text-center" style="color: #7b7575;">AP LIST</h4>
+          <div class="table-responsive">
+            <table class="table table-responsive table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Discount(%)</th>
+                  <th>FSC(%)</th>
+                  <th>AMC</th>
+                  <th>CA Charge($)</th>
+                  <th>Accessorials</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr *ngFor="let list of apValues; let i = index">
+                  <td align="center">{{list.companyName}}</td>
+                  <td>{{list.discount}}</td>
+                  <td>{{list.fuelsurcharge}}</td>
+                  <td>{{list.amc}}</td>
+                  <td>{{list.caCharge}}</td>
+                  <td align="center">
+                    <a class="btn btn-default" (click)="viewAssessorials(list, 'AP')">View</a>
+                  </td>
+                  <td align="center">
+                    <a class="btn btn-default" style="padding: 0 6px; color: #0079FE" id="editIconAp"
+                      (click)="editApData(list)"><em class="fa fa-pencil"></em></a>
+                    <!-- <a class="btn btn-danger" style="padding: 0 6px;" data-toggle="modal" data-target="#apDeleteModal" (click)="deleteApModal(list.recentRateId)" about=""><em class="fa fa-trash"></em></a> -->
+                  </td>
+                </tr>
+                <div class="modal fade bs-example-modal-sm" id="apDeleteModal" tabindex="-1" role="dialog"
+                  aria-labelledby="mySmallModalLabel">
+                  <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        Are you sure?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm" id="deleteIconAp"
+                          (click)="deleteApData()">Delete</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-sm">Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-md-6" *ngIf="showDetailArTable">
+          <h4 class="text-center" style="color: #7b7575;">AR LIST</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-responsive">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Discount(%)</th>
+                  <th>FSC(%)</th>
+                  <th>AMC</th>
+                  <th>CA Charge($)</th>
+                  <th>Accessorials</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr *ngFor="let list of arValues">
+                  <td align="center">{{list.companyName}}</td>
+                  <td>{{list.discount}}</td>
+                  <td>{{list.fuelsurcharge}}</td>
+                  <td>{{list.amc}}</td>
+                  <td>{{list.caCharge}}</td>
+                  <td align="center">
+                    <a class="btn btn-default" (click)="viewAssessorials(list, 'AR')">View</a>
+                  </td>
+                  <td align="center">
+                    <a class="btn btn-default" style="padding: 0 6px;color: #0079FE" id="editIconAr"
+                      (click)="editArData(list)"><em class="fa fa-pencil"></em></a>
+                    <!-- <a class="btn btn-danger" style="padding: 0 6px;" id="deleteIconAr" data-toggle="modal" data-target="#arDeleteModal" (click)="deleteArModal(list.recentRateId)"><em class="fa fa-trash"></em></a> -->
+                  </td>
+                </tr>
+                <div class="modal fade bs-example-modal-sm" id="arDeleteModal" tabindex="-1" role="dialog"
+                  aria-labelledby="mySmallModalLabel">
+                  <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        Are you sure?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm" id="deleteIconAp"
+                          (click)="deleteArData()">Delete</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-sm">Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--AP and AR-->
+  <!--AP and AR Details-->
+  <div class="clearfix">&nbsp;</div>
+  <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-content">
+              <div class="card-header-grey">
+                <h1 class="card-heading">AP details</h1>
+              </div>
+              <div class="card-body">
+                <form class="" [formGroup]="APForm">
+                  <div class="row">
+                    <div class="col-md-6" *ngIf="!showEditAp">
+                      <div class="form-group form-group-sm">
+                        <label for="apCompany" class="control-label">Company <span *ngIf="showErrorMsg"
+                            style="color: #ff0000">Choose a different Company</span></label>
+                        <select id="companyNameAp" class="form-control" formControlName="apCompany"
+                          (change)="duplicateCompany(APForm.controls['apCompany'].value)">
+                          <option value="" hidden>--Select Company--</option>
+                          <option value="YRC">YRC</option>
+                          <option value="FEDEX ECONOMY">FEDEX ECONOMY</option>
+                          <option value="FEDEX PRIORITY">FEDEX PRIORITY</option>
+                          <option value="REDDAWAY">REDDAWAY</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="showEditAp">
+                      <div class="form-group form-group-sm">
+                        <label for="apCompanyEdit" class="control-label">Company</label>
+                        <input type="text" class="form-control" id="companyNameApEdit" formControlName="apCompany"
+                          [disabled]="true">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="discountAp" class="control-label">Discount (%)</label>
+                        <input type="text" class="form-control" id="discountAp" formControlName="apDiscount"
+                          ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" maxlength="">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group form-group-sm">
+                        <label for="fscAp" class="control-label">FSC(%) <span><em class="fa fa-info-circle"
+                              aria-hidden="true" tooltip="Fuel Surcharge"></em></span></label>
+                        <input type="text" class="form-control" id="fscAp" formControlName="apFsc" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="amcAp" class="control-label">AMC <span><em class="fa fa-info-circle"
+                              aria-hidden="true" tooltip="Absolute Minimum Charge"></em></span></label>
+                        <input type="text" class="form-control" id="amcAp" formControlName="apAmc" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group form-group-sm">
+                        <label for="fscAp" class="control-label">Other Charges</label>
+                        <input type="text" class="form-control" id="fscAp" formControlName="otherChargeName"
+                          ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="amcAp" class="control-label">Charge </label>
+                        <input type="text" class="form-control" id="amcAp" formControlName="caCharge"
+                          ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group form-group-sm">
+                        <a for="fscAp" class="control-label" (click)="addAssessorials('AP')">Add
+                          Accessorials<span></span></a>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="showForAssessorials">
+                    <div class="col-md-4">
+                      <div class="form-group form-group-sm">
+                        <label for="apAssessorials" class="control-label">Accessorials<span *ngIf="assessorialErrorMsg"
+                            style="color: #ff0000">Choose a different Accessorial</span></label>
+                        <select id="apAssessorials" *ngIf="!showForEditAP" class="form-control"
+                          formControlName="assessorials"
+                          (change)="checkAssessorials(APForm.controls['assessorials'].value, 'AP', 'save')">
+                          <option value="" hidden>--Select Accessorials--</option>
+                          <option *ngFor="let ass of assessorialArray" value="{{ass.id}}">{{ass.assessorialName}}
+                          </option>
+                          <!--<option value="liftGate">LiftGate Service</option>
+                        <option value="residential">Residential Delivery</option>
+                        <option value="limitedAccessDelivery">Limited Access Delivery</option>
+                        <option value="insideDelivery">Inside Delivery</option>
+                        <option value="notify">Notify</option>-->
+                        </select>
+                        <select id="apAssessorials" *ngIf="showForEditAP" class="form-control"
+                          formControlName="assessorials"
+                          (change)="checkAssessorials(APForm.controls['assessorials'].value, 'AP', 'save')" [disabled]="true">
+                          <option value="" hidden>--Select Accessorials--</option>
+                          <option *ngFor="let ass of assessorialArray" value="{{ass.id}}">{{ass.assessorialName}}
+                          </option>
+                          <!--<option value="liftGate">LiftGate Service</option>
+                        <option value="residential">Residential Delivery</option>
+                        <option value="limitedAccessDelivery">Limited Access Delivery</option>
+                        <option value="insideDelivery">Inside Delivery</option>
+                        <option value="notify">Notify</option>-->
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group form-group-sm">
+                        <label for="costAp" class="control-label">Cost<span></span></label>
+                        <input type="text" class="form-control" id="costAp" formControlName="cost" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group form-group-sm">
+                        <label for="minAp" class="control-label">Min<span></span></label>
+                        <input type="text" class="form-control" id="minAp" formControlName="min" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                          (change)="checkForValues(APForm.controls['min'].value, 'min')">
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group form-group-sm">
+                        <label for="maxAp" class="control-label">Max<span *ngIf="showForMaxValue">Max Value should be
+                            greater than Min Value</span></label>
+                        <input type="text" class="form-control" id="maxAp" formControlName="max" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                          (change)="checkForValues(APForm.controls['max'].value, 'max')">
+                      </div>
+                    </div>
+                    <div class="col-md-2" *ngIf="!showEditSaveAssessorials">
+                      <label>&nbsp;</label>
+                      <button class="btn btn-success center-block" id="saveAssessorials"
+                        (click)="addSaveAssessorials(APForm.value, 'AP')"><em class="fa fa-plus-circle"></em></button>
+                    </div>
+                    <div class="col-md-2" *ngIf="showEditSaveAssessorials">
+                      <label>&nbsp;</label>
+                      <button class="btn btn-success center-block" id="saveAssessorials"
+                        (click)="editSaveAssessorials(APForm.value, 'AP')"><em class="fa fa-check"></em></button>
+                    </div>
+                  </div>
+                </form>
+                <div class="container">
+                  <div class="row" *ngIf="showAccessorialsTable">
+                    <div class="col-md-10">
+                      <div class="col-md-6">
+                        <h4 class="text-center" style="color: #7b7575;">ACCESSORIAL LIST</h4>
+                        <div class="table-responsive">
+                          <table class="table table-responsive table-striped table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Accessorial</th>
+                                <th>Cost</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+
+                              <tr *ngFor="let list of assessorialObjectArray; let i = index">
+                                <td align="center">{{list.name}}</td>
+                                <td>{{list.cost}}</td>
+                                <td>{{list.min}}</td>
+                                <td>{{list.max}}</td>
+                                <td align="center">
+                                  <a class="btn btn-default" style="padding: 0 6px; color: #0079FE" id="editIconAp"
+                                    (click)="editAssessorials(list, 'AP')"><em class="fa fa-pencil"></em></a>
+                                  <!-- <a class="btn btn-danger" style="padding: 0 6px;"  (click)="deleteAssessorials(i, 'AP')" about=""><em class="fa fa-trash"></em></a> -->
+                                </td>
+                              </tr>
+                              <div class="modal fade bs-example-modal-sm" id="apDeleteModal" tabindex="-1" role="dialog"
+                                aria-labelledby="mySmallModalLabel">
+                                <div class="modal-dialog modal-sm" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-body">
+                                      Are you sure?
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm"
+                                        id="deleteIconAp" (click)="deleteApData()">Delete</button>
+                                      <button type="button" data-dismiss="modal" class="btn btn-sm">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+
+              <div class="card-footer" *ngIf="!showEditAp">
+                <button class="btn btn-success center-block" id="saveAp" (click)="saveAPData(APForm.value)"
+                  [disabled]="!APForm.controls['apCompany'].valid || !APForm.controls['apDiscount'].valid || !APForm.controls['apFsc'].valid || !APForm.controls['apAmc'].valid">Add</button>
+              </div>
+              <div class="card-footer" *ngIf="showEditAp">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <button class="btn btn-success pull-right" id="editSaveAp"
+                      (click)="editSaveAPData(APForm.value)">Save</button>
+                  </div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-danger pull-left" id="cancelAp" (click)="cancel('ap')">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-content">
+              <div class="card-header-grey">
+                <h1 class="card-heading">AR details </h1>
+              </div>
+              <div class="card-body">
+                <form class="" [formGroup]="ARForm">
+                  <div class="row">
+                    <div class="col-md-6" *ngIf="!showEditAr">
+                      <div class="form-group form-group-sm">
+                        <label for="companyAr" class="control-label">Company <span *ngIf="showErrorMsgAr"
+                            style="color: #ff0000 ">Choose a different Company</span></label>
+                        <select id="companyAr" class="form-control" formControlName="arCompany"
+                          (change)="duplicateArCompany(ARForm.controls['arCompany'].value)">
+                          <option value="" hidden>--Select Company--</option>
+                          <option value="YRC">YRC</option>
+                          <option value="FEDEX ECONOMY">FEDEX ECONOMY</option>
+                          <option value="FEDEX PRIORITY">FEDEX PRIORITY</option>
+                          <option value="REDDAWAY">REDDAWAY</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="showEditAr">
+                      <div class="form-group form-group-sm">
+                        <label for="companyAr" class="control-label">Company</label>
+                        <input type="text" class="form-control" id="companyNameArEdit" formControlName="arCompany"
+                          [disabled]="true">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="discountAp" class="control-label">Discount (%)</label>
+                        <input type="text" class="form-control" id="discountAr" formControlName="arDiscount"
+                          ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" maxlength="">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group form-group-sm">
+                        <label for="fscAp" class="control-label">FSC(%) <span><em class="fa fa-info-circle"
+                              aria-hidden="true" tooltip="Fuel Surcharge"></em></span></label>
+                        <input type="text" class="form-control" id="fscAr" formControlName="arFsc" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="amcAp" class="control-label">AMC <span><em class="fa fa-info-circle"
+                              aria-hidden="true" tooltip="Absolute Minimum Charge"></em></span></label>
+                        <input type="text" class="form-control" id="amcAr" formControlName="arAmc" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group form-group-sm">
+                        <label for="fscAp" class="control-label">Other Charges </label>
+                        <input type="text" class="form-control" id="fscAp" formControlName="otherChargeName"
+                          ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="amcAp" class="control-label">Charge </label>
+                        <input type="text" class="form-control" id="amcAp" formControlName="caCharge"
+                          ngPattern="/[0-9.]/" onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group form-group-sm">
+                        <a for="fscAp" class="control-label" (click)="addAssessorials('AR')">Add
+                          Accessorials<span></span></a>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="showForAssessorialsAR">
+                    <div class="col-md-4">
+                      <div class="form-group form-group-sm">
+                        <label for="apAssessorials" class="control-label">Accessorials<span
+                            *ngIf="assessorialErrorMsgAR" style="color: #ff0000">Choose a different
+                            Accessorial</span></label>
+                        <select id="apAssessorials" *ngIf="!showForEditAR" class="form-control"
+                          formControlName="assessorials"
+                          (change)="checkAssessorials(ARForm.controls['assessorials'].value, 'AR','save')">
+                          <option value="" hidden>--Select Accessorials--</option>
+                          <option *ngFor="let ass of assessorialArray" value="{{ass.id}}">{{ass.assessorialName}}
+                          </option>
+                          <!--<option value="liftGate">LiftGate Service</option>
+                        <option value="residential">Residential Delivery</option>
+                        <option value="limitedAccessDelivery">Limited Access Delivery</option>
+                        <option value="insideDelivery">Inside Delivery</option>
+                        <option value="notify">Notify</option>-->
+                        </select>
+                        <select id="apAssessorials" class="form-control" *ngIf="showForEditAR"
+                          formControlName="assessorials"
+                          (change)="checkAssessorials(ARForm.controls['assessorials'].value, 'AR','save')" [disabled]="true">
+                          <option value="" hidden>--Select Accessorials--</option>
+                          <option *ngFor="let ass of assessorialArray" value="{{ass.id}}">{{ass.assessorialName}}
+                          </option>
+                          <!--<option value="liftGate">LiftGate Service</option>
+                        <option value="residential">Residential Delivery</option>
+                        <option value="limitedAccessDelivery">Limited Access Delivery</option>
+                        <option value="insideDelivery">Inside Delivery</option>
+                        <option value="notify">Notify</option>-->
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group form-group-sm">
+                        <label for="costAp" class="control-label">Cost<span></span></label>
+                        <input type="text" class="form-control" id="costAp" formControlName="cost" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')">
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group form-group-sm">
+                        <label for="minAp" class="control-label">Min<span></span></label>
+                        <input type="text" class="form-control" id="minAp" formControlName="min" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                          (change)="checkForValues(ARForm.controls['min'].value, 'min')">
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group form-group-sm">
+                        <label for="maxAp" class="control-label">Max<span *ngIf="showForMaxValue">Max Value should be
+                            greater than Min Value</span></label>
+                        <input type="text" class="form-control" id="maxAp" formControlName="max" ngPattern="/[0-9.]/"
+                          onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                          (change)="checkForValues(ARForm.controls['max'].value, 'max')">
+                      </div>
+                    </div>
+                    <div class="col-md-2" *ngIf="!showEditSaveAssessorialsAR">
+                      <label>&nbsp;</label>
+                      <button class="btn btn-success center-block" id="saveAssessorials"
+                        (click)="addSaveAssessorials(ARForm.value, 'AR')"><em class="fa fa-plus-circle"></em></button>
+                    </div>
+                    <div class="col-md-2" *ngIf="showEditSaveAssessorialsAR">
+                      <label>&nbsp;</label>
+                      <button class="btn btn-success center-block" id="saveAssessorials"
+                        (click)="editSaveAssessorials(ARForm.value, 'AR')"><em class="fa fa-check"></em></button>
+                    </div>
+                  </div>
+                </form>
+                <div class="container">
+                  <div class="row" *ngIf="showAccessorialsTableAR">
+                    <div class="col-md-10">
+                      <div class="col-md-6">
+                        <h4 class="text-center" style="color: #7b7575;">ACCESSORIAL LIST</h4>
+                        <div class="table-responsive">
+                          <table class="table table-responsive table-striped table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Accessorial</th>
+                                <th>Cost</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+
+                              <tr *ngFor="let list of assessorialObjectArrayAR; let i = index">
+                                <td align="center">{{list.name}}</td>
+                                <td>{{list.cost}}</td>
+                                <td>{{list.min}}</td>
+                                <td>{{list.max}}</td>
+                                <td align="center">
+                                  <a class="btn btn-default" style="padding: 0 6px; color: #0079FE" id="editIconAr"
+                                    (click)="editAssessorials(list, 'AR')"><em class="fa fa-pencil"></em></a>
+                                  <!-- <a class="btn btn-danger" style="padding: 0 6px;"  (click)="deleteAssessorials(i, 'AR')" about=""><em class="fa fa-trash"></em></a> -->
+                                </td>
+                              </tr>
+                              <div class="modal fade bs-example-modal-sm" id="apDeleteModal" tabindex="-1" role="dialog"
+                                aria-labelledby="mySmallModalLabel">
+                                <div class="modal-dialog modal-sm" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-body">
+                                      Are you sure?
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm"
+                                        id="deleteIconAp" (click)="deleteApData()">Delete</button>
+                                      <button type="button" data-dismiss="modal" class="btn btn-sm">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer" *ngIf="!showEditAr">
+                <button class="btn btn-success center-block" id="saveAr" (click)="saveARData(ARForm.value)"
+                  [disabled]="!ARForm.controls['arCompany'].valid || !ARForm.controls['arDiscount'].valid || !ARForm.controls['arFsc'].valid || !ARForm.controls['arAmc'].valid">Add</button>
+              </div>
+              <div class="card-footer" *ngIf="showEditAr">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <button class="btn btn-success pull-right" id="editSaveAr"
+                      (click)="editSaveArData(ARForm.value)">Save</button>
+                  </div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-danger pull-left" id="cancelAr" (click)="cancel('ar')">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="clearfix">&nbsp;</div>
+  <div class="clearfix">&nbsp;</div>
+  <div class="clearfix">&nbsp;</div>
+  <!--AP and AR Details-->
+
+
+
+</div>
+
+<app-dialog [(visible)]="showTableForViewAssessorials">
+  <div tabindex="-1" role="dialog">
+    <div role="document">
+      <div class="agileits-login" style="background: #275867 !important; color: #9c7357 !important;">
+        <h4 class="text-center">Accessorial Details</h4>
+        <div class="table-responsive">
+          <table class="table table-bordered table-responsive">
+            <thead>
+              <tr>
+                <th>Accessorial</th>
+                <th>Cost</th>
+                <th>Min($)</th>
+                <th>Max($)</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr *ngFor="let list of viewAssessorialArray">
+                <td align="center">{{list.name}}</td>
+                <td *ngIf="list.cwt === false">${{list.cost}}</td>
+                <td *ngIf="list.cwt === true">{{list.cost}}$/cwt</td>
+                <td>{{list.min}}</td>
+                <td>{{list.max}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-dialog>
+
+<!-- <app-dialog [(visible)]="showcarriermodal">
+  <div tabindex="-1" role="dialog">
+    <div role="document">
+      <div class="agileits-login" style="background: #275867 !important; color: #9c7357 !important;">
+        <h4 class="text-center">Carrier</h4>
+        <div class="table-responsive">
+          <div class="row">
+          <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [(ngModel)]="emergencyStopYRC"  checked ="!emergencyStopYRC" > 
+           <label class="form-check-label" for="flexSwitchCheckDefault">YRC</label>
+          </div>
+           <div class="row">
+        
+           <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [(ngModel)]="emergencyStopReddaway"  checked ="!emergencyStopReddaway" > 
+           <label class="form-check-label" for="flexSwitchCheckDefault">REDDAWAY</label>
+          </div>
+           <div class="row">
+        
+           <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [(ngModel)]="emergencyStopEconomy" checked ="!emergencyStopEconomy" > 
+           <label class="form-check-label" for="flexSwitchCheckDefault">FEDEX ECONOMY</label>
+          </div>
+           <div class="row">
+        
+           <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [(ngModel)]="emergencyStopPriority" checked ="!emergencyStopPriority" > 
+           <label class="form-check-label" for="flexSwitchCheckDefault">FEDEX PRIORITY</label>
+          </div>
+</div>
+      </div>
+    </div>
+  </div>
+</app-dialog> -->

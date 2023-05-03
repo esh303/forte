@@ -1,0 +1,1251 @@
+<body>
+  <!--Top-Bar-->
+  <div class="header">
+  <nav class="navbar navbar-default">
+  <app-header></app-header>
+  <div class="clearfix"></div>
+  </nav>
+  </div>
+  <!--//Top-Bar-->
+  <div class="container-fluid">
+  <div class="row"> 
+  <app-sidemenu></app-sidemenu>
+  <div class="col-md-10 main_cont">
+  <h2 class="main-head">Track Shipment Information</h2>
+  <div class = "row">
+  <div class = "col-md-10">
+  <div class="col-md-12" style="margin-bottom: 20px">
+  <div class="div-border" style="margin-bottom: 20px">
+  <form [formGroup]="trackingForm">
+  <div class="row">
+  <div class="col-md-6 form-group">
+  <label>Carrier SCAC Code</label>
+  <select class="form-control" formControlName="bolCarrier" (change)="selectedCarrier(trackingForm.controls['bolCarrier'].value)">
+  <option value="">Select</option>
+  <option value="FXFE">FXFE</option>
+  <option value="FXFP">FXFP</option>
+  <option value="YRC">YRC</option>
+  <option value="REDDAWAY">REDDAWAY</option>
+  <option value="OTHERS" *ngIf="customerType=='externalCustomer'">OTHERS</option>
+  </select>
+  </div>
+  <div class="col-md-6 form-group">
+  <label>Tracking/Pro No</label>
+  <input type="text" class="form-control" placeholder="trackingNumber" formControlName="bolTrackingNumber" minlength="11" maxlength="15" autocomplete="nope"> 
+  </div>
+  </div>
+  <div class="row">
+  <div class="col-md-4 square-button text-center">
+  <a href="#" (click)="search(trackingForm.value)"><em class="fa fa-search" aria-hidden="true" style="margin-right:10px;"></em>Search</a>
+  </div>
+  <div class="col-md-4 square-button text-center">
+  <a (click)="clear()">
+  <em class="fa fa-close icon"></em>Clear</a>
+  </div>
+  <div class="col-md-4 square-button text-center">
+  <a (click)="refresh()">
+  <em class="fa fa-refresh icon"></em>Refresh</a>
+  </div>
+  </div>
+  </form> 
+  </div>
+  <div class="col-md-12 col-sm-12 text-center" style="padding:0px 20px" *ngIf="showLoader">
+  <span class="text-center" style="padding: 35px; color: #a2705c; font-size: 20px;"><em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #a2705c; font-size: 20px;"></em> &nbsp;Loading</span>
+  </div> 
+  <div class="col-md-push-1 col-md-10 col-sm-12 ship-border" *ngIf="showSearchErrorMessage">
+  <h6 style="margin:20px 10px;font-size:20px;text-align:center">Please give atleast one field</h6>
+  </div>
+  <div class="row">
+  <div class="col-md-10 col-md-push-1 text-center" *ngIf="entryLoader">
+  <span style="padding:40px; color: #4c7971; font-size: 22px; ">
+  <em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #4c7971;font-size: 22px;"></em>&nbsp;Loading</span>
+  </div>
+  </div>
+ 
+  <!--- Erroe Msg -->
+  <div class="col-md-push-1 col-md-10 col-sm-12 ship-border" *ngIf="showErrorMessage">
+  <h6 style="margin:20px 10px;font-size:20px;text-align:center">No Tracking Details are Available</h6>
+  </div>
+ 
+  <div class="col-md-12 col-sm-12 text-center">
+ 
+  <div class="ship-border" *ngIf="showYrcErrorMessage">
+  <h6 style="margin:20px 10px">{{trackingResponse.result.result.statusMessage.$value}}</h6>
+  </div>
+  </div>
+  <div class="col-md-12 col-sm-12 text-center" style="padding:0px 20px">
+ 
+  <div class="ship-border" *ngIf="showReddawayErrorMessage">
+  <h6 style="margin:20px 10px">{{trackingResponse.result.TrackDetailResponse.STATUS.MESSAGE}}</h6>
+  </div>
+  </div>
+ 
+  <div class="col-md-12 col-sm-12 text-center" style="padding: 0px" *ngIf = "showTrackingTable" >
+      <h4 style="text-align: center;
+      font-size: 17px;
+      font-weight: bold;">LTL</h4>
+      <div class="ship-border">
+      <div class="table-div" >
+      <div class="table-responsive" >
+      <table class="table table-bordered">
+      <thead>
+      <tr>
+      <td class="padding-table">Tracking ID/Pro No</td>
+      <td class="padding-table">Shipper Company Name</td>
+      <!-- <td class="padding-table">Shipper Contact Name</td> -->
+      <td class="padding-table">Consignee Company Name</td>
+      <!-- <td class="padding-table">Consignee Contact Name</td> -->
+      <td class="padding-table">Carrier</td>
+      <td class="padding-table">Origin</td>
+      <td class="padding-table">Destination</td>
+      <td class="padding-table">Created Date</td>
+      <td class="padding-table">BOL No</td>
+      <td class="padding-table">Track</td>
+      </tr>
+      </thead>
+      <tbody>
+          
+      <tr *ngFor="let data of trackBolArray | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+      <td *ngIf = "data.bolTrackingNumber!== undefined && data.bolTrackingNumber !== '' && data.bolTrackingNumber !== null" class="padding-point-one">{{data.bolTrackingNumber}}
+        <em *ngIf="data?.otherCarrierName !== 'Rate Quote' && data?.status!=='inActive'" class="fa fa-pencil-square-o" data-toggle="modal" data-target="#update-modal" style="float: right;margin-right: 3px;color: #134c3e;margin-top: 3px;font-weight: 600px;" (click)="editTrackProNumber(data)"></em></td>
+      <td style="text-align: center" *ngIf = "data.bolTrackingNumber === undefined || data.bolTrackingNumber === '' || data.bolTrackingNumber === null">-</td>
+      <td style="text-transform: uppercase " *ngIf = "data?.bolRequest?.shipperCompanyName !== undefined && data?.bolRequest?.shipperCompanyName !== '' && data?.bolRequest?.shipperCompanyName !== null" >{{data?.bolRequest?.shipperCompanyName}}</td>
+      <td style="text-align: center" *ngIf = "data?.bolRequest?.shipperCompanyName ===undefined || data?.bolRequest?.shipperCompanyName === '' || data?.bolRequest?.shipperCompanyName === null">-</td>
+      
+      <td style="text-transform: uppercase " *ngIf = "data.bolRequest.consigneeCompanyName !== undefined && data.bolRequest.consigneeCompanyName !== '' && data.bolRequest.consigneeCompanyName !== null" >{{data?.bolRequest.consigneeCompanyName}}</td>
+      <td style="text-align: center" *ngIf = "data.bolRequest.consigneeCompanyName ===undefined || data.bolRequest.consigneeCompanyName === '' || data.bolRequest.consigneeCompanyName === null">-</td>
+      
+      <td *ngIf="data?.bolCarrier== 'OTHERS'">{{data?.bolCarrier}}<br>({{data?.otherCarrierName}})</td>
+      <td *ngIf="data?.bolCarrier!== 'OTHERS'">{{data?.bolCarrier}}</td>
+      <td>{{data?.bolRequest.origin}}</td>
+      <td>{{data?.bolRequest.destination}}</td>
+      <td>{{data?.createdOn}}</td>
+      <td align="center" *ngIf="data?.bolCarrier!== 'OTHERS'"><a class="" href="#bolType-modal" style="color: #4c7a71;text-decoration: underline;" (click)="checkMyBill(data.bolReferenceNumber)" data-toggle="modal" data-target="#bolType-modal">{{data?.bolReferenceNumber}}</a></td>
+      <td align="center" *ngIf="data?.bolCarrier === 'OTHERS'">{{data?.bolReferenceNumber}}</td>
+      <td style="text-align: center" *ngIf="data?.bolCarrier !== 'OTHERS'" (click)= "track(data.bolTrackingNumber,data.bolCarrier)"><em class="fa fa-truck" data-toggle="modal" data-target="#track-modal"></em></td>
+      <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName === 'YRC' || data?.otherCarrierName === 'REDDAWAY' || data?.otherCarrierName === 'REDDAWAY' || data?.otherCarrierName === 'FEDEX_FREIGHT_PRIORITY' || data?.otherCarrierName === 'FEDEX_FREIGHT_ECONOMY'" (click)= "track(data.bolTrackingNumber,data.otherCarrierName)"><em class="fa fa-truck" data-toggle="modal" data-target="#track-modal"></em></td>
+      <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName === 'Rate Quote' && data?.otherCarrierName !== 'YRC' && data?.otherCarrierName !== 'REDDAWAY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_PRIORITY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_ECONOMY'"><a style="color:#7e6e72" href={{data?.trackLink}} target="_blank"><em class="fa fa-truck" tooltip="Tracking can be done"></em></a></td>
+      <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName !== 'Rate Quote' && data?.otherCarrierName !== 'YRC' && data?.otherCarrierName !== 'REDDAWAY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_PRIORITY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_ECONOMY'"><em class="fa fa-truck" tooltip="Tracking cannot be done"></em></td>
+      </tr>
+      <tr *ngIf="trackBolArray.length === 0"><td style="text-align: center;
+        font-size: 17px;
+        font-weight: bold;
+        background-color: #f5f1ef;" colspan="9">No Tracking Details are available
+          </td></tr>
+      <!-- <tr *ngIf="trackBolArray.length === 0">No Tracking Details are available</tr> -->
+      </tbody>
+      </table>
+      </div>
+      </div>
+      </div>
+      <div class="row" *ngIf="trackBolArray?.length>0">
+      <div class="col-sm-4 col-md-4 text-left">
+      <label>Items per page</label>
+      <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+      <option *ngFor="let number of numberOfPages">{{number}}</option>
+      </select>
+      </div>
+      <div class="col-sm-4 col-md-4 col-md-push-4">
+      <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+      </div>
+      
+      </div>
+      </div>
+      <div class="clearfix">&nbsp;</div>
+      <div class="col-md-12 col-sm-12 text-center" style="padding: 0px" *ngIf = "trackFtlArray.length > 0" >
+        <h4 style="text-align: center;
+        font-size: 17px;
+        font-weight: bold;">FTL</h4>
+    <div class="ship-border">
+    <div class="table-div" >
+    <div class="table-responsive" >
+    <table class="table table-bordered">
+    <thead>
+    <tr>
+    <td class="padding-table">Tracking ID/Pro No</td>
+    <td class="padding-table">Shipper Company Name</td>
+    <!-- <td class="padding-table">Shipper Contact Name</td> -->
+    <td class="padding-table">Consignee Company Name</td>
+    <!-- <td class="padding-table">Consignee Contact Name</td> -->
+    <td class="padding-table">Carrier</td>
+    <td class="padding-table">Origin</td>
+    <td class="padding-table">Destination</td>
+    <td class="padding-table">Created Date</td>
+    <td class="padding-table">BOL No</td>
+    <td class="padding-table">Track</td>
+    </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of trackFtlArray | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+            <td *ngIf = "data.bolTrackingNumber!== undefined && data.bolTrackingNumber !== '' && data.bolTrackingNumber !== null" class="padding-point-one">{{data.bolTrackingNumber}}
+              <em *ngIf="data?.otherCarrierName !== 'Rate Quote' && data?.status !=='inaActive'" class="fa fa-pencil-square-o" data-toggle="modal" data-target="#update-modal" style="float: right;margin-right: 3px;color: #134c3e;margin-top: 3px;font-weight: 600px;" (click)="editTrackProNumber(data)"></em></td>
+            <td style="text-align: center" *ngIf = "data.bolTrackingNumber === undefined || data.bolTrackingNumber === '' || data.bolTrackingNumber === null">-</td>
+            <td style="text-transform: uppercase " *ngIf = "data?.bolRequest?.shipperCompanyName !== undefined && data?.bolRequest?.shipperCompanyName !== '' && data?.bolRequest?.shipperCompanyName !== null" >{{data?.bolRequest?.shipperCompanyName}}</td>
+            <td style="text-align: center" *ngIf = "data?.bolRequest?.shipperCompanyName ===undefined || data?.bolRequest?.shipperCompanyName === '' || data?.bolRequest?.shipperCompanyName === null">-</td>
+            
+            <td style="text-transform: uppercase " *ngIf = "data.bolRequest.consigneeCompanyName !== undefined && data.bolRequest.consigneeCompanyName !== '' && data.bolRequest.consigneeCompanyName !== null" >{{data?.bolRequest.consigneeCompanyName}}</td>
+            <td style="text-align: center" *ngIf = "data.bolRequest.consigneeCompanyName ===undefined || data.bolRequest.consigneeCompanyName === '' || data.bolRequest.consigneeCompanyName === null">-</td>
+            
+            <td *ngIf="data?.bolCarrier== 'OTHERS'">{{data?.bolCarrier}}<br>({{data?.otherCarrierName}})</td>
+            <td *ngIf="data?.bolCarrier!== 'OTHERS'">{{data?.bolCarrier}}</td>
+            <td>{{data?.bolRequest.origin}}</td>
+            <td>{{data?.bolRequest.destination}}</td>
+            <td>{{data?.createdOn}}</td>
+            <td align="center" *ngIf="data?.bolCarrier!== 'OTHERS'"><a class="" href="#bolType-modal" style="color: #4c7a71;text-decoration: underline;" (click)="checkMyBill(data.bolReferenceNumber)" data-toggle="modal" data-target="#bolType-modal">{{data?.bolReferenceNumber}}</a></td>
+            <td align="center" *ngIf="data?.bolCarrier === 'OTHERS'">{{data?.bolReferenceNumber}}</td>
+            <td style="text-align: center" *ngIf="data?.bolCarrier !== 'OTHERS'" (click)= "track(data.bolTrackingNumber,data.bolCarrier)"><em class="fa fa-truck" data-toggle="modal" data-target="#track-modal"></em></td>
+            <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName === 'YRC' || data?.otherCarrierName === 'REDDAWAY' || data?.otherCarrierName === 'REDDAWAY' || data?.otherCarrierName === 'FEDEX_FREIGHT_PRIORITY' || data?.otherCarrierName === 'FEDEX_FREIGHT_ECONOMY'" (click)= "track(data.bolTrackingNumber,data.otherCarrierName)"><em class="fa fa-truck" data-toggle="modal" data-target="#track-modal"></em></td>
+            <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName === 'Rate Quote' && data?.otherCarrierName !== 'YRC' && data?.otherCarrierName !== 'REDDAWAY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_PRIORITY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_ECONOMY'"><a style="color:#7e6e72" href={{data?.trackLink}} target="_blank"><em class="fa fa-truck" tooltip="Tracking can be done"></em></a></td>
+            <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName !== 'Rate Quote' && data?.otherCarrierName !== 'YRC' && data?.otherCarrierName !== 'REDDAWAY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_PRIORITY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_ECONOMY'"><em class="fa fa-truck" tooltip="Tracking cannot be done"></em></td>
+            </tr>
+            <tr *ngIf="trackFtlArray.length === 0"><td style="text-align: center;
+              font-size: 17px;
+              font-weight: bold;
+              background-color: #f5f1ef;" colspan="9">No Tracking Details are available
+                </td></tr>
+            <!-- <tr colspan="9" >No Tracking Details are available</tr> -->
+    </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    <div class="row" *ngIf="trackFtlArray?.length>0">
+    <div class="col-sm-4 col-md-4 text-left">
+    <label>Items per page</label>
+    <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+    <option *ngFor="let number of numberOfPages">{{number}}</option>
+    </select>
+    </div>
+    <div class="col-sm-4 col-md-4 col-md-push-4">
+    <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+    </div>
+    
+    </div>
+    </div>
+      
+      <div class="col-md-12 col-sm-12 text-center" style="padding: 0px" *ngIf = "trackShipmentArray.length > 0" >
+          <h4 style="text-align: center;
+          font-size: 17px;
+          font-weight: bold;">OTHER SHIPMENT</h4>
+      <div class="ship-border">
+      <div class="table-div" >
+      <div class="table-responsive" >
+      <table class="table table-bordered">
+      <thead>
+      <tr>
+      <td class="padding-table">Tracking ID/Pro No</td>
+      <td class="padding-table">Shipper Company Name</td>
+      <!-- <td class="padding-table">Shipper Contact Name</td> -->
+      <td class="padding-table">Consignee Company Name</td>
+      <!-- <td class="padding-table">Consignee Contact Name</td> -->
+      <td class="padding-table">Carrier</td>
+      <td class="padding-table">Origin</td>
+      <td class="padding-table">Destination</td>
+      <td class="padding-table">Created Date</td>
+      <td class="padding-table">BOL No</td>
+      <td class="padding-table">Track</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of trackShipmentArray | paginate: { itemsPerPage: numberPerPage, currentPage: p }">
+          <td *ngIf = "data.bolTrackingNumber!== undefined && data.bolTrackingNumber !== '' && data.bolTrackingNumber !== null" class="padding-point-one">{{data.bolTrackingNumber}}
+            <em *ngIf="data?.otherCarrierName !== 'Rate Quote' && data?.status !== 'inActive'" class="fa fa-pencil-square-o" data-toggle="modal" data-target="#update-modal" style="float: right;margin-right: 3px;color: #134c3e;margin-top: 3px;font-weight: 600px;" (click)="editTrackProNumber(data)"></em></td>
+          <td style="text-align: center" *ngIf = "data.bolTrackingNumber === undefined || data.bolTrackingNumber === '' || data.bolTrackingNumber === null">-</td>
+          <td style="text-transform: uppercase " *ngIf = "data?.bolRequest?.shipperCompanyName !== undefined && data?.bolRequest?.shipperCompanyName !== '' && data?.bolRequest?.shipperCompanyName !== null" >{{data?.bolRequest?.shipperCompanyName}}</td>
+          <td style="text-align: center" *ngIf = "data?.bolRequest?.shipperCompanyName ===undefined || data?.bolRequest?.shipperCompanyName === '' || data?.bolRequest?.shipperCompanyName === null">-</td>
+          
+          <td style="text-transform: uppercase " *ngIf = "data.bolRequest.consigneeCompanyName !== undefined && data.bolRequest.consigneeCompanyName !== '' && data.bolRequest.consigneeCompanyName !== null" >{{data?.bolRequest.consigneeCompanyName}}</td>
+          <td style="text-align: center" *ngIf = "data.bolRequest.consigneeCompanyName ===undefined || data.bolRequest.consigneeCompanyName === '' || data.bolRequest.consigneeCompanyName === null">-</td>
+          
+          <td *ngIf="data?.bolCarrier== 'OTHERS'">{{data?.bolCarrier}}<br>({{data?.otherCarrierName}})</td>
+          <td *ngIf="data?.bolCarrier!== 'OTHERS'">{{data?.bolCarrier}}</td>
+          <td>{{data?.bolRequest.origin}}</td>
+          <td>{{data?.bolRequest.destination}}</td>
+          <td>{{data?.createdOn}}</td>
+          <td align="center" *ngIf="data?.bolCarrier!== 'OTHERS'"><a class="" href="#bolType-modal" style="color: #4c7a71;text-decoration: underline;" (click)="checkMyBill(data.bolReferenceNumber)" data-toggle="modal" data-target="#bolType-modal">{{data?.bolReferenceNumber}}</a></td>
+          <td align="center" *ngIf="data?.bolCarrier === 'OTHERS'">{{data?.bolReferenceNumber}}</td>
+          <td style="text-align: center" *ngIf="data?.bolCarrier !== 'OTHERS'" (click)= "track(data.bolTrackingNumber,data.bolCarrier)"><em class="fa fa-truck" data-toggle="modal" data-target="#track-modal"></em></td>
+          <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName === 'YRC' || data?.otherCarrierName === 'REDDAWAY' || data?.otherCarrierName === 'REDDAWAY' || data?.otherCarrierName === 'FEDEX_FREIGHT_PRIORITY' || data?.otherCarrierName === 'FEDEX_FREIGHT_ECONOMY'" (click)= "track(data.bolTrackingNumber,data.otherCarrierName)"><em class="fa fa-truck" data-toggle="modal" data-target="#track-modal"></em></td>
+          <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName === 'Rate Quote' && data?.otherCarrierName !== 'YRC' && data?.otherCarrierName !== 'REDDAWAY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_PRIORITY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_ECONOMY'"><a style="color:#7e6e72" href={{data?.trackLink}} target="_blank"><em class="fa fa-truck" tooltip="Tracking can be done"></em></a></td>
+          <td style="text-align: center" *ngIf="data?.bolCarrier === 'OTHERS' && data?.otherCarrierName !== 'Rate Quote' && data?.otherCarrierName !== 'YRC' && data?.otherCarrierName !== 'REDDAWAY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_PRIORITY' && data?.otherCarrierName !== 'FEDEX_FREIGHT_ECONOMY'"><em class="fa fa-truck" tooltip="Tracking cannot be done"></em></td>
+          </tr>
+          <tr *ngIf="trackShipmentArray.length === 0"><td style="text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+            background-color: #f5f1ef;" colspan="9">No Tracking Details are available
+              </td></tr>
+          <!-- <tr *ngIf="trackShipmentArray.length === 0">No Tracking Details are available</tr> -->
+      </tbody>
+      </table>
+      </div>
+      </div>
+      </div>
+      <div class="row" *ngIf="trackShipmentArray?.length>0">
+      <div class="col-sm-4 col-md-4 text-left">
+      <label>Items per page</label>
+      <select [(ngModel)]="selectPagination" (change)="selectRanges(selectPagination)" name="selectPagination">
+      <option *ngFor="let number of numberOfPages">{{number}}</option>
+      </select>
+      </div>
+      <div class="col-sm-4 col-md-4 col-md-push-4">
+      <pagination-controls (pageChange)="p = $event" class="pull-right"></pagination-controls>
+      </div>
+      
+      </div>
+      </div>
+      <div class="clearfix">&nbsp;</div>
+      
+    
+  </div>
+  </div>
+  <div class="col-md-2">
+  <div class="div-border">
+  <div class="help-seg-head">
+  <div>
+  <em class="fa fa-times-circle help-icon-cancel"></em>
+  </div>
+  <div>
+  <p class="help-carr-head">CANCEL PICKUP?</p>
+  </div>
+  </div>
+  <div class="row help-seg">
+  <p class="help-carr-txt">Please contact the following Call Centre Numbers in case the pick up needs to be cancelled:</p>
+  </div>
+  <div class="row help-seg">
+  <div>
+  <em class="fa fa-phone-square help-icon"></em>
+  </div>
+  <div class="pad-left">
+  <p class="help-carr">FedEx</p><p class="help-num">800.435.7949</p>
+  </div>
+  </div>
+  <div class="row help-seg">
+  <div>
+  <em class="fa fa-phone-square help-icon"></em>
+  </div>
+  <div class="pad-left">
+  <p class="help-carr">YRC</p><p class="help-num">800.610.6500</p>
+  </div>
+  </div>
+  <div class="row help-seg">
+  <div>
+  <em class="fa fa-phone-square help-icon"></em>
+  </div>
+  <div class="pad-left">
+  <p class="help-carr">Reddaway</p><p class="help-num">888.420.8960</p>
+  </div>
+  </div>
+  <div class="row help-seg">
+  <p class="help-carr-txt-red ">Failure to do so will incur pickup charges.</p>
+  </div>
+  </div>
+  </div>
+  </div>
+ 
+ 
+  </div> 
+  </div>
+  </div>
+  
+  <app-footer></app-footer>
+  
+  
+  </body>
+  <!-- Legend Modal -->
+  <div id="legend-modal" class="modal" role="dialog">
+  <div class="modal-dialog">
+ 
+  <!-- Modal content-->
+  <div class="modal-content">
+  <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal">&times;</button>
+  <h4 class="modal-title"><em class="fa fa-key"></em>&nbsp;Legend</h4>
+  </div>
+  <div class="modal-body">
+ 
+  <div class="legend-body">
+  <div class="row">
+  <div class="col-md-6 col-md-push-3 text-center">
+  <table class="table legend-table table-responsive">
+  <caption>Rate Types</caption>
+  <tbody>
+  <tr>
+  <td class="th-head"><em class="fa fa-list-alt"></em></td>
+  <td class="th-body">Full Rate Quote</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-cube"></em></td>
+  <td class="th-body">LTL Rate Quote</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-bolt"></em></td>
+  <td class="th-body">Quickie Quote</td>
+  </tr>
+  </tbody>
+  </table>
+  <table class="table legend-table table-responsive">
+  <caption>Status Types</caption>
+  <tbody>
+  <tr>
+  <td class="th-head"><em class="fa fa-truck"></em></td>
+  <td class="th-body">Booked as Shipment</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-usd"></em></td>
+  <td class="th-body">Quoted Request</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-times-circle"></em></td>
+  <td class="th-body">Canceled Request</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-times"></em></td>
+  <td class="th-body">Expired Request</td>
+  </tr>
+  </tbody>
+  </table>
+  <table class="table legend-table table-responsive">
+  <caption>Action Icons</caption>
+  <tbody>
+  <tr>
+  <td class="th-head"><em class="fa fa-file-text"></em></td>
+  <td class="th-body">Opens the BOL associated with that rate quote.</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-edit"></em></td>
+  <td class="th-body">Opens a form to create a BOL out of that rate quote's info.</td>
+  </tr>
+  <tr>
+  <td class="th-head"><em class="fa fa-file-text-o"></em></td>
+  <td class="th-body">Opens the shipment associated with that rate quote.</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+ 
+  </div>
+  </div>
+ 
+  <!-- Legend Modal -->
+  <!-- Tracking History Modal -->
+  <div id="track-modal" class="modal" role="dialog">
+  <div class="modal-dialog modal-lg">
+ 
+ 
+  <!-- Modal content-->
+   <div class="modal-content">
+  <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" style="font-size: 35px">&times;</button>
+  <h4 class="modal-title"><em class="fa fa-truck"></em>&nbsp;Shipment Status</h4>
+  </div>
+  <div class="modal-body">
+  <div class="ship-border text-center" *ngIf="showTrackingLoader">
+  <span class="text-center" style="padding: 40px; color: #a2705c; font-size: 25px;"><em class="fa fa-spinner fa-spin" aria-hidden="true" style="color: #a2705c; font-size: 20px;"></em> &nbsp;Loading</span>
+  </div>
+  <div class="ship-border" *ngIf="showFedexTrackingDetails">
+  <h4 class="sub-head">Shipment Facts</h4>
+  <div class="track-quote">
+  <div class="table-responsive">
+  <table class="table table-bordered">
+  <tbody>
+  <tr>
+  <th width="15%">Tracking No</th>
+  <td width="20%">{{trackingResponse?.trackingDetail?.TrackingNumber}}</td>
+  <th width="15%">Carrier</th>
+  <td width="20%">FEDEX</td>
+  </tr>
+  <tr>
+  <th>Total Pieces</th>
+  <td>{{trackingResponse?.trackingDetail?.PackageCount}}</td>
+  <th>Total Weight</th>
+  <td>{{trackingResponse?.trackingDetail?.ShipmentWeight?.Value}}
+  {{trackingResponse?.trackingDetail?.ShipmentWeight?.Units}}
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  <h4 class="sub-head">Shipment Status</h4>
+  <div class="track-quote">
+  <div class="table-responsive">
+  <table class="table table-bordered">
+ 
+  <tbody>
+  <tr>
+  <th width="20%">Current Status</th>
+  <td width="30%">
+  {{trackingResponse?.trackingDetail?.StatusDetail?.Description}}
+  ({{trackingResponse?.trackingDetail?.StatusDetail?.CreationTime | date: 'MM/dd/yyyy' }}
+  {{trackingResponse?.trackingDetail?.StatusDetail?.CreationTime | date: 'hh:mm a'}})
+  </td>
+  <th width="20%">Service</th>
+  <td width="30%">{{Service | titlecase}}</td>
+  </tr>
+  <tr>
+  <th>Origin</th>
+  <td>{{trackingResponse?.trackingDetail?.OriginLocationAddress?.City}}</td>
+  <th>Destination</th>
+  <td>{{trackingResponse?.trackingDetail?.DestinationLocationAddress?.City}}</td>
+  </tr>
+  </tbody>
+  </table>
+  <div class="col-sm-6" style="padding-left: 0px;margin-top: -20px;margin-bottom: 20px" *ngFor="let detail of this.DatesOrTimes">
+  <div>
+  <div class="col-sm-5" style="padding-left: 0px">
+  <p class="heading-track">{{detail?.Type | titlecase }}</p>
+  </div>
+  <div class="col-sm-5" style="padding-left: 0px; margin-left: -2px;">
+  <p class="sub-track">{{detail?.DateOrTimestamp | date: 'MM/dd/yyyy'}} {{detail?.DateOrTimestamp | date:'hh:mm a'}}</p>
+  </div>
+  </div>
+  </div>
+ 
+  </div>
+  </div>
+  <div class="track-address">
+  <div class="table-responsive">
+  <table class="table table-bordered">
+  <tbody>
+  <tr>
+  <th width="33%">Shipper</th>
+  <th width="33%">Consignee</th>
+  <th width="33%">Bill To</th>
+  </tr>
+  <tr>
+  <td>
+  {{trackingResponse?.trackingDetail?.ShipperAddress?.City}}<br>
+  {{trackingResponse?.trackingDetail?.ShipperAddress?.CountryName}}
+  </td>
+  <td>
+  {{trackingResponse?.trackingDetail?.DestinationAddress?.City}}<br>
+  {{trackingResponse?.trackingDetail?.DestinationAddress?.CountryName}}
+  </td>
+  <td>
+  {{trackingResponse?.trackingDetail?.DestinationLocationAddress?.City}}<br>
+  {{trackingResponse?.trackingDetail?.DestinationLocationAddress?.CountryName}}
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  <h4 class="sub-head">Shipment History</h4>
+  <div class="table-div">
+  <div class="table-responsive">
+  <table class="table table-bordered">
+  <thead>
+  <tr>
+  <td>Date</td>
+  <td>Time</td>
+  <td>Type</td>
+  <td>Status and Location</td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let history of trackingResponse.trackingHistory">
+  <td>{{history?.date | date: 'MM/dd/yyyy'}}</td>
+  <td>{{history?.time | date: 'hh:mm a'}}</td>
+  <td>{{history?.EventType}}</td>
+  <td>{{history?.EventDescription}}, {{history?.Address?.City}},{{history?.Address?.StateOrProvinceCode}}</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+ 
+  <!-- yrc-->
+ 
+  <div class="ship-border" *ngIf="showYrcTrackingDetails">
+  <h4 class="sub-head">Shipment Facts</h4>
+  <!-- <div class="track-quote"> -->
+  <div class="table-responsive">
+  <table class="track-quote">
+  <tbody>
+  <tr>
+  <th width="15%">Pro No</th>
+  <td width="20%">{{proNumber}}</td>
+  <th width="15%">Reference No</th>
+  <td width="20%">{{refNumber}}</td>
+  </tr>
+  <tr>
+  <th width="15%">Freightbill No</th>
+  <td width="20%">{{yrcResponse?.freightBillNumber?.$value}}</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <h4 class="sub-head">Shipment Status</h4>
+  <div class="table-responsive">
+  <table class="track-quote">
+  <tbody>
+  <tr>
+  <th width="20%">Current Status</th>
+  <td width="30%">{{shipments[0]?.statusCode?.$value}}</td>
+  <th width="20%">Carrier</th>
+  <td width="30%">{{carrier}}</td>
+  </tr>
+  <tr>
+  <th>Origin</th>
+  <td>{{yrcResponse?.originCity?.$value}} ({{yrcResponse?.originZip?.$value}})</td>
+  <th>Destination</th>
+  <td>{{yrcResponse?.destinationCity?.$value}} ({{yrcResponse?.destinationZip?.$value}})</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <div class="table-responsive">
+  <table class="track-address">
+  <tbody>
+  <tr>
+  <th width="33%">Shipper</th>
+  <th width="33%">Consignee</th>
+  </tr>
+  <tr>
+  <td>
+  <b>City</b> : {{yrcResponse?.originCity?.$value}}<br>
+  <b>State</b> : {{yrcResponse?.originState?.$value}}<br>
+  <b>Zip</b> : {{yrcResponse?.originZip?.$value}}
+  </td> 
+  <td>
+  <b>City</b> : {{yrcResponse?.destinationCity?.$value}}<br>
+  <b>State</b> : {{yrcResponse?.destinationState?.$value}}<br>
+  <b>Zip</b> : {{yrcResponse?.destinationZip?.$value}}
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <h4 class="sub-head">Shipment History</h4>
+  <div class="table-div">
+  <div class="table-responsive">
+  <table class="table table-bordered" style="font-size:15px">
+  <thead>
+  <tr>
+  <td style="font-size:15px">Date</td>
+  <td style="font-size:15px">Time</td>
+  <td style="font-size:15px">Type</td>
+  <td style="font-size:15px">Status and Location</td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let history of shipments">
+  <td style="font-size:15px">{{history?.statusDate?.$value}}</td>
+  <td style="font-size:15px">{{history?.statusTime?.$value}}</td>
+  <td style="font-size:15px">{{history?.statusCode?.$value}}</td>
+  <td style="font-size:15px">{{history?.statusMessage?.$value}}</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+ 
+  <!-- reddaway -->
+ 
+  <div class="ship-border" *ngIf="showReddawayTrackingDetails">
+  <h4 class="sub-head">Shipment Facts</h4>
+  <div class="table-responsive">
+  <table class="track-quote">
+  <tbody>
+  <tr>
+  <th width="15%">{{searchBy | titlecase}}Pro Number</th>
+  <td width="20%">{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.PRONUMBER}}</td>
+  <th width="15%">Standard Delivery Date</th>
+  <td width="20%">{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.STANDARDDELIVERYDATE}}</td>
+  </tr>
+  <tr>
+  <th width="15%">Carrier</th>
+  <td width="20%">{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.ORIGIN?.CARRIER | titlecase}}</td>
+  <th width="15%">Pick Up Date</th>
+  <td width="20%">{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.PICKUPDATE}}</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <h4 class="sub-head">Shipment Status</h4>
+  <div class="table-responsive">
+  <table class="track-quote">
+  <tbody>
+  <tr>
+  <th width="15%">Current Status</th>
+  <td width="20%">{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.CURRENTSTATUS}}</td>
+  <th width="15%">Service Type</th>
+  <td width="20%">{{reddawayServiceType | titlecase}}</td>
+  </tr>
+  <tr>
+  <th>Origin</th>
+  <td>
+  <b>City:</b>{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.ORIGIN?.CITY}}<br>
+  <b>State:</b>{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.ORIGIN?.STATE}}<br>
+  <b>Zip:</b>{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.ORIGIN?.ZIP}}<br>
+  </td>
+  <th>Destination</th>
+  <td>
+  <b>City:</b>{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.DESTINATION?.CITY}}<br>
+  <b>State:</b>{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.DESTINATION?.STATE}}<br>
+  <b>Zip:</b>{{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.DESTINATION?.ZIP}}<br>
+  </td>
+ 
+  </tr>
+  <tr>
+  <th width="15%">Total Pieces</th>
+  <td width="20%">{{trackingResponse?.result.TrackDetailResponse?.TrackDetail?.TOTAL_PIECES}}</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <div class="table-responsive">
+  <table class="track-address">
+  <tbody>
+  <tr>
+  <th width="33%">Shipper</th>
+  <th width="33%">Consignee</th>
+  </tr>
+  <tr>
+  <td>
+  {{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.SHIPPER?.ADDRESS3}}
+  </td>
+  <td>
+  {{trackingResponse?.result?.TrackDetailResponse?.TrackDetail?.CONSIGNEE?.ADDRESS3}}
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  <div class="ship-border" *ngIf="hideFedexTrackingDetails">
+  <h6 style="margin:40px 10px;font-size:17px;text-align:center">{{trackingResponse?.result?.CompletedTrackDetails[0]?.TrackDetails[0]?.Notification?.Message}}</h6>
+  </div>
+  <div class="div-border ship-border" *ngIf="hideYrcTrackingDetails">
+  <h6 style="margin:40px 10px;font-size:17px;text-align:center">{{trackingResponse?.result?.result?.statusMessage?.$value}}</h6>
+  </div>
+  <div class="div-border ship-border" *ngIf="hideReddawayTrackingDetails">
+  <h6 style="margin:40px 10px ;font-size:17px;text-align:center">{{trackingResponse?.result?.TrackDetailResponse?.STATUS?.MESSAGE}}</h6>
+  </div>
+
+  <div class="div-border ship-border" *ngIf="showProErrorMessage">
+    <h6 style="margin:40px 10px;font-size:17px;text-align:center">Pro/ Track Number is not Available</h6> 
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+ 
+  <!-- Tracking History Modal -->
+ 
+  <div id="bolType-modal" class="modal" role="">
+  <div class="modal-dialog modal-lg">
+  
+  <!-- Modal content-->
+  <div class="modal-content">
+  <div class="modal-header">
+  <em class="close" data-dismiss="modal" style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+  <h4 class="modal-title" style="color: #ffffff">Bill of Lading </h4>
+  </div>
+  
+  <div class="modal-body" id="print-section" style="background-color: #ffffff">
+  <div id="section1" class="print-modal">
+  
+  <html>
+  <head>
+  <style type="text/css">
+  .txt-justify{
+  text-align: justify;
+  }
+  .txt-center{
+  text-align: center;
+  }
+  .txt-right{
+  text-align: right;
+  }
+  .txt-left{
+  text-align: left;
+  }
+  .fontpt{
+  font-size:10pt;
+  }
+  .font9pt{
+  font-size:9pt;
+  }
+  .full-width{
+  width: 100%;
+  }
+  .full-height{
+  width: 100%;
+  }
+  .left-float{
+  float:left;
+  }
+  .right-float{
+  float:right;
+  }
+  .padding-rgt3{
+  padding-right:3%;
+  }
+  .width22{
+  width:22%;
+  }
+  .width38{
+  width:38%;
+  }
+  .height110{
+  height: 110px;
+  }
+  .height80{
+  height: 80px;
+  }
+  .height20{
+  height: 20px;
+  }
+  .border{
+  border: 1px solid black;
+  }
+  .div-col3{
+  border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; float:left; width:39.6%; height: 110px;
+  }
+  .valign{
+  valign:top;
+  }
+  .inline{
+  display: inline-block;
+  }
+  .normalfont{
+  font-weight: normal;
+  }
+  .mediumfont{
+  font-size:medium;
+  }
+  .smallfont{
+  font-size:small;
+  }
+  .boldfont{
+  font-weight: bold;
+  }
+  .border-left{
+  border-left: 1px solid black;
+  }
+  .font11{
+  font-size: 11pt;
+  }
+  .font12{
+  font-size: 12pt;
+  }
+  .ml-60 {
+  margin-left:60px;
+  }
+  .ml-10 {
+  margin-left:10px;
+  }
+  .ml-20 {
+  margin-left:20px;
+  }
+  .ml-40 {
+  margin-left:40px;
+  }
+  .ml-50 {
+  margin-left:50px;
+  }
+  .ml-80{
+  margin-left:80px;
+  }
+  .ml-5{
+  margin-left:5px;
+  }
+  .pl-20{
+  padding-left: 20px;
+  }
+  .bt-2{
+  border-top: 2px solid black;
+  }
+  .bbnone{
+  border-bottom: none;
+  }
+  .div-col4{
+  margin-left: 50px; float: left; height: 80%; width: 40px; border: 2px solid black;
+  }
+  .div-col5{
+  margin-left: 25px; float: left; height: 80%; width: 40px; border: 2px solid black; text-align: center;
+  }
+  .div-col6{
+  margin-left: 45px; float: left; height: 80%; width: 40px; border: 2px solid black;
+  }
+  .div-col7{
+  margin-left: 72px; float: left; height: 80%; width: 40px; border: 2px solid black;
+  }
+  .tr-1{
+  width: 100%; background-color:#CCCCCC; margin-top: 1px;
+  }
+  .undertxt{
+  text-decoration: underline;
+  }
+  .printForte { display: inline; } .pdfForte { display: none; } .itemRow td { font-weight:normal !important; } td { font-size:9pt; font-family:arial; line-height:1.5em; } span { font-size:9pt; font-family:arial; line-height:1.5em; } div { font-size:9pt; font-family:arial; line-height:1.5em; }#bolContainer { width: 850px; margin: 0 auto; font-family: Arial; line-height:1.5em;margin-top: 4.5em; font-size:9pt; } #bolContainer td { font-size: 9pt; } .controlContainer { font-weight:bold; } .controlInline { margin-left: 10px; } .sectionHeader { width: 100%; background-color: #CCCCCC; font-size: small; clear: both; font-weight: bold; } .itemHeaders { font-weight: bold; } tr.border_bottom td { border-bottom:1px solid black; } tr.border_right, td.right { border-right:1px solid black; } tr.border_not_top td.not_top { border-left: 1px solid black; border-bottom: 1px solid black; border-right: 1px solid black; } tr.border_all, td.all { border: 1px solid black; } tr.border_top, td.top { border-top: 1px solid black; } tr.border_left { border-left: 1px solid black; } td.left { border-left: 1px solid black; } table { border-collapse: collapse; } #codInfo { width: 100%; } #codAmount { margin-left: 5%; width: 15%; font-size: 10pt; float: left; } #codChecks { margin-left: 2%; width: 78%; float: left; } @media print { td { font-size:9pt; font-family:arial; line-height:1.5em; } span { font-size:9pt; font-family:arial; line-height:1.5em; } div { font-size:9pt; font-family:arial; line-height:1.5em; } body { margin: 0.5cm 1cm 0.5cm 0.5cm; -webkit-print-color-adjust: exact; } .printSize { font-size: 7pt !important; } .firstRow { height: 10% !important; } .smaller { font-size: 6.5pt !important; } .bigger { font-size: 8.5pt !important; } .noPrint { display:none; } .top-right { width:36.56% !important; } .shipCons { height: 18% !important; } .specInst { height: 15% !important; } .bigger2 { font-size:10pt !important; } .secondLine { padding-right:13.3% !important; } #consTable { width:50.1% !important; } .printForte { display: inline; } .pdfForte { display: none !important; } }
+  </style>
+  </head>
+  <body style="margin-top: 4em;margin-left: -2em;">
+  <div id="bolContainer" style="margin:2em;padding:20px">
+  <div class="firstRow left-float padding-rgt3 width22 height110">
+  <table width="100%" height="100%">
+  <tbody>
+  <tr>
+  <td>
+  <img src="../../assets/images/forte_logo.png" style="height: 60px; width:150px!important" class="full-width">
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <div class="firstRow border left-float width38 height110 txt-center">
+  <br><strong><div class="fontpt">UNIFORM STRAIGHT BILL OF LADING</div>Original-Not Negotiable</strong><br>Carrier SCAC Code: <span id="bolSCAC" class="controlContainer controlInline">{{bolValue?.serviceType}}</span><br>
+  <span *ngIf="bolValue?.serviceType =='YRC' && showProNumber === true">PRO#:<b style="font-size: 17px;">{{bolValue?.proNumber}}</b></span>
+  <span *ngIf="bolValue?.serviceType =='YRC' && showProNumber === false">PRO#:<b style="font-size: 17px;">-</b></span>
+  <span *ngIf="bolValue?.serviceType =='FEDEX FREIGHT ECONOMY' && showTrackingNumber === true">TRACK#:<b style="font-size: 17px;">{{bolValue?.trackingNumber}}</b></span>
+  <span *ngIf="bolValue?.serviceType =='FEDEX FREIGHT ECONOMY' && showTrackingNumber === false">TRACK#:<b style="font-size: 17px;">-</b></span>
+  <span *ngIf="bolValue?.serviceType === 'FEDEX FREIGHT PRIORITY' && showTrackingNumber === true">TRACK#:<b style="font-size: 17px;">{{bolValue?.trackingNumber}}</b></span>
+  <span *ngIf="bolValue?.serviceType =='FEDEX FREIGHT PRIORITY' && showTrackingNumber === false">TRACK#:<b style="font-size: 17px;">-</b></span>
+  <span *ngIf="bolValue?.serviceType === 'REDDAWAY' && showReddawayNumber === true">PRO#: <b style="font-size: 17px;">{{bolValue?.bolTrackingNumber}}</b></span>
+  <span *ngIf="bolValue?.serviceType =='REDDAWAY' && showReddawayNumber === false">PRO#: <b style="font-size: 17px;">-</b></span>
+  </div>
+  <div class="top-right firstRow div-col3">
+  <table class="full-width full-height">
+  <tbody>
+  <tr class="border_bottom" width="100%" height="30%">
+  <td valign="top">
+  <div class="valign">Date: <span *ngIf="bolValue?.shipment!==''"id="bolDate" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.DATE_TIME" class="GrTanGridData inline" title="">{{bolValue?.shipment | date:'MM/dd/yyyy'}}</span>
+  </span></span></div>
+  </td>
+  </tr>
+  <tr class="border_bottom" width="100%" height="30%">
+  <td valign="top">
+  <div class="">Shipper's Bill of Lading #: <span id="bolShipperBolNumber" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_BOL_NUMBER" class="GrTanGridData inline" title="">{{bolValue?.shippersBillOfLading}}</span>
+  </span></span></div>
+  </td>
+  </tr>
+  <tr class="border_bottom" width="100%" height="20%">
+  <td>
+  <div class="">PO #: <span id="bolPONumber" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.PO_NUMBER" class="GrTanGridData inline" title="">{{bolValue?.purchaseOrderNumber}}</span>
+  </span></span></div>
+  </td>
+  </tr>
+  <tr width="100%" height="20%">
+  <td>
+  <div class="">Shipper #: <span id="bolShipperNumber" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_NUMBER" class="GrTanGridData inline" title="">{{bolValue?.shipperIdNumber}}</span>
+  </span></span></div>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <div id="shipConsInfo">
+  <table width="100%">
+  <tbody>
+  <tr id="shipConsHead" class="sectionHeader">
+  <td width="25%" class="txt-right font9pt">Shipper (from)</td>
+  <td class="txt-center font9pt normalfont" width="50%"></td>
+  <td width="25%" class="txt-left font9pt">Consignee (to)</td>
+  </tr>
+  </tbody>
+  </table>
+  <table width="100%">
+  <tbody>
+  <tr class="border_all">
+  <td width="50%" colspan="3" class="right">Shipper: <span id="bolShipperName" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER" class="GrTanGridData inline" title="">{{bolValue?.shipperName}}
+  </span>
+  </span></span></td>
+  <td width="50%" colspan="3">Consignee: <span id="bolConsigneeName" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE" class="GrTanGridData inline" title="">{{bolValue?.consigneeName}}</span>
+  </span></span></td>
+  </tr>
+  <tr class="border_all">
+    <td width="50%" colspan="3" class="right">Contact Name: <span id="bolShipperName" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER" class="GrTanGridData inline" title="">{{bolValue?.shipperContactName}}
+    </span>
+    </span></span></td>
+    <td width="50%" colspan="3">Contact Name: <span id="bolConsigneeName" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE" class="GrTanGridData inline" title="">{{bolValue?.consigneeContactName}}</span>
+    </span></span></td>
+    </tr>
+  <tr class="border_all">
+  <td width="50%" colspan="3" class="right">Street: <span id="bolShipperStreet" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPERSTREET1" class="GrTanGridData inline" title="">{{bolValue?.shipperStreet1}}</span>
+  </span> <span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPERSTREET2" class="GrTanGridData" style="display:inline-block" title=""></span>
+  </span></span></td>
+  <td width="50%" colspan="3">Destination Street: <span id="bolConsigneeStreet" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEESTREET1" class="GrTanGridData inline" title="">{{bolValue?.consigneeStreet1}}</span>
+  </span> <span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEESTREET2" class="GrTanGridData" style=" display:inline-block" title=""></span>
+  </span></span></td>
+  </tr>
+  <tr class="border_all" height="35px">
+  <td width="25%" valign="top" class="right">City: <br><span id="bolShipperCity" class="controlContainer"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_CITY" class="GrTanGridData inline" title="">{{bolValue?.shipperCity}}</span>
+  </span></span></td>
+  <td width="15%" valign="top" class="right">State / Province <br><span id="bolShipperState" class="controlContainer"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_STATE_PROVINCE" class="GrTanGridData inline" title="">{{bolValue?.shipperState}}</span>
+  </span></span></td>
+  <td width="10%" valign="top" class="right">Zip <br><span id="bolShipperZip" class="controlContainer"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_ZIP" class="GrTanGridData inline" title="">{{bolValue?.shipperZip}}</span>
+  </span></span></td>
+  <td width="25%" valign="top" class="right">City: <br><span id="bolConsigneeCity" class="controlContainer"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_CITY" class="GrTanGridData inline" title="">{{bolValue?.consigneeCity}}</span>
+  </span></span></td>
+  <td width="15%" valign="top" class="right">State / Province <br><span id="bolConsigneeState" class="controlContainer"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_STATE_PROVINCE" class="GrTanGridData inline" title="">{{bolValue?.consigneeState}}</span>
+  </span></span></td>
+  <td width="10%" valign="top">Zip <br><span id="bolConsigneeZip" class="controlContainer"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_ZIP" class="GrTanGridData inline" title="">{{bolValue?.consigneeZip}}</span>
+  </span></span></td>
+  </tr>
+  <tr class="border_all">
+  <td width="25%" class="right">Country: <span id="bolShipperCountry" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_COUNTRY" class="GrTanGridData inline" title="">{{bolValue?.shipperCountry}}</span>
+  </span></span></td>
+  <td width="25%" class="right" colspan="2">Phone: <span id="bolShipperPhone" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.SHIPPER_PHONE" class="GrTanGridData inline" title="">{{bolValue?.shipperPhoneNumber}}</span>
+  </span></span></td>
+  <td width="25%" class="right">Country: <span id="bolConsigneeCountry" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_COUNTRY" class="GrTanGridData inline" title="">{{bolValue?.consigneeCountry}}</span>
+  </span></span></td>
+  <td width="25%" colspan="2">Phone: <span id="bolConsigneePhone" class="controlContainer controlInline"><span><span id="CUSTOMER_BOL_LI_CUSTOMER_B_QOZJ.V.R1.CONSIGNEE_PHONE" class="GrTanGridData inline" title="">{{bolValue?.consigneePhoneNumber}}</span>
+  </span></span></td>
+  </tr>
+  <tr class="border_all">
+  <td style="border-right:1px solid #000000" height="40px" class="boldfont" valign="top" colspan="3" ><span id="bolSpecialInstructions" class="controlContainer font12" > Vol/Ref Number: <span>{{bolValue?.ReferenceNumber}} </span></span></td>
+  <td style="border-right:1px solid #000000" height="40px" class="boldfont" valign="top" colspan="3" ><span id="bolSpecialInstructions" class="controlContainer font12" > P/U Confirmation#: <span>{{bolValue?.pickupConformationNumber}} </span></span></td>
+ 
+  </tr>
+  <tr class="border_all">
+  <td height="40px" class="boldfont" valign="top" colspan="6" ><span id="bolSpecialInstructions" class="controlContainer font12" >Special Instructions: <span> {{bolValue?.spclInstructions}}</span></span></td>
+  </tr>
+  <!-- <tr class="border_all" *ngIf="bolValue?.accessorials!== null && bolValue?.accessorials!=='' && bolValue?.accessorials!== undefined">
+    <td height="40px" class="boldfont" valign="top" colspan="6" ><span id="bolSpecialInstructions" class="controlContainer font12" >Assessorials: <span> {{bolValue?.accessorials}}</span></span></td>
+
+    </tr> -->
+  <tr class="border_all">
+  <td class="boldfont txt-center" width="100%" colspan="6">
+    <span class="mediumfont" *ngIf="bolValue?.thirdParty === 'Third Party'">Bill Freight Charges {{bolValue?.thirdParty}} to:</span>
+    <span class="mediumfont" *ngIf="bolValue?.thirdParty !== 'Third Party'">Bill Freight Charges {{bolValue?.thirdParty}} :</span>
+  </td>
+  </tr>
+  <tr class="border_left border_right">
+  <td width="100%" colspan="6">Name: <span id="bolBillToName" class="controlContainer controlInline"><span class="printForte">{{bolValue?.thirdPartyCompanyName}}</span><span class="pdfForte">{{bolValue?.thirdPartyCompanyName}}</span></span></td>
+  </tr>
+  <tr class="border_left border_bottom border_right">
+  <td width="100%" colspan="6">
+  Street: <span id="bolBillToStreet" class="controlContainer controlInline">{{bolValue?.thirdPartyStreet}}</span>
+  <span class="ml-60">City: <span id="bolBillToCity" class="controlContainer controlInline">{{bolValue?.thirdPartyCity}}</span></span>
+  <span class="ml-60">State/Province: <span id="bolBillToState" class="controlContainer controlInline">{{bolValue?.thirdPartyState}}</span></span>
+  <span class="ml-60">Zip: <span id="bolBillToZip" class="controlContainer controlInline">{{bolValue?.thirdPartyPostalCode}}
+  </span></span>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <div id="codInfo">
+  <div id="codChecks">
+  <div class="boldfont" height="20px">1. The Letters "C.O.D." must appear in box before consignee's name above.</div>
+  <div class="left-float height20"><span class="left-float">2. C.O.D. funds need to be collected as:</span> <div class="div-col4"></div> <span class="left-float ml-5">Certified Funds</span> <div class="div-col4"></div> <span class="left-float ml-5">Company Check</span></div><br>
+  <div class="left-float height20"><span class="left-float">3. C.O.D. fee to be paid by:</span> <div class="div-col5"></div> <span class="left-float ml-5 boldfont">Shipper</span> <div class="div-col6"></div> <span class="left-float ml-5 boldfont">Consignee</span> <div class="div-col7"></div> <span class="left-float ml-5" >Personal Check</span></div>
+  </div>
+  <div class="sectionHeader" id="shipConsHead"><span class="pl-20">REMIT C.O.D. TO: (If different than above)</span></div>
+  
+  </div>
+  <div id="itemInfo">
+  <div class="txt-justify" style="font-size: 4.5pt!important;">
+  Received, subject to individually determined rates or contracts that have been agreed upon in writing between the carrier and shipper, if applicable, otherwise to the rates, classifications, and rules that have been established by the carrier and are available to the shipper, on request, and to all applicable state and federal regulations, the property described below. In apparent good order, except as noted (contents and condition of contents of packages unknown) marked, consigned, and destined as shown here on, which said carrier agrees to carry to its destination, if on its route, or otherwise to deliver to another carrier on the route to destination. Every service to be performed hereunder shall be subject to all the conditions not prohibited by law, whether printed or written, herein contained, including the conditions on the back hereof, or otherwise referenced, which are hereby agreed to by the shipper and accepted for himself and his assigns.
+  </div>
+  <table width="100%">
+  <tbody>
+  <tr class="border_top border_left border_bottom itemHeaders txt-center" id="itemHeaders1" width="100%">
+  <td class="right" width="12.5%">
+  <div class="bigger">No Handling Units</div>
+  
+  </td>
+  <td class="right" width="12.5%">
+  <div class="bigger">Handling Units Type</div>
+  </td>
+  <td class="right" width="12.5%">
+  <div class="bigger">Pieces</div>
+  </td>
+  <td class="right" width="3.5%">
+  <div class="bigger">HM</div>
+  <div class="bigger">(X)</div>
+  </td>
+  <td class="right" width="39%">
+  <div class="bigger">Description of articles, kind of package, special</div>
+  <div class="bigger">marks and exceptions (Subject to correction)</div>
+  </td>
+  <td class="right" width="11%">
+  <div class="bigger">Dimensions (in.)</div>
+  <div class="bigger">(L x W x H)</div>
+  </td>
+  <td class="right" width="6%">
+  <div class="bigger">Weight</div>
+  <div class="bigger">(IN LBS)</div>
+  </td>
+  <td class="right" width="14%">
+  <div class="bigger">NMFC Item #</div>
+  <div class="bigger">(Subject to correction)</div>
+  </td>
+  <td class="right" width="5.5%">
+  <div class="bigger">Class</div>
+  </td>
+  <td class="right" width="5.5%">
+  <div class="bigger">Cube</div>
+  </td>
+  </tr>
+  
+  <tr *ngFor="let array of bolValue?.lineItem"class="border_bottom border_left itemRow txt-center full-width" id="bolItemRow1">
+  
+  
+  <td class="right bigger controlContainer">{{array.HandlingUnitQuantity}}</td><td style="border-right: 1px solid #000000;font-size:13px;" *ngIf="array.HandlingUnitType !== 'PIECE' && array.HandlingUnitType !== 'PALLET' && array.HandlingUnitType !== 'DRUM' && array.HandlingUnitType !=='CARTON'">{{array.HandlingUnitType}}</td>
+  <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PIECE'">PCS</td>
+  <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'PALLET'">PLT</td>
+  <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'DRUM'">DRM</td>
+  <td class="right bigger controlContainer" *ngIf="array.HandlingUnitType === 'CARTON'">CTN</td>
+  <td class="right bigger controlContainer" *ngIf="array.PackageQuantity !== '' && array.PackageQuantity !== null && array.PackageQuantity !== undefined">{{array.PackageQuantity}}</td> 
+  <td class="right bigger controlContainer" *ngIf="array.PackageQuantity === '' && array.PackageQuantity === null && array.PackageQuantity === undefined">-</td> 
+  <td class="right bigger controlContainer" *ngIf="array.isHazardous === true"><em class="fa fa-check" aria-hidden="true"></em></td> 
+  <td class="right bigger controlContainer" *ngIf="array.isHazardous === false || array.isHazardous === ''">-</td> 
+  <td class="right bigger controlContainer">{{array.Description}}</td>
+  <td class="right bigger controlContainer" *ngIf="array.Dimensions!== undefined">{{array.Dimensions.Length}} x {{array.Dimensions.Width}} x {{array.Dimensions.Height}}</td>
+  <td class="right bigger controlContainer" *ngIf="array.Dimensions === undefined">-</td>
+  <td class="right bigger controlContainer" *ngIf="array.Weight.Value !== undefined">{{array.Weight.Value}}</td>
+  <td class="right bigger controlContainer" *ngIf="array.Weight !== undefined">{{array.Weight}}</td>
+  <td class="right bigger controlContainer" *ngIf="array.nmfc === undefined">-</td>
+  <td class="right bigger controlContainer" *ngIf="array.nmfc !== undefined" >{{array.nmfc}}</td>
+  
+  <td class="right bigger controlContainer" >{{array.FreightClass}}</td>
+  <td class="right bigger controlContainer" >&nbsp;</td>
+  </tr>
+  
+  <tr class="border_bottom border_left full-width" id="itemTotals">
+  <td class="right bigger" colspan="10">
+  <span class="ml-20">TOTAL HANDLING UNITS:<b>{{totalPieces}}</b> </span>
+  <span class="ml-20">Total Pallets:</span><span id="bolTotalPieces" class="controlContainer controlInline">{{myBolTotalPallets}}</span>
+  <span class="ml-40">Total Pieces Count:</span> <span id="bolTotalPallets" class="controlContainer controlInline">{{myBolTotalPieces}}</span>
+  <span class="ml-40">Total Weight:</span> <span id="bolTotalWeight" class="controlContainer controlInline">{{totalWeights}} lbs</span>
+  </td>
+  </tr>
+  <tr class="border_bottom border_left sectionHeader tr-1" id="hmNote">
+  <td class="right" colspan="10"><span class="boldfont ml-80 smallfont">Mark "X" in the HM COLUMN TO DESIGNATE HAZARDOUS MATERIALS AS DEFINED IN DOT REGULATIONS</span></td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  <div id="bolLegalNotes">
+  <div style="font-size: 4.5pt!important;; margin-top: 48px;">NOTE (1) Where the rate and carrier's liability for loss or damage may be dependant on value, shippers must state specifically in writing the agreed to declared value of the property as follows: "The agreed to declared value of the property is specifically stated by the shipper to be not <br>
+  exceeding <span class="undertxt">________________</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; per &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="undertxt">________________</span> ."</div>
+  <div style="font-size: 4.5pt!important;">NOTE (2) Liability limitation for loss or damage on this shipment shall be applicable as provided by contract or in the current National Motor Freight Classification, DOT 100 series, or this carrier's governing tariffs, in no event shall carrier's liability exceed $100,000 per incident.</div>
+  <div style="font-size: 4.5pt!important;">NOTE (3) Commodities requiring special or additional care or attention in handling or stowing must be so marked and packaged as to ensure safe transportation with ordinary care. See Sec 2 (e) of NMFC Item 350.</div>
+  </div>
+  <div id="shipperCertification">
+  <div class="sectionHeader" class="border sectionHeader"><div class="txt-center"><strong>SHIPPER CERTIFICATION</strong></div></div>
+  <div >
+  This is to certify that the above named materials are properly classified, described, packaged, marked, and labeled, and are in proper condition for transportation according to the applicable regulations of the Department of Transportation.<br> <br>
+  <span class="ml-5" >Shipper Signature:</span>
+  <span class="right" style="float: right;margin-right: 200px">Date:</span> 
+  </div>
+  </div>
+  <div id="carrierCertification">
+  <div class="sectionHeader" class="border sectionHeader"><div class="txt-center"><strong>CARRIER CERTIFICATION</strong></div></div>
+  <div>
+  Carrier acknowledges receipt of packages and required placards. Carrier certifies emergency response information was made available and/or carrier has the DOT emergency response guidebook or equivalent document in the vehicle.
+  </div>
+  <table width="100%">
+  <tbody>
+  <tr class="border_all" width="100%">
+  <td class="right txt-center" width="15%" colspan="2">
+  <div class="bigger">SINGLE SHIPMENT</div>
+  </td>
+  <td class="right txt-center" width="15%">
+  <div class="bigger">DATE</div>
+  </td>
+  <td class="right txt-center" width="70%">
+  <div class="bigger">DRIVER/EMPLOYEE NUMBER &amp; SIGNATURE</div>
+  </td>
+  </tr>
+  <tr class="border_right border_left" width="100%">
+  <td class="right smallfont txt-center" colspan="2">Circle One</td>
+  <td class="right txt-center"></td>
+  <td class="right">&nbsp;</td>
+  </tr>
+  <tr class="border_bottom border_right border_left" width="100%">
+  <td class="mediumfont txt-center">Y</td>
+  <td class="right mediumfont txt-center">N</td>
+  <td class="right ">&nbsp;</td>
+  <td class="right">&nbsp;</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </body></html>
+  
+  </div>
+  </div>
+  
+  <div class="modal-footer">
+  <div class="row">
+  <div class="col-md-5 col-md-push-1 green-button text-center">
+  <a data-dismiss="modal" data-toggle="modal" data-target="#bolType-modal" (click)="downloadPdfTest(bolValue)">
+  <em class="fa fa-download" aria-hidden="true" style="margin-right:5px;"></em>DOWNLOAD</a>
+  </div>
+  <!-- <div class="col-md-3 col-md-push-1 green-button text-center">
+  <a (click)="print()">
+  <em class="fa fa-print" style="margin-right:5px;"></em>PRINT</a>
+  </div> -->
+  <div class="col-md-5 col-md-push-1 green-button text-center">
+  <a data-dismiss="modal">
+  <em class="fa fa-close" aria-hidden="true" style="margin-right:5px;"></em>CLOSE</a>
+  </div>
+  
+  
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+
+  <div id="update-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+   
+   
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form [formGroup]="updateTrackProNumberForm">
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" style="font-size: 35px">&times;</button>
+    <h4 class="modal-title"><em class="fa fa-pencil-square-o"></em>&nbsp;Update</h4>
+    </div>
+    
+    <div class="modal-body" style="background-color:#f8f8f8">
+        <div class="legend-body">
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label>Existing Tracking ID/Pro No</label>
+          <input type="text" class="form-control" formControlName="bolTrackingNumberOld" [disabled]="true">
+        </div>
+        <div class="col-md-6 form-group">
+          <label>Existing PickUp No</label>
+          <input type="text" class="form-control" formControlName="pickupConformationNumberOld" [disabled]="true">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label>New Tracking ID/Pro No</label>
+          <input type="text" class="form-control" formControlName="bolTrackingNumber" autofocus>
+        </div>
+        <div class="col-md-6 form-group">
+          <label>New PickUp No</label>
+          <input type="text" class="form-control" formControlName="pickupConformationNumber">
+        </div>
+      </div>
+      </div>
+     </div>
+    <div class="modal-footer">
+      <div class="row">
+        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+          <button data-dismiss="modal" (click)="updateTrackProNumber(updateTrackProNumberForm.value)"><em class="fa fa-edit icon"></em>Update</button>
+        </div>
+        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+          <button data-dismiss="modal"><em class="fa fa-close icon"></em>Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+    </div>
+    </div>
+    </div>
+ 

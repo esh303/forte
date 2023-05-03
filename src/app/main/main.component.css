@@ -1,0 +1,376 @@
+.error{
+  color: #fa0000;
+}
+
+.float-label-control { position: relative; margin-bottom: 1.5em; }
+.float-label-control ::-webkit-input-placeholder { color: transparent; }
+.float-label-control :-moz-placeholder { color: transparent; }
+.float-label-control ::-moz-placeholder { color: transparent; }
+.float-label-control :-ms-input-placeholder { color: transparent; }
+.float-label-control input:-webkit-autofill,
+.float-label-control textarea:-webkit-autofill { background-color: transparent !important; -webkit-box-shadow: 0 0 0 1000px white inset !important; -moz-box-shadow: 0 0 0 1000px white inset !important; box-shadow: 0 0 0 1000px white inset !important; }
+.float-label-control input, .float-label-control textarea, .float-label-control label { font-size: 1.3em; box-shadow: none; -webkit-box-shadow: none; }
+.float-label-control input:focus,
+.float-label-control textarea:focus { box-shadow: none; -webkit-box-shadow: none; border-bottom-width: 2px; padding-bottom: 0; }
+.float-label-control textarea:focus { padding-bottom: 4px; }
+.float-label-control input, .float-label-control textarea { display: block; width: 100%; padding: 0.1em 0em 1px 0em; border: none; border-radius: 0px; border-bottom: 1px solid #aaa; outline: none; margin: 0px; background: none; }
+.float-label-control textarea { padding: 0.1em 0em 5px 0em; }
+.float-label-control label { position: absolute; font-weight: normal; top: -1.0em; left: 0.08em; color: #aaaaaa; z-index: -1; font-size: 0.85em; -moz-animation: float-labels 300ms none ease-out; -webkit-animation: float-labels 300ms none ease-out; -o-animation: float-labels 300ms none ease-out; -ms-animation: float-labels 300ms none ease-out; -khtml-animation: float-labels 300ms none ease-out; animation: float-labels 300ms none ease-out; /* There is a bug sometimes pausing the animation. This avoids that.*/ animation-play-state: running !important; -webkit-animation-play-state: running !important; }
+.float-label-control input.empty + label,
+.float-label-control textarea.empty + label { top: 0.1em; font-size: 1.5em; animation: none; -webkit-animation: none; }
+.float-label-control input:not(.empty) + label,
+.float-label-control textarea:not(.empty) + label { z-index: 1; }
+.float-label-control input:not(.empty):focus + label,
+.float-label-control textarea:not(.empty):focus + label { color: #aaaaaa; }
+.float-label-control.label-bottom label { -moz-animation: float-labels-bottom 300ms none ease-out; -webkit-animation: float-labels-bottom 300ms none ease-out; -o-animation: float-labels-bottom 300ms none ease-out; -ms-animation: float-labels-bottom 300ms none ease-out; -khtml-animation: float-labels-bottom 300ms none ease-out; animation: float-labels-bottom 300ms none ease-out; }
+.float-label-control.label-bottom input:not(.empty) + label,
+.float-label-control.label-bottom textarea:not(.empty) + label { top: 3em; }
+
+
+@keyframes float-labels {
+  0% { opacity: 1; color: #aaa; top: 0.1em; font-size: 1.5em; }
+  20% { font-size: 1.5em; opacity: 0; }
+  30% { top: 0.1em; }
+  50% { opacity: 0; font-size: 0.85em; }
+  100% { top: -1em; opacity: 1; }
+}
+
+@-webkit-keyframes float-labels {
+  0% { opacity: 1; color: #aaa; top: 0.1em; font-size: 1.5em; }
+  20% { font-size: 1.5em; opacity: 0; }
+  30% { top: 0.1em; }
+  50% { opacity: 0; font-size: 0.85em; }
+  100% { top: -1em; opacity: 1; }
+}
+
+@keyframes float-labels-bottom {
+  0% { opacity: 1; color: #aaa; top: 0.1em; font-size: 1.5em; }
+  20% { font-size: 1.5em; opacity: 0; }
+  30% { top: 0.1em; }
+  50% { opacity: 0; font-size: 0.85em; }
+  100% { top: 3em; opacity: 1; }
+}
+
+@-webkit-keyframes float-labels-bottom {
+  0% { opacity: 1; color: #aaa; top: 0.1em; font-size: 1.5em; }
+  20% { font-size: 1.5em; opacity: 0; }
+  30% { top: 0.1em; }
+  50% { opacity: 0; font-size: 0.85em; }
+  100% { top: 3em; opacity: 1; }
+}
+.selectField
+{
+  width: 100%;
+  padding: 11px;
+  background: rgba(76, 122, 113, 0.61);
+  border: 2px solid #00000052;
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.9;
+}
+.table-hover tbody tr:hover,
+            .table-hover tbody tr:hover td,
+            .table-hover tbody tr:hover th{
+                background:#22313F !important;
+                color:#fff !important;
+            }
+.imgBlock {
+  display: none;
+}
+.imgShow {
+  display: block;
+}
+.logisticsBtn{
+  margin-top: 20px;
+  width:100%;
+  height: 44px;
+  font-size: 12.5px;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  background: #525252;
+  transition: 0.5s all;
+  padding:12px 23px;
+}
+.form-control {
+  height: 42px;
+  }
+
+  .table-quote .table-responsive .table-bordered thead tr td{
+    color:#a4745b;
+    text-align: center;
+    padding:10px;
+    font-weight:bold;
+    border: 2px solid #134c3e;
+  }
+
+  .dropdown-menu>li>a{
+    font-size: 12px !important;
+    letter-spacing:1px;
+    color:#656E72;
+    font-weight: 600;
+  }
+  .dropdown-menu li a:hover {
+    background-color: #e7e7e7 !important;
+  }
+
+  .dropdown-menu{
+    padding: 0px;
+    overflow-y:auto;
+    height:200px;
+    background: transparent;
+    box-shadow:none;
+    border: none;
+  }
+  .table-class{
+    padding: 0px;
+    overflow-y:auto;
+    height:442px;
+    background: transparent;
+    box-shadow:none;
+    border: none;
+  }
+  table.table-dropdown{
+    /* background-color: transparent; */
+    width: 100%;
+    border: 2px solid #e4e4e4;
+    font-size:13px!important;
+    background-color:#fff;
+
+    /* vertical-align: middle; */
+  }
+
+  input:focus {
+    border-color: red;
+  }
+  /* button:focus {
+    border-color: red;
+  } */
+  button:focus {
+
+    outline: 2px solid rgb(229, 50, 82) !important;
+    background: rgba(76, 122, 113, 0.61) !important;
+    /* outline-offset: -4px; */
+  
+  }
+  table.table-dropdown thead tr td,table.table-dropdown thead tr th{
+    color:#fff!important;
+    text-align: left!important;
+    padding:10px;
+    font-weight:bold;
+    border: 2px solid #697b78!important;
+    background-color: #91aba6!important;
+    text-transform: capitalize;
+  }
+  table.table-dropdown tbody tr{
+   
+    background-color:#fff!important ;
+  
+  }
+  table.table-dropdown tbody tr td{
+    border: 2px solid #697b78!important;
+    text-align: left!important;
+    color:#656E72;
+    padding:10px;
+    text-transform: capitalize;
+    font-weight:bold;
+  }
+  table.table-dropdown tbody tr:hover,table.table-dropdown thead tr:hover{
+    background-color: rgba(230, 230, 230, 0.5) !important;
+    color:#fff ;
+  }
+  table.table-dropdown tbody tr:hover,table.table-dropdown thead tr:hover{
+    background-color: rgba(230, 230, 230, 0.5) !important;
+   
+  }
+  .w3l_banner_info {
+    text-align: left;
+    margin: 0 auto;
+    width: 100%!important;
+}
+
+.confirm-button{
+  display: inline-block;
+  background-color:#134c3e;
+  font-size: 13px;
+  padding: 5px 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius:0px;
+  border:2px solid #fff;
+  margin-bottom:20px;
+  width: calc(100% - 10px);
+  color: #ffffff!important;
+  }
+  .confirm-button:hover{
+  background-color:#134c3e;
+  color: #fff!important;
+  border:2px solid #fff;
+  }
+
+  .close{
+    color: #fff!important;
+    margin-top: -10px;
+    margin-right:20px;
+    opacity: 1;
+  }
+  .btn-1 {
+    background-color: #525252;
+  }
+  .btn-1 .round {
+    background-color: #F27935;
+  }
+  .newbtn {
+    text-decoration: none;
+    -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+    padding: 12px 53px 12px 23px;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    font-weight: bold;
+    position: relative;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .newbtn span {
+    position: relative;
+    z-index: 3;
+  }
+  .newbtn .round {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+    z-index: 2;
+  }
+  .newbtn .round i {
+    position: absolute;
+    top: 50%;
+    margin-top: -6px;
+    left: 50%;
+    margin-left: -4px;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+  }
+  
+  .txt {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  
+  .type-1 .newbtn:hover {
+    padding-left: 48px;
+    padding-right: 28px;
+  }
+  .type-1 .newbtn:hover .round {
+    width: calc(100% - 6px);
+    -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+  }
+  .type-1 .newbtn:hover .round i {
+    left: 12%;
+  }  
+
+  .btn-1 {
+    background-color: #525252;
+  }
+  .btn-1 .round {
+    background-color: #F27935;
+  }
+  .newbtn {
+    text-decoration: none;
+    -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+    padding: 12px 53px 12px 23px;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    font-weight: bold;
+    position: relative;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .newbtn span {
+    position: relative;
+    z-index: 3;
+  }
+  .newbtn .round {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+    z-index: 2;
+  }
+  .newbtn .round i {
+    position: absolute;
+    top: 50%;
+    margin-top: -6px;
+    left: 50%;
+    margin-left: -4px;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+  }
+  
+  .txt {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  
+  .type-1 .newbtn:hover {
+    padding-left: 48px;
+    padding-right: 28px;
+  }
+  .type-1 .newbtn:hover .round {
+    width: calc(100% - 6px);
+    -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+  }
+  .type-1 .newbtn:hover .round i {
+    left: 12%;
+  }
+
+  .blink_me {
+    animation: blinker 3s linear infinite;
+  }
+
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
+
+

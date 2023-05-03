@@ -1,0 +1,94 @@
+<body>
+    <!--Top-Bar-->
+    <div class="header">
+      <nav class="navbar navbar-default">
+        <app-header></app-header>
+        <div class="clearfix"></div>
+      </nav>
+    </div>
+    <!--//Top-Bar-->
+    <div class="container-fluid">
+      <div class="row">
+        <!-- <app-sidemenu></app-sidemenu> -->
+        <div class="col-md-10 col-md-push-1 main_cont">
+            <h2 class="main-head">File Upload</h2>
+           
+            <div class="row">
+                <div class="col-md-10 col-md-push-1">
+                    <div class="card" style="margin-top:50px">
+                      <div class="card-head">
+                        <div class="row">
+                            <div class="col-md-6" style="border-right: 1px dashed #d9d9d9;padding:30px 0px">
+                          <!-- <h3 class="dash-head" style="margin:20px 10px 40px 10px;text-align: left">File Upload</h3> -->
+                        <img src="../../assets/images/file.png" alt="" class="img-responsive center-block" style="height: 150px;">
+                        <h6 class="dash-head" style="margin-top:20px">Choose a File to Upload...</h6>
+                     
+                      <div class="card-body text-center" style="margin:30px 0px">
+                          <div class="upload-btn-wrapper">
+                              <button class="btn">Browse Files</button>
+                              <input type="file" accept='text/plain' (change)="fileChanged($event)"/>
+                            </div>
+                          </div>
+                          </div>
+                          <div class="col-md-6" style="padding:50px 0px">
+      
+                            <!-- Before file chosen-->
+      <div *ngIf="showNoFileChoosen">
+                              <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block" style="height: 130px;">
+                              <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5" >No Files Chosen...</h6>
+                            </div>
+                              <!-- <h6 class="dash-head" style="margin-top:30px;color: #B5B3B5" *ngIf="fileName!=='' && fileName!==undefined && fileName!==null">{{fileName}}</h6> -->
+                              
+                            
+                              <!-- Before uploading file-->
+      
+                              <!-- After file chosen-->
+                            <div *ngIf="showFileIsChoosen">
+                              <img src="../../assets/images/document2.png" alt="" class="img-responsive center-block" style="height: 130px;">
+                              <h6 class="dash-head" style="margin-top:25px">{{fileName}}</h6>
+                              <div class="text-center" style="margin:30px 0px">
+                              <div class="upload-btn-wrapper">
+                                  <button class="btn" (click)="uploadDocument()"><em class="fa fa-upload icon"></em>Upload File</button>
+                                </div>
+                                </div>
+                              </div>
+                              <!-- After file chosen-->
+      
+                                <!-- After uploading file-->
+                              <div *ngIf="showFileIsUploaded">
+                                <div class="check_mark" style="margin-top:0px">
+                                    <div class="sa-icon sa-success animate">
+                                      <span class="sa-line sa-tip animateSuccessTip"></span>
+                                      <span class="sa-line sa-long animateSuccessLong"></span>
+                                      <div class="sa-placeholder"></div>
+                                      <div class="sa-fix"></div>
+                                    </div>
+                                  </div>  
+                                  <h6 class="dash-head" style="margin-top:30px">File Uploaded Successfully...</h6>
+                                </div>
+                             <!-- After uploading file-->
+                              <div *ngIf="errorOnUploadMsg">
+                                  <img src="../../assets/images/exclamation-circle.png" alt="" class="img-responsive center-block" style="height: 130px;">
+                                  <h6 class="dash-head" style="margin-top:25px;color: #B5B3B5" >Failed to Upload</h6>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                    
+                  </div>
+           
+             
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <app-footer></app-footer>
+      
+      
+    </body>
+    <!-- Legend Modal -->
+    
+  

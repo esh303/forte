@@ -1,0 +1,42 @@
+/*.card
+{
+  background: #ff304d00;
+  padding: 20px;
+  border: 1px solid #ffffff;
+}
+.card-footer
+{
+  padding:10px;
+  border: 1px solid #ffffff;
+}*/
+
+.card
+{
+  background: #ff304d00;
+  padding: 20px;
+  border: 1px solid #ffffff;
+}
+.card-footer
+{
+  padding:10px;
+  border: 1px solid #ffffff;
+}
+.selectField{
+  width: 100%;
+  padding: 10px;
+  /*background: rgba(29, 31, 31, 0.7);*/
+  background: rgba(76, 122, 113, 0.61);
+  border: 1px solid #182d32;
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.9;
+}
+.ngx-pagination a, .ngx-pagination button {
+  color: #ffffff !important;
+  display: block;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0;
+}
+.table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+  border: 1px solid #4c7a71;
+}

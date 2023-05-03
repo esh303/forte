@@ -1,0 +1,270 @@
+<div class="banner-w3layoutsSales">
+  <!--Top-Bar-->
+  <div class="header">
+      <nav class="navbar navbar-default">
+          <app-header></app-header>
+          <div class="clearfix"></div>
+      </nav>
+  </div>
+
+  <!--main screen-->
+  <div class="w3l_banner_info" id="name">
+      <div class="col-md-12 col-sm-12 banner-form-agileinfo">
+              <div class="col-md-10 col-md-push-1">
+                  <div class="row">
+                      <div class="col-md-10 col-md-push-1 button-group">
+                          <div class="btn-group btn-group-justified">
+                              <button style="width:50%" class="btn btn-primary active" [routerLink]="[('/customerInfoworkbook')]">
+                                  <em class="fa fa-user" style="margin-right: 5px"></em>Customer Information</button>
+                                  <button style="width:40%" class="btn btn-primary active"
+                                  >
+                                  <em class="fa fa-upload" style="margin-right: 5px"></em>Upload Traffic Flow</button>
+                              <button style="width:50%" class="btn btn-primary active" [routerLink]="[('/trafficdatanew')]">
+                                  <em class="fa fa-file" style="margin-right: 5px"></em>Traffic Data</button>
+                              <button style="width:50%" class="btn btn-primary active"  >
+                                  <em class="fa fa-file" style="margin-right: 5px"></em>Analytics</button>
+                                  <button style="width:40%" class="btn btn-primary "  >
+                                    <em class="fa fa-file" style="margin-right: 5px"></em>Create contract</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>        
+      <div class="clearfix">&nbsp;</div>
+      <!-- <div class="col-sm-12 div-group"> -->
+        <!-- <div *ngIf="companyDetails !== undefined" class="row" style="text-align: center">
+          <h4 >{{companyDetails.companyName}}</h4>
+        </div>
+        <div *ngIf="companyDetails === undefined" class="row" style="text-align: center">
+          <h4>Please choose existing company or new company from customer information tab</h4>
+
+        </div> -->
+      <!-- </div> -->
+
+      <!-- <div class="clearfix"></div> -->
+
+      <div class="row" >
+   
+        <div class="col-md-12" >
+          <div  *ngIf="showTable" id="bolContainerNew" style=" width:100%;
+          font-size: 15px;
+          font-family: 'Open Sans', sans-serif!important;
+        padding:40px;
+        display:block; background-color: white;">
+            <div class="container"  style="width:850px;height:990px;border:1px solid black;margin-top: 10px;">
+              <div class="row" style="text-align: center;margin-top: 10px;">
+                <div class="col-md-12" style="font-weight: bold;">
+                  FORTÉ TRANSPORTATION LOGISTICS CORPORATION
+                </div>
+                <div class="col-md-12" style="font-weight: bold;font-size: 20px;">
+                   TRANSPORTATION SERVICE AGREEMENT
+                </div>
+            
+              </div>
+              <div class="row" style="text-align:justify;margin-top:10px;">
+                <!-- <div class="col-md-12">
+                  <p><span style="font-weight: bold;">Forté Transportation Logistics Corporation, </span>hereinafter referred to as
+                    the “Company”, agrees to extend to the below named company, hereinafter referred to as the “Client”, a program
+                    that provides discounts from listed carrier's published LTL Rate Tariffs (Schedule “A”) for early payment. </p>
+                </div> -->
+              </div>
+              <div class="row" style="text-align: center;">
+<!--             
+                <div class="col-md-12" style="text-align: center;
+                              margin-left: 36px;">
+                  <p style="font-weight: bold; margin-left:-50px;color:#eebc4c">{{companyDetails?.companyName}}</p>
+                    <p style="margin-top:-10px;margin-left:-50px;color:#eebc4c">{{companyDetails?.companyShippingAddress}}</p>
+                      <p style="margin-top:-10px;margin-left:-50px;color:#eebc4c">{{companyDetails?.companyCity}}, {{companyDetails?.companyState}} {{companyDetails?.companyZip}}</p>
+                </div>
+             -->
+                <div class="row" style="margin-left: 30px;
+                          margin-right: 30px;
+                          text-align: justify;
+                          ">
+                  <div class="col-md-12">
+                    <div class="col-md-12" style="text-align: center;
+                   margin-left: 36px;"> 
+            <p style="font-weight: bold; margin-left:-50px;">{{companyDetails?.companyName}}</p>
+            <p style="margin-left:-50px;">{{companyDetails?.companyShippingAddress}}</p>
+            <p style="margin-left:-50px;">{{companyDetails?.companyCity}}, {{companyDetails?.companyState}} {{companyDetails?.companyZip}}</p>
+            </div>
+                    <p>
+                      <span style="font-weight: bold;"> 1. Scope and Terms of Agreement: </span>Forté Transportation Logistics Corporation, hereinafter referred to as
+                      the “Company”, agrees to extend to the above named company, hereinafter referred to as the “Client”, a 60% discount of Company's TL Tariff FTLC 799. Discount to be applied  in accordance
+                      with Company's rules and regulations governing said tariff. Charges not covered by this service agreement include  (but are not limited to) Stop Enroute, Driver Load or Unload, Circuitous Miles,
+                      Driver Count, Driver Delay, Load Bracing or Load Tie-down, Fuel Surcharge, and other duly, DOT authorized accessorial charges as listed in the underlying carrier's applicable rules tariff.
+                    </p>
+                    <p>
+                      The Company proposes, within the scope and terms in this agreement, to pay all charges incurred by Client in the
+                      movement of general TL commodities (not to exceed $100 Thousand total value). Client agrees not to negotiate with
+                      any carriers that the Company provides for a period of 90 days from the expiration of this agreement.In order for the scope and terms of this agreement to be applicable, Client <span
+                        style="font-weight: bold;"><u> must</u></span> note the Company as the invoice<span
+                        style="font-weight: bold;">/third-party prepaid</span> payor of the freight charges (see example below) on
+                      all original Bills of Lading issued to listed carriers. Such notice on the Bill of Lading<span
+                        style="font-weight: bold;"> <u> must</u></span> include along with the name of the Company, the complete and
+                      correct address for the Company to insure accurate billing.
+            
+                    </p>
+                  </div>
+                </div>
+                <div class="row"  class="col-md-12 col-md-push-3" style="text-align: center;
+                   margin-left: 36px;">
+                  <!-- <div class="col-md-6" > -->
+                    <!-- <div style="text-align: left;">
+                      <p style="margin-top: -10px;" style="font-weight: bold;">Carrier shpts must Bill "Third Party Prepaid"to:</p>
+                      <p style="margin-top: -10px;color:#eebc4c">Test CopanyName</p>
+                      <p style="margin-top: -10px;">C/O Fortee</p>
+                      <p style="margin-top: -10px;">301 54th Ave East, Suite 200</p>
+                      <p style="margin-top: -10px;">Fife, WA 98424</p>
+            
+                    </div> -->
+            
+                  <!-- </div> -->
+                  <!-- <div class="col-md-6" > -->
+                    <div style="text-align: left;">
+                      <p style="font-weight: bold;">Bill "Third Party Prepaid"to:</p>
+                      <p style="">Forté
+                      </p>
+                      <p style="">301 54th Ave East, Suite 200</p>
+                      <p style="">Fife, WA 98424</p>
+                    </div>
+                  <!-- </div> -->
+                </div>
+                <div class="row" style="margin-left: 30px;
+                          margin-right: 30px;
+                          text-align: justify;
+                          ">
+                  <div class="col-md-12">
+                    <p>
+                      Client agrees to pay the company all charges covered by this agreement within 45 days of the invoice date,
+                      however, if Client pays Fortés’ invoice in full within <span ><u>4</u></span> days of the date of the invoice, Client shall be
+                      entitled to the discounts from the carrier’ published tariffs as provided in TL Tariff FTLC 799, and payment of those
+                      discounted amounts within <span ><u>4</u></span> days of the date of the invoice shall be treated as payment in full. Client
+                      further agrees to notify the Company of any perceived billing errors within three (3) business days of receipt
+                      of the Forté invoice to insure that the Company does not pay, on behalf of the client, contested freight
+                      charges.
+            
+                    </p>
+                    <p>
+                      <span style="font-weight: bold;"> 2. Duration of Agreement: </span> This agreement shall become effective 7
+                      days from receipt by Company of signed agreement and will remain in effect thereafter for a period of 30 days
+                      with automatic 30 day renewals until terminated. Agreement may be terminated by written notice, given by
+                      either party, effective one week from the date the notice is issued. Further, the agreement may terminate
+                      without notice or penalty if the Client chooses not to use the Company’s services during any 30 day period.
+            
+                    </p>
+            
+                  </div>
+                </div>
+                <div class="row"
+                style="height:20px;margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+                <div class="col-md-4" id="bruse" style="width:230px;">
+                  x _______________________
+                </div>
+                <div class="col-md-2" id="date" style="width: 140px;">
+                  <p style="font-weight: bold;margin-top: -10px;">Date
+                  </p>
+                  <!-- <input type="text" id="firsteditdate" class="textBoxcustom" [(ngModel)]="firstDate"  (keydown)="checkcontractKey($event,'firstdate')"> -->
+
+                </div>
+                <div class="col-md-4" id="manager" style="width:230px;">
+                  x _______________________
+                </div>
+                <div class="col-md-2" id="date" style="width: 140px;">
+                  <p style="font-weight: bold;margin-top: -10px;">Date
+                  </p>
+                  <!-- <input type="text" id="secondeditdate"  class="textBoxcustom"  [(ngModel)]="secondDate" (keydown)="checkcontractKey($event,'secondDate')"> -->
+                </div>
+              </div>
+              <div class="row"
+                style="margin-left: 26px;margin-right: 30px;text-align: left; margin-top: 20px;display: flex!important;">
+          
+                <div class="col-md-4" style="width:230px;">
+                  <p style="font-weight: bold;margin-top: -10px;">Bruce G. Buchanan</p>
+                  <p style="">President</p>
+                  <p style="">Forté Transportation Logistics Corp.</p>
+          
+                </div>
+                <div class="col-md-2" style="width:140px;">
+                  <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                  </p> -->
+                  <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate()" style="color:#0079FE"></em> -->
+
+                </div>
+                <div class="col-md-4" style="width:230px;margin-top: -15px">
+                  <!-- <p style="font-weight: bold;margin-top: -10px;color:#eebc4c">{{companyInformation?.contactPersonName}}</p> -->
+                  <input type="text" id="shippingmanager1" class="textBoxcustom" [(ngModel)]="shippingManagerName" (keydown)="checkcontractKey($event,'name')" >
+                  <input type="text" id="shippingmanager2" class="textBoxcustom" [(ngModel)]="shippingManagerPost" (keydown)="checkcontractKey($event,'post')">
+                  <input type="text" id="shippingAddress" class="textBoxcustom" [(ngModel)]="contractAddrss" (keydown)="checkcontractKey($event,'address')" data-toggle="tooltip" title="{{contractAddrss}}">
+
+                  <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItem()" style="color:#0079FE"></em> -->
+                  <!-- <p style="margin-top: 0px;color:#eebc4c">Shipping Manager</p> -->
+                  <!-- <p style="color:#eebc4c">{{contractAddrss}}</p> -->
+                </div>
+                <div class="col-md-2" style="width:140px;">
+                  <!-- <p style="font-weight: bold;margin-top: -10px;">Date
+                  </p> -->
+                  <!-- <i *ngIf="showeditContract" class="fa fa-pencil" aria-hidden="true" (click)="focusinputItemDate1()" style="color:#0079FE"></em> -->
+
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12" style="text-align:center;">
+                  <p><span style="font-weight: bold;">Forté Logistics Consultant:</span> Bruce Buchanan</p>
+                </div>
+              </div>
+            
+            
+              </div>
+              <!-- </br> -->
+              <!-- <div class="container" style="width:750px;height:auto;border:1px solid black;"> -->
+              </div>
+             
+          </div>
+            <div class="row">
+              <div class="col-md-2 col-md-push-2">
+                <!-- <button class="btn btn-danger"><em class="fa fa-save" aria-hidden="true" style="font-size: 20px; vertical-align: middle"></em>Save Data</button> -->
+                <button class="logisticsBtn" style="width: 265px" id="createContractrulesBtn" (click)="savecontractdetails()" >
+                  <em class="fa fa-file" aria-hidden="true"
+                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>
+                  Save TL Contract</button>
+      
+              </div>
+              <div class="row">
+                <div class="col-md-2 col-md-push-4">
+                  <button class="logisticsBtn" style="width: 265px" id="exportContract1Btn" (click)="onboardingCustomer()">
+                    <em class="fa fa-file" aria-hidden="true"
+                      style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>
+                     On Board Customer</button>
+        
+                </div>
+              </div>
+            </div>
+  
+        </div>
+
+      </div>
+    
+  </div>
+  <div class="clearfix"></div>
+  <div class="clearfix"></div>
+</div>
+
+<!--//banner-->
+<div class="clearfix">&nbsp;</div>
+<div class="clearfix">&nbsp;</div>
+</div>
+
+<div class="copy">
+  <p>© 2018 Logistics . All Rights Reserved </p>
+</div>
+<style>
+  h2,
+  .h2 {
+      font-size: 12px !important;
+  }
+
+  h3,
+  .h3 {
+      font-size: 14px !important;
+  }
+</style>

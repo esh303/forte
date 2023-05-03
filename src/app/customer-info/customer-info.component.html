@@ -1,0 +1,793 @@
+<style>
+    .table-bordered>thead>tr>th,
+    .table-bordered>tbody>tr>th,
+    .table-bordered>tfoot>tr>th,
+    .table-bordered>thead>tr>td,
+    .table-bordered>tbody>tr>td,
+    .table-bordered>tfoot>tr>td {
+        border: 1px solid #a9a0a0;
+        text-align: -webkit-center;
+    }
+    
+</style>
+<div class="banner-w3layoutsSales">
+    <!--Top-Bar-->
+    <div class="header">
+        <nav class="navbar navbar-default">
+            <app-header></app-header>
+            <div class="clearfix"></div>
+        </nav>
+    </div>
+    <!--main screen-->
+    <div class="w3l_banner_info" id="name">
+        <div class="col-md-12 col-sm-12 banner-form-agileinfo">
+            <form [formGroup]="customerForm">
+                <div class="col-md-10 col-md-push-1">
+                    <div class="row">
+                        <div class="col-md-10 col-md-push-1 button-group">
+                            <div class="btn-group btn-group-justified">
+                                <button style="width:40%" class="btn btn-primary " [routerLink]="[('/Customer_Info')]">
+                                    <em class="fa fa-user" style="margin-right: 5px"></em>Customer Information</button>
+                                    <button style="width:40%" class="btn btn-primary active"
+                                    (click)="nextflow(customerForm.value)">
+                                    <em class="fa fa-upload" style="margin-right: 5px"></em>Upload Traffic Flow</button>
+                                <button style="width:40%" class="btn btn-primary active" (click)="nextTraffic()">
+                                    <em class="fa fa-file" style="margin-right: 5px"></em>Traffic Data</button>
+                                <button style="width:40%" class="btn btn-primary active" (click)="nextCarrierAnalytics()" >
+                                    <em class="fa fa-file" style="margin-right: 5px"></em>Analytics</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="div-group">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Logistics Consultant</label>
+                                        <span style="color: #FF0000">*</span>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" formControlName="salesRepId"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group radio-group" style="margin-bottom: 5px;">
+                                            <label>Company Name</label>
+                                            <span style="color: #FF0000">*</span>
+                                            <input type="radio" class="option-input radio"
+                                                style="top:5px;margin-left: 10px;" [value]=true
+                                                formControlName="typeOfUser" (change)="clearCompany()" />
+                                            <label style="margin-right: 10px;">Existing Company</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                [value]=false formControlName="typeOfUser" (change)="clearCompany()" />
+                                            <label>New Company</label>
+                                        </div>
+                                        <div class="form-group" *ngIf="customerForm.controls['typeOfUser'].value==true">
+                                            <select class="selectField" formControlName="companyName"
+                                                (change)="checkForCompany($event, customerForm.controls['companyName'].value)"
+                                                (keyup.enter)="checkForCompany($event, customerForm.controls['companyName'].value)">
+                                                <option value="" hidden>Select</option>
+                                                <option *ngFor="let company of companyNames" value="{{company}}">
+                                                    {{company}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" *ngIf="customerForm.controls['typeOfUser'].value==false">
+                                            <input type="text" class="form-control" placeholder="Company Name"
+                                                id="companyName" autofocus formControlName="companyName"
+                                                (keydown)="checkEnterKey($event, 'companyName')" autocomplete="none">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label>Zip</label>
+                                        <span *ngIf="zipCodeErrorResponse"
+                                            style="color: #ff0000;font-size:12px;">Invalid Zipcode</span>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Zip" id="companyZip"
+                                                formControlName="companyZip"
+                                                (blur)="checkForZipCodes(customerForm.controls['companyZip'].value, 'zip'); patchContactInfo(customerForm.value, 'companyZip')"
+                                                ngPattern="/[0-9]/"
+                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" maxlength="5"
+                                                autocomplete="nope" (keydown)="checkEnterKey($event, 'companyZip')">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>City</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="City" id="companyCity"
+                                                formControlName="companyCity"
+                                                (change)="patchContactInfo(customerForm.value, 'companyCity')"
+                                                (keydown)="checkEnterKey($event, 'companyCity')">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>State</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="State"
+                                                formControlName="companyState" [disabled]="true">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="labelText" for="rating">Street Address</label>
+                                        <textarea class="form-control fieldsGrey" rows="2" id="address"
+                                            formControlName="companyShippingAddress"
+                                            (keydown)="checkEnterKey($event, 'companyShippingAddress')"
+                                            (blur)="patchContactInfo(customerForm.value, 'companyShippingAddress')"
+                                            autocomplete="nope"></textarea>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="labelText" for="rating">Rating Notes</label>
+                                        <textarea class="form-control fieldsGrey" rows="2" id="ratingNotes"
+                                            formControlName="ratingNotes"
+                                            (keydown)="checkEnterKey($event, 'ratingNotes')"
+                                            autocomplete="nope"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="height: 500px;">
+                        <div class="col-sm-5" style="padding-right: 0px; height: 500px;">
+                            <div class="div-group" style="padding-bottom: 52px;">
+                                <h1 class="card-heading">Customer Contact</h1>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Name</label>
+                                        <span style="color: #FF0000">*</span>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Name"
+                                                id="contactPersonalName" formControlName="contactPersonName"
+                                                (keydown)="checkEnterKey($event, 'contactPersonalName')"
+                                                autocomplete="none">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Title</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="contactPersonDesignation"
+                                                formControlName="contactPersonDesignation" autocomplete="none"
+                                                (keydown)="checkEnterKey($event, 'contactPersonDesignation')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Phone No.</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Phone No."
+                                                id="contactPersonPhoneNumber" formControlName="contactPersonPhoneNumber"
+                                                autocomplete="none" minlength="10" ngPattern="/[0-9]/"
+                                                onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')" name="phone"
+                                                mask="(999) 999-9999"
+                                                (keydown)="checkEnterKey($event, 'contactPersonPhoneNumber')"
+                                                (blur)="patchContactInfo(customerForm.value, 'contactPersonPhoneNumber')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Fax</label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="contactPersonFax"
+                                                formControlName="contactPersonFax"
+                                                (keydown)="checkEnterKey($event, 'contactPersonFax')"
+                                                (blur)="patchContactInfo(customerForm.value, 'contactPersonFax')"
+                                                autocomplete="none">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Pictures Attached?</label>
+                                        <div class="form-group radio-group+"
+                                            style="padding-left: 0px !important;">
+                                            <input type="radio" class="option-input radio" style="top:5px;" [value]=true
+                                                formControlName="picturesAttached" />
+                                            <label style="margin-right: 10px;">Yes</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                [value]=false formControlName="picturesAttached"
+                                                (change)='picturesAttachedCancel()' />
+                                            <label>No</label>
+                                        </div>
+                                        <div class="col-sm-5" style="padding: 0px;margin-top: -40px;
+                                        margin-left: 115px;">
+
+                                            <button class="upload-btn" data-target="#picture-modal"
+                                                data-toggle="modal"><em class="fa fa-upload"
+                                                    style="margin-right: 2px"></em>Upload</button>
+                                        </div>
+                                        <div  class ="col-sm-4" style="padding: 0px 2px;margin-top: -40px;margin-left: 205px;">
+                                            <!-- <button [disabled]="!enableViewPicturesUploaded" class="upload-btn" data-target="#pictureUploaded-modal"
+                                            data-toggle="modal"> -->
+                                            <button class="upload-btn" (click)="viewPicturesUploaded()" data-target="#pictureUploaded-modal"
+                                            data-toggle="modal" style="width: 80px;">
+                                            <em class="fa fa-eye"></em>View</button>
+                                            <!-- </button> -->
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Pre-Pricing Authorization Attached?</label>
+
+                                        <div class="form-group radio-group ">
+                                            <input type="radio" class="option-input radio" style="top:5px;" [value]=true
+                                                formControlName="prePricingAuthorizationAttached" />
+                                            <label style="margin-right: 10px;">Yes</label>
+                                            <input type="radio" class="option-input radio" style="top:5px;"
+                                                [value]=false formControlName="prePricingAuthorizationAttached" />
+                                            <label>No</label>
+                                        </div>
+                                        <div class="col-sm-5" style="padding: 0px;margin-top: -40px;
+                                        margin-left: 115px;">
+
+                                            <button class="upload-btn" data-target="#prepricing-modal"
+                                                data-toggle="modal"><em class="fa fa-upload"
+                                                    style="margin-right: 2px"></em>Upload</button>
+                                        </div>
+                                        <div  class ="col-sm-4" style="padding: 0px 3px;margin-top: -40px;margin-left:205px;">
+                                            <!-- <button [disabled]="!enableViewPrePricingPicturesUploaded" class="upload-btn" data-target="#prepricingUploaded-modal"
+                                            data-toggle="modal"> -->
+                                            <button class="upload-btn" (click)="viewPrePricingPicturesUploaded()" data-target="#prepricingpictureUploaded-modal"   data-toggle="modal" style="width: 80px;">
+                                            <em class="fa fa-eye"></em>View</button>
+                                            <!-- </button> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7" style="padding-left: 0px">
+                            <div class="div-group" style="padding-bottom:48px; padding-top: 0px">
+                                <h1 class="card-heading">AP Contact Info. Use the same address
+                                    <span>
+                                        <input type="radio" style="top:5px;" formControlName="isContactAddressSame"
+                                            [value]=true (click)="contactInfo(customerForm.value,'similar')" />
+                                        <label style="margin-right: 10px;">Yes</label>
+                                        <input type="radio" style="top:5px;" formControlName="isContactAddressSame"
+                                            [value]=false (click)="contactInfo(customerForm.value,'unsimilar')" />
+                                        <label>No</label>
+                                    </span>
+                                </h1>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Name</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Name"
+                                                        id="accountPersonName" formControlName="accountPersonName"
+                                                        autocomplete="none"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonName')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Title</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control"
+                                                        id="accountPersonDesignation"
+                                                        formControlName="accountPersonDesignation" autocomplete="none"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonDesignation')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Phone No.</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Phone No."
+                                                        formControlName="accountPersonPhoneNumber" autocomplete="none"
+                                                        id="accountPersonPhoneNumber" minlength="10" ngPattern="/[0-9]/"
+                                                        onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                                        name="phone" mask="(999) 999-9999"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonPhoneNumber')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Shipping Address</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Shipping Address"
+                                                        formControlName="accountPersonShippingAddress"
+                                                        autocomplete="none" id="accountPersonShippingAddress"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonShippingAddress')">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Fax</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Fax"
+                                                        id="accountPersonFax" formControlName="accountPersonFax"
+                                                        autocomplete="none"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonFax')">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>Zip</label>
+                                                <span *ngIf="zipCodeContactErrorResponse"
+                                                    style="color: #ff0000;font-size: 12px;">Invalid Zipcode</span>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Zip"
+                                                        id="accountPersonZip" formControlName="accountPersonZip"
+                                                        (blur)="checkForZipCodes(customerForm.controls['accountPersonZip'].value, 'contactZip')"
+                                                        ngPattern="/[0-9]/"
+                                                        onkeyup="this.value=this.value.replace(/[^0-9.]+/g,'')"
+                                                        maxlength="5" autocomplete="nope"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonZip')">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>City</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="City"
+                                                        id="accountPersonCity" formControlName="accountPersonCity"
+                                                        (keydown)="checkEnterKey($event, 'accountPersonCity')">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>State</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="State"
+                                                        formControlName="accountPersonState" [disabled]="true">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Potential Annual Forté Revenue</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Forté Revenue"
+                                                        id="potentialRevenue"
+                                                        (keydown)="checkEnterKey($event, 'potentialRevenue')"
+                                                        (blur)="calculateAmtCredit(customerForm.value)"
+                                                        formControlName="potentialAnnualForteRevenue"
+                                                        autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Payment Terms(In days)</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Payment Terms"
+                                                        id="paymentTerms"
+                                                        (keydown)="checkEnterKey($event, 'paymentTerms')"
+                                                        (blur)="calculateAmtCredit(customerForm.value)"
+                                                        formControlName="paymentTerms" autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Estimated Extended Credit($)</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Estimated Extended Credit"
+                                                        id="estimatedExtendedCredit"
+                                                        formControlName="estimatedExtendedCredit"
+                                                        (keydown)="checkEnterKey($event, 'estimatedExtendedCredit')"
+                                                        autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Credit Report (Score/Date)</label>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Credit Report"
+                                                        formControlName="creditReport" autocomplete="none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>BOL Required w/Invoice?</label>
+                                                <div class="form-group radio-group">
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=true formControlName="bolRequired" />
+                                                    <label style="margin-right: 10px;">Yes</label>
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=false formControlName="bolRequired" />
+                                                    <label>No</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>PO Required on Invoice?</label>
+                                                <div class="form-group radio-group">
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=true formControlName="poRequired" />
+                                                    <label style="margin-right: 10px;">Yes</label>
+                                                    <input type="radio" class="option-input radio" style="top:5px;"
+                                                        [value]=false formControlName="poRequired" />
+                                                    <label>No</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <button class="logisticsBtn" style="width: 100%" type="submit" (click)="clearForm()">
+                                <em class="fa fa-refresh" aria-hidden="true"
+                                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>Clear
+                                Data</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="logisticsBtn" id="saveBtn" style="width: 100%" type="submit"
+                                (click)="saveData(customerForm.value)">
+                                <em class="fa fa-save" aria-hidden="true"
+                                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>Save
+                                Data</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="logisticsBtn" style="width: 100%" type="submit"
+                                (click)="next(customerForm.value)">
+                                <em class="fa fa-step-forward" aria-hidden="true"
+                                    style="font-size: 20px; vertical-align: middle;margin-right: 5px;"></em>Next</button>
+                        </div>
+                    </div>
+                    <div class="clearfix">&nbsp;</div>
+                </div>
+            </form>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+        <div class="clearfix">&nbsp;</div>
+    </div>
+    <!--//Slider-->
+    <div class="clearfix"></div>
+</div>
+
+<!--//banner-->
+<div class="clearfix">&nbsp;</div>
+<div class="copy">
+    <p>© 2018 Logistics . All Rights Reserved </p>
+</div>
+<a href="#" tabindex="-1" id="toTop" style="display: block;">
+    <span id="toTopHover" style="opacity: 1;"> </span>
+</a>
+<!-- //smooth scrolling -->
+<style>
+    h2,
+    .h2 {
+        font-size: 12px !important;
+    }
+
+    h3,
+    .h3 {
+        font-size: 14px !important;
+    }
+</style>
+
+<div id="picture-modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+
+        <!-- Modal content-->
+        <div class="modal-content">
+                <div class="modal-header">
+                        <em class="close" data-dismiss="modal" style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                        <h4 class="modal-title" style="color: #ffffff">Upload Pictures</h4>
+                      </div>
+            <form [formGroup]="customerForm">
+                <div class="modal-header" style="background-color:#f8f8f8">
+                    <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                        (click)="picturesAttachedCancel()">&times;</button> -->
+                    <h4 class="modal-title"><em class="fa fa-pencil-square-o"></em>&nbsp;Attach Picture</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="legend-body">
+
+                        <div class="row" style="margin:30px 0px">
+                            <!-- <div class="col-md-8 form-group" style="margin-left: 100px;">
+             
+                <label for="filePicker">Choose a file:</label><br>
+                <input type="file" id="filePicker" class="form-control" formControlName="pictures" autofocus (change)="handleFileSelect($event)" style=" height: 40px !important;">
+            </div> -->
+                            <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">
+                            <!-- <h6 class="dash-head" style="margin-top:20px">Choose a File to Upload...</h6> -->
+
+                            <div class="text-center" style="margin:15px 0px">
+                                <div class="upload-btn-wrapper">
+                                    <button class="btn">Browse Files</button>
+                                    <input type="file" accept='image/*' name="myImage" (change)="fileChanged($event)"
+                                        multiple />
+                                </div>
+                            </div>
+                            <div class="text-center gallery" style="margin:10px 30px">
+                                <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                <table width="100%">
+                                    <tr style="border-bottom:1px solid #ddd;"
+                                        *ngFor="let data of filenames;let i = index">
+                                        <td style="width: 50%;">
+                                            <img style="width:100px; height: 60px;" src="{{data.image}}">
+                                        </td>
+                                        <td style="text-align:left;width:40%" href="" (click)="viewImageIndex(data, i)">
+                                                <p><em class="fa fa-file" style="margin-right: 5px"></em>{{data.name}}</p>
+                                            </td>
+                                        <td style="width: 10%;">
+                                            <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                    <!--      <tr style="border-bottom:1px solid #ddd;">
+                                    <td style="text-align:left;width:90%"> 
+                                         <p><em class="fa fa-file" style="margin-right: 5px"></em>File name2.jpg</p> 
+                                    </td>
+                                    <td style="width: 10%;"> 
+                                        <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #ddd;">
+                                        <td style="text-align:left;width:90%"> 
+                                             <p><em class="fa fa-file" style="margin-right: 5px"></em>File name3.jpg</p> 
+                                        </td>
+                                        <td style="width: 10%;"> 
+                                            <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #ddd;">
+                                            <td style="text-align:left;width:90%"> 
+                                                 <p><em class="fa fa-file" style="margin-right: 5px"></em>File name4.jpg</p> 
+                                            </td>
+                                            <td style="width: 10%;"> 
+                                                <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                        </tr> -->
+
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color:#f8f8f8">
+                    <div class="row" style="margin-left: 25px;">
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" class="logisticsBtn" (click)="picturesAttached(filenames)"><em
+                                    class="fa fa-save icon"></em>Save</button>
+                        </div>
+                        <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                            <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn"><em
+                                    class="fa fa-close icon"></em>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="pictureUploaded-modal" class="modal" role="dialog">
+        <div class="modal-dialog">
+    
+    
+            <!-- Modal content-->
+            <div class="modal-content" *ngIf="!picShowFlag">
+                    <div class="modal-header">
+                            <em class="close" data-dismiss="modal" style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                            <h4 class="modal-title" style="color: #ffffff">Uploaded Pictures</h4>
+                          </div>
+                <form [formGroup]="customerForm">
+                    <div class="modal-header" style="background-color:#f8f8f8">
+                        <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                            (click)="picturesAttachedCancel()">&times;</button> -->
+                        <h4 class="modal-title">Attached Pictures</h4>
+                    </div>
+    
+                    <div class="modal-body">
+                        <div class="legend-body">
+    
+                            <div class="row" style="margin:30px 0px">
+                                      <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">   
+                                <!-- <div class="text-center" style="margin:15px 0px">
+                                    <div class="upload-btn-wrapper">
+                                        <button class="btn">Browse Files</button>
+                                        <input type="file" accept='image/*' name="myImage" (change)="fileChanged($event)"
+                                            multiple />
+                                    </div>
+                                </div> -->
+                                <div class="text-center gallery" style="margin:10px 30px">
+                                    <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                    <table width="100%">
+                                        <tr style="border-bottom:1px solid #ddd;"
+                                            *ngFor="let data of uploadedPictures;let i = index"> 
+                                            <td style="width: 50%;">
+                                                <img style="width:100px; height: 60px;" src="{{data.image}}" (click)="imageClick(data)">
+                                            </td>
+                                            <td style="text-align:left;width:40%" href="" (click)="viewImageIndex(data, i)">
+                                                <p><em class="fa fa-file" style="margin-right: 5px"></em>{{data.name}}</p>
+                                            </td>
+                                            <td style="width: 10%;">
+                                                <button class="btn" (click)="deleteImage(data.name, 'Pictures', i)"><em class="fa fa-trash"></em></button></td>
+                                        </tr>   
+                                    </table>
+    
+    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="modal-footer" style="background-color:#f8f8f8">
+                        <div class="row" style="margin-left: 25px;"> -->
+                            <!-- <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                                <button data-dismiss="modal" class="logisticsBtn" (click)="picturesAttached()"><i
+                                        class="fa fa-save icon"></em>Save</button>
+                            </div> -->
+                            <!-- <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                                <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn">
+                                        Ok</button>
+                            </div>
+                        </div>
+                    </div> -->
+                </form>
+            </div>
+            <div class="modal-content" id="picContent" *ngIf="picShowFlag">
+                    <div (click)="hidePic()"><em class="fa fa-arrow-left" aria-hidden="true" style="margin-top: 10px;
+                    margin-left: 10px; font-size: 18px;"></em></div>
+                    <div><em class="close" data-dismiss="modal" style="font-size: 35px; margin-top: -25px;
+                    margin-right: 10px;">&times; </em></div>
+                    <img class="content" src="{{imageData.image}}" style="display:block; margin-left:auto; margin-right:auto; width: 595px; height: auto;"
+                    (click)="downloadImage(imageData)">
+                    <div id="caption" style="text-align: center">{{imageData.name}}</div>
+                    </div>
+        </div>
+    </div>
+
+<div id="prepricing-modal" class="modal" role="dialog">
+            <div class="modal-dialog">
+        
+        
+                <!-- Modal content-->
+                <div class="modal-content">
+                        <div class="modal-header">
+                                <em class="close" data-dismiss="modal" style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                                <h4 class="modal-title" style="color: #ffffff"></h4>
+                              </div>
+                    <form [formGroup]="customerForm">
+                        <div class="modal-header" style="background-color:#f8f8f8">
+                            <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                                (click)="picturesAttachedCancel()">&times;</button> -->
+                            <h4 class="modal-title"><em class="fa fa-pencil-square-o"></em>&nbsp;Attach Picture</h4>
+                        </div>
+        
+                        <div class="modal-body">
+                            <div class="legend-body">
+        
+                                <div class="row" style="margin:30px 0px">
+                                    <!-- <div class="col-md-8 form-group" style="margin-left: 100px;">
+                     
+                        <label for="filePicker">Choose a file:</label><br>
+                        <input type="file" id="filePicker" class="form-control" formControlName="pictures" autofocus (change)="handleFileSelect($event)" style=" height: 40px !important;">
+                    </div> -->
+                                    <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">
+                                    <!-- <h6 class="dash-head" style="margin-top:20px">Choose a File to Upload...</h6> -->
+        
+                                    <div class="text-center" style="margin:15px 0px">
+                                        <div class="upload-btn-wrapper">
+                                            <button class="btn">Browse Files</button>
+                                            <input type="file" accept='image/*' name="myImage" (change)="fileChanged1($event)"
+                                                multiple />
+                                        </div>
+                                    </div>
+                                    <div class="text-center gallery" style="margin:10px 30px">
+                                        <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                        <table width="100%">
+                                            <tr style="border-bottom:1px solid #ddd;"
+                                                *ngFor="let data of pricingList;let i = index">
+                                                <td style="width: 50%;">
+                                                        <img style="width:100px; height: 60px;" src="{{data.image}}">
+                                                    </td>
+                                                <td style="text-align:left;width:40%" href="" (click)="viewImageIndex1(data, i)">
+                                                    <p><em class="fa fa-file" style="margin-right: 5px"></em>{{data.name}}</p>
+                                                </td>
+                                                
+                                                <td style="width: 10%;">
+                                                    <button class="btn"><em class="fa fa-trash"></em></button></td>
+                                            </tr>        
+                                        </table>
+        
+        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="background-color:#f8f8f8">
+                            <div class="row" style="margin-left: 25px;">
+                                <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                                    <button data-dismiss="modal" class="logisticsBtn" (click)="prepricingAttached(pricingList)"><em
+                                            class="fa fa-save icon"></em>Save</button>
+                                </div>
+                                <div class="col-md-4 col-md-offset-1 col-sm-6 green-button text-center">
+                                    <button data-dismiss="modal" (click)="picturesAttachedCancel()" class="logisticsBtn"><em
+                                            class="fa fa-close icon"></em>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+<div id="prepricingpictureUploaded-modal" class="modal" role="dialog">
+                <div class="modal-dialog">
+            
+            
+                    <!-- Modal content-->
+                    <div class="modal-content" *ngIf="!picShowFlag">
+                            <div class="modal-header">
+                                    <em class="close" data-dismiss="modal" style="font-size: 35px; margin-top:-20px;margin-left: 0px;">&times; </em>
+                                    <h4 class="modal-title" style="color: #ffffff">View Attached Pictures</h4>
+                                  </div>
+                        <form [formGroup]="customerForm">
+                            <div class="modal-header" style="background-color:#f8f8f8">
+                                <!-- <button type="button" class="close" data-dismiss="modal" style="font-size: 35px"
+                                    (click)="picturesAttachedCancel()">&times;</button> -->
+                                <h4 class="modal-title">Attached Pictures</h4>
+                            </div>
+            
+                            <div class="modal-body">
+                                <div class="legend-body">
+            
+                                    <div class="row" style="margin:30px 0px">
+                                              <img src="../../assets/images/upload.png" alt="" class="center-block" height="100px">   
+                                        <!-- <div class="text-center" style="margin:15px 0px">
+                                            <div class="upload-btn-wrapper">
+                                                <button class="btn">Browse Files</button>
+                                                <input type="file" accept='image/*' name="myImage" (change)="fileChanged($event)"
+                                                    multiple />
+                                            </div>
+                                        </div> -->
+                                        <div class="text-center gallery" style="margin:10px 30px">
+                                            <!-- <h6 class="dash-head" style="margin-top:20px">Uploaded Files</h6> -->
+                                            <table width="100%">
+                                                <tr style="border-bottom:1px solid #ddd;"
+                                                    *ngFor="let data of uploadedPricingPictures;let i = index">
+                                                   
+                                                    <td style="width: 50%;">
+                                                        <img style="width:100px; height: 60px;" src="{{data.image}}" (click)="imageClick(data)">
+                                                    </td>
+                                                    <td style="text-align:left;width:40%" href="" (click)="viewImageIndex1(data, i)">
+                                                            <p><em class="fa fa-sfile" style="margin-right: 5px"></em>{{data.name}}</p>
+                                                        </td>
+                                                    <td style="width: 10%;">
+                                                        <button class="btn" (click)="deleteImage(data.name, 'prePricingPictures', i)"><em class="fa fa-trash"></em></button></td>
+                                                </tr>   
+                                            </table>
+            
+            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </form>
+                    </div>
+                    <div class="modal-content" id="picContent" *ngIf="picShowFlag">
+                        <div (click)="hidePic()"><em class="fa fa-arrow-left" aria-hidden="true" style="margin-top: 10px;
+                        margin-left: 10px; font-size: 18px;"></em></div>
+                        <div><em class="close" data-dismiss="modal" style="font-size: 35px; margin-top: -25px;
+                        margin-right: 10px;">&times; </em></div>
+                        <img class="content" src="{{imageData.image}}" style="display:block; margin-left:auto; margin-right:auto; width: 595px; height: auto;"
+                        (click)="downloadImage(imageData)">
+                        <div id="caption" style="text-align: center">{{imageData.name}}</div>
+                        </div>
+                </div>
+ </div>        
+
+            
